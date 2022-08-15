@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\SatuanResource;
 use App\Models\Satuan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class SatuanController extends Controller
 {
@@ -28,7 +30,41 @@ class SatuanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // $auth = $request->user();
+        try {
+
+            DB::beginTransaction();
+
+            if (!$request->has('id')) {
+
+                $validatedData = Validator::make($request->all(), [
+                    'name' => 'required'
+                ]);
+                if ($validatedData->fails()) {
+                    return response()->json($validatedData->errors(), 422);
+                }
+
+                Satuan::create($request->only('name'));
+
+                // $auth->log("Memasukkan data PEGAWAI {$user->name}");
+            } else {
+                $satuan = Satuan::find($request->id);
+                $satuan->update([
+                    'name' => $request->name
+                ]);
+                // return response()->json(['satuan' => $satuan, 'data' => $request->all()]);
+                // $satuan->name = $request->name;
+                // $satuan->save();
+
+                // $auth->log("Merubah data PEGAWAI {$user->name}");
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'success'], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Ada Kesalahan', 'error' => $e], 500);
+        }
     }
 
     /**
@@ -60,8 +96,24 @@ class SatuanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+
+        // $auth = auth()->user()->id;
+        $id = $request->id;
+
+        $data = Satuan::find($id);
+        $del = $data->delete();
+
+        if (!$del) {
+            return response()->json([
+                'message' => 'Error on Delete'
+            ], 500);
+        }
+
+        // $user->log("Menghapus Data Pegawai {$data->nama}");
+        return response()->json([
+            'message' => 'Data sukses terhapus'
+        ], 200);
     }
 }

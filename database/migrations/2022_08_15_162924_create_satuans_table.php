@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class TabelSatuan extends Migration
+class CreateSatuansTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class TabelSatuan extends Migration
      */
     public function up()
     {
-        Schema::create('satuan', function (Blueprint $table) {
+        Schema::create('satuans', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
             $table->string('name')->nullable();
@@ -28,6 +28,6 @@ class TabelSatuan extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('satuan');
+        Schema::dropIfExists('satuans');
     }
 }

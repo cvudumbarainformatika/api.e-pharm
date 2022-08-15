@@ -9,6 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 class Satuan extends Model
 {
     use HasFactory, HasUuid;
-    protected $table = 'satuan';
+
     protected $guarded = ['id'];
 }

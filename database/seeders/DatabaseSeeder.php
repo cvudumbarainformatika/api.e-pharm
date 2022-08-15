@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Satuan;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -19,6 +20,9 @@ class DatabaseSeeder extends Seeder
             'name' => 'admin',
             'email' => 'admin@app.com',
             'password' => bcrypt('123456789')
+        ]);
+        Satuan::create([
+            'name' => 'atm'
         ]);
     }
 }
