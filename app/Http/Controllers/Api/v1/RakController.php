@@ -3,18 +3,18 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\v1\KategoriResource;
-use App\Models\Kategori;
+use App\Http\Resources\v1\RakResource;
+use App\Models\Rak;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class KategoriController extends Controller
+class RakController extends Controller
 {
     public function index()
     {
-        $data = Kategori::paginate();
-        return KategoriResource::collection($data);
+        $data = Rak::paginate();
+        return RakResource::collection($data);
     }
     public function store(Request $request)
     {
@@ -32,19 +32,19 @@ class KategoriController extends Controller
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Kategori::create($request->only('nama'));
-                // Kategori::create([
+                Rak::create($request->only('nama'));
+                // Rak::create([
                 //     'nama' => $request->name
                 // ]);
 
-                // $auth->log("Memasukkan data Kategori {$user->name}");
+                // $auth->log("Memasukkan data Rak {$user->name}");
             } else {
-                $kategori = Kategori::find($request->id);
+                $kategori = Rak::find($request->id);
                 $kategori->update([
                     'nama' => $request->nama
                 ]);
 
-                // $auth->log("Merubah data Kategori {$user->name}");
+                // $auth->log("Merubah data Rak {$user->name}");
             }
 
             DB::commit();
@@ -60,7 +60,7 @@ class KategoriController extends Controller
         // $auth = auth()->user()->id;
         $id = $request->id;
 
-        $data = Kategori::find($id);
+        $data = Rak::find($id);
         $del = $data->delete();
 
         if (!$del) {
@@ -69,7 +69,7 @@ class KategoriController extends Controller
             ], 500);
         }
 
-        // $user->log("Menghapus Data Kategori {$data->nama}");
+        // $user->log("Menghapus Data Rak {$data->nama}");
         return response()->json([
             'message' => 'Data sukses terhapus'
         ], 200);

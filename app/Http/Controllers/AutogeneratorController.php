@@ -10,7 +10,7 @@ class AutogeneratorController extends Controller
     //
     public function index()
     {
-        $table = 'kategoris';
+        $table = 'raks';
         $data = Schema::getColumnListing($table);
 
 
