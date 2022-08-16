@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Dokter;
 use App\Models\Kategori;
+use App\Models\Product;
 use App\Models\Rak;
 use App\Models\Satuan;
 use App\Models\Supplier;
@@ -45,6 +46,19 @@ class DatabaseSeeder extends Seeder
         ]);
         Rak::create([
             'nama' => '1 A atas'
+        ]);
+        Product::create([
+            'barcode' => null,
+            'nama' => 'Paracetamol',
+            'merk' => 'Kalbe',
+            'satuan_id' => 1,
+            'harga_beli' => 5500,
+            'harga_jual_umum' => 8000,
+            'harga_jual_resep' => 9000,
+            'harga_jual_cust' => 9500,
+            'stok_awal' => 12,
+            'rak_id' => 1,
+            'kategori_id' => 1
         ]);
     }
 }
