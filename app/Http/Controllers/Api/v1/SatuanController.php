@@ -46,7 +46,7 @@ class SatuanController extends Controller
 
                 Satuan::create($request->only('name'));
 
-                // $auth->log("Memasukkan data PEGAWAI {$user->name}");
+                // $auth->log("Memasukkan data satuan {$user->name}");
             } else {
                 $satuan = Satuan::find($request->id);
                 $satuan->update([
@@ -56,7 +56,7 @@ class SatuanController extends Controller
                 // $satuan->name = $request->name;
                 // $satuan->save();
 
-                // $auth->log("Merubah data PEGAWAI {$user->name}");
+                // $auth->log("Merubah data Satuan {$user->name}");
             }
 
             DB::commit();
@@ -111,7 +111,7 @@ class SatuanController extends Controller
             ], 500);
         }
 
-        // $user->log("Menghapus Data Pegawai {$data->nama}");
+        // $user->log("Menghapus Data Satuan {$data->nama}");
         return response()->json([
             'message' => 'Data sukses terhapus'
         ], 200);
