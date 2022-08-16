@@ -13,14 +13,14 @@ class CreateSuplliersTable extends Migration
      */
     public function up()
     {
-        Schema::create('suplliers', function (Blueprint $table) {
+        Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
             $table->string('nama')->nullable();
             $table->string('alamat')->nullable();
             $table->string('perusahaan')->nullable();
             $table->string('kontak')->nullable();
-            $table->double('saldo awal hutang')->nullable();
+            $table->double('saldo_awal_hutang')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +32,6 @@ class CreateSuplliersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('suplliers');
+        Schema::dropIfExists('suppliers');
     }
 }
