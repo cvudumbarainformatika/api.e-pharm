@@ -4,7 +4,8 @@ use App\Http\Controllers\Api\v1\RakController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
-    'middleware' => 'jwt.verify',
+    'middleware' => 'auth:api',
+    // 'middleware' => 'jwt.vrify',
     'prefix' => 'rak'
 ], function () {
     Route::get('/index', [RakController::class, 'index']);

@@ -4,7 +4,8 @@ use App\Http\Controllers\Api\v1\DokterController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
-    'middleware' => 'jwt.verify',
+    'middleware' => 'auth:api',
+    // 'middleware' => 'jwt.verify',
     'prefix' => 'dokter'
 ], function () {
     Route::get('/index', [DokterController::class, 'index']);

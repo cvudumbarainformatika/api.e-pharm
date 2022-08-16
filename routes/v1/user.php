@@ -6,7 +6,8 @@ use App\Http\Controllers\AuthController;
 
 
 Route::group([
-    'middleware' => 'jwt.verify',
+    'middleware' => 'auth:api',
+    // 'middleware' => 'jwt.verify',
     'prefix' => 'user'
 ], function () {
     Route::get('/profile', [AuthController::class, 'userProfile']);

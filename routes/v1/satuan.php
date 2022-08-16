@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group([
-    'middleware' => 'jwt.verify',
+    'middleware' => 'auth:api',
+    // 'middleware' => 'jwt.verify',
     'prefix' => 'satuan'
 ], function () {
     Route::get('/index', [SatuanController::class, 'index']);
