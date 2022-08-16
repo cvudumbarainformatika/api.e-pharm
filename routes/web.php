@@ -18,4 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::view("login", "login");
-Route::get('autogen', [AutogeneratorController::class, 'index']);
+Route::get('/autogen', [AutogeneratorController::class, 'index']);
