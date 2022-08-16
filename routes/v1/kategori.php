@@ -8,6 +8,6 @@ Route::group([
     'prefix' => 'kategori'
 ], function () {
     Route::get('/index', [KategoriController::class, 'index']);
-    Route::get('/store', [KategoriController::class, 'store']);
-    Route::get('/destroy', [KategoriController::class, 'destroy']);
+    Route::post('/store', [KategoriController::class, 'store']);
+    Route::post('/destroy', [KategoriController::class, 'destroy']);
 });

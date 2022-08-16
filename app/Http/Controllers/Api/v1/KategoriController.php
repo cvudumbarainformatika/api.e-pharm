@@ -26,19 +26,22 @@ class KategoriController extends Controller
             if (!$request->has('id')) {
 
                 $validatedData = Validator::make($request->all(), [
-                    'nama' => 'required'
+                    'name' => 'required'
                 ]);
                 if ($validatedData->fails()) {
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Kategori::create($request->only('nama'));
+                // Kategori::create($request->only('nama'));
+                Kategori::create([
+                    'nama' => $request->name
+                ]);
 
                 // $auth->log("Memasukkan data Kategori {$user->name}");
             } else {
                 $kategori = Kategori::find($request->id);
                 $kategori->update([
-                    'nama' => $request->nama
+                    'nama' => $request->name
                 ]);
 
                 // $auth->log("Merubah data Kategori {$user->name}");
