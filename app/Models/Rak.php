@@ -10,4 +10,9 @@ class Rak extends Model
 {
     use HasFactory, HasUuid;
     protected $guarded = ['id'];
+
+    public function product()
+    {
+        return $this->hasMany(Product::class); // rak itu punya banyak row di product
+    }
 }
