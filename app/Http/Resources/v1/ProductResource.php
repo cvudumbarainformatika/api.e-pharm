@@ -31,6 +31,7 @@ class ProductResource extends JsonResource
             'rak' => $this->whenLoaded('rak'),
             'kategori_id' => $this->kategori_id,
             'kategori' => $this->whenLoaded('kategori'),
+            'expired' => $this->expired,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
 

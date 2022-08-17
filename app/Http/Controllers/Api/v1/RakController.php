@@ -32,10 +32,10 @@ class RakController extends Controller
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Rak::create($request->only('nama'));
-                // Rak::create([
-                //     'nama' => $request->name
-                // ]);
+                // Rak::create($request->only('nama'));
+                Rak::firstOrCreate([
+                    'nama' => $request->nama
+                ]);
 
                 // $auth->log("Memasukkan data Rak {$user->name}");
             } else {

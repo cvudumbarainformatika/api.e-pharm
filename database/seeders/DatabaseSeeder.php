@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('123456789')
         ]);
         Satuan::create([
-            'name' => 'atm'
+            'nama' => 'ATM'
         ]);
         Dokter::create([
             'nama' => 'Sugeng',
@@ -42,13 +42,13 @@ class DatabaseSeeder extends Seeder
             'saldo_awal_hutang' => '8976889'
         ]);
         Kategori::create([
-            'nama' => 'generik'
+            'nama' => 'GENERIK'
         ]);
         Rak::create([
-            'nama' => '1 A atas'
+            'nama' => '1 A ATAS'
         ]);
         Product::create([
-            'barcode' => null,
+            'barcode' => 212323231,
             'nama' => 'Paracetamol',
             'merk' => 'Kalbe',
             'satuan_id' => 1,

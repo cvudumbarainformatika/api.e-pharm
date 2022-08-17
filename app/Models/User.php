@@ -49,7 +49,8 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return mixed
      */
-    public function getJWTIdentifier() {
+    public function getJWTIdentifier()
+    {
         return $this->getKey();
     }
     /**
@@ -57,7 +58,25 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return array
      */
-    public function getJWTCustomClaims() {
+    public function getJWTCustomClaims()
+    {
         return [];
+    }
+
+    public function scopeFilter($search, array $reqs)
+    {
+        $search->when($reqs['q'] ?? false, function ($search, $query) {
+            return $search->where('name', 'LIKE', '%' . $query . '%');
+        });
+
+        // $search->when($reqs['jenis_kepegawaian_id'] ?? false, function ($search, $query) {
+        //     return $search->where('jenis_kepegawaian_id', $query);
+        // });
+
+        // $search->when($reqs['jenis_kepegawaian_id'] ?? false, function ($search, $jenis) {
+        //     return $search->whereHas('jenis', function ($search) use ($jenis) {
+        //         $search->where('id', $jenis);
+        //     });
+        // });
     }
 }

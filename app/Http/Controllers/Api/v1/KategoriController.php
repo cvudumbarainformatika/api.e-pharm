@@ -32,10 +32,10 @@ class KategoriController extends Controller
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Kategori::create($request->only('nama'));
-                // Kategori::create([
-                //     'nama' => $request->name
-                // ]);
+                // Kategori::create($request->only('nama'));
+                Kategori::firstOrCreate([
+                    'nama' => $request->nama
+                ]);
 
                 // $auth->log("Memasukkan data Kategori {$user->name}");
             } else {

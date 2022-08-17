@@ -38,19 +38,22 @@ class SatuanController extends Controller
             if (!$request->has('id')) {
 
                 $validatedData = Validator::make($request->all(), [
-                    'name' => 'required'
+                    'nama' => 'required'
                 ]);
                 if ($validatedData->fails()) {
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Satuan::create($request->only('name'));
+                // Satuan::create($request->only('name'));
+                Satuan::firstOrCreate([
+                    'nama' => $request->nama
+                ]);
 
                 // $auth->log("Memasukkan data satuan {$user->name}");
             } else {
                 $satuan = Satuan::find($request->id);
                 $satuan->update([
-                    'name' => $request->name
+                    'nama' => $request->nama
                 ]);
                 // return response()->json(['satuan' => $satuan, 'data' => $request->all()]);
                 // $satuan->name = $request->name;

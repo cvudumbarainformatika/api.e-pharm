@@ -18,7 +18,7 @@ class ProductController extends Controller
         //     ->filter(request(['q']))
         //     ->paginate(request('per_page'));;
         $data->load('kategori:id,nama');
-        $data->load('satuan:id,name');
+        $data->load('satuan:id,nama');
         $data->load('rak:id,nama');
         return ProductResource::collection($data);
     }
@@ -43,12 +43,13 @@ class ProductController extends Controller
                     'stok_awal' => 'required',
                     'rak_id' => 'required',
                     'kategori_id' => 'required',
+                    'expired' => 'required',
                 ]);
                 if ($validatedData->fails()) {
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Product::create($request->only(['nama', 'barcode', 'merk', 'satuan_id', 'harga_beli', 'harga_jual_umum', 'harga_jual_resep', 'harga_jual_cust', 'stok_awal', 'rak_id', 'kategori_id']));
+                Product::create($request->only(['nama', 'barcode', 'merk', 'satuan_id', 'harga_beli', 'harga_jual_umum', 'harga_jual_resep', 'harga_jual_cust', 'stok_awal', 'rak_id', 'kategori_id', 'expired']));
                 // Product::create([
                 //     'nama' => $request->name
                 // ]);
@@ -68,6 +69,7 @@ class ProductController extends Controller
                     'stok_awal' => $request->stok_awal,
                     'rak_id' => $request->rak_id,
                     'kategori_id' => $request->kategori_id,
+                    'expired' => $request->expired,
                 ]);
 
                 // $auth->log("Merubah data Product {$user->name}");
