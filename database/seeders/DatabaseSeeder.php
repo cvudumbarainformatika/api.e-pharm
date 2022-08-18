@@ -2,12 +2,19 @@
 
 namespace Database\Seeders;
 
+use App\Models\Beban;
+use App\Models\BebanTransaction;
+use App\Models\Customer;
+use App\Models\DetailTransaction;
 use App\Models\Dokter;
 use App\Models\Kategori;
+use App\Models\Merk;
+use App\Models\Perusahaan;
 use App\Models\Product;
 use App\Models\Rak;
 use App\Models\Satuan;
 use App\Models\Supplier;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -50,7 +57,7 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'barcode' => 212323231,
             'nama' => 'Paracetamol',
-            'merk' => 'Kalbe',
+            'merk_id' => 1,
             'satuan_id' => 1,
             'harga_beli' => 5500,
             'harga_jual_umum' => 8000,
@@ -59,6 +66,44 @@ class DatabaseSeeder extends Seeder
             'stok_awal' => 12,
             'rak_id' => 1,
             'kategori_id' => 1
+        ]);
+        Merk::create([
+            'nama' => 'KALBE'
+        ]);
+        Beban::create([
+            'nama' => 'KALBE'
+        ]);
+        Customer::create([
+            'nama' => 'Suhar',
+            'alamat' => 'Jl. mana yang akan kau pilih',
+            'kontak' => '00904293040',
+            'saldo_awal_piutang' => 100000
+        ]);
+        Transaction::create([
+            'nama' => 'di isi nama',
+            'tanggal' => '2020/08/12',
+            'total' => 70000,
+            'ongkir' => 0,
+            'potongan' => 0,
+            'bayar' => 100000,
+            'kembali' => 30000,
+            'status' => 1,
+        ]);
+        DetailTransaction::create([
+            'transaction_id' => 1,
+            'product_id' => 1,
+            'qty' => 3,
+            'harga' => 10000,
+            'total' => 30000
+        ]);
+        BebanTransaction::create([
+            'transaction_id' => 1,
+            'beban_id' => 1,
+            'total' => 10000,
+            'keterangan' => 'seeder jadi ya gitu lah'
+        ]);
+        Perusahaan::create([
+            'nama' => 'PT. KALBE'
         ]);
     }
 }

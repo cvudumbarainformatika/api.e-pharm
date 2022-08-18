@@ -25,6 +25,12 @@ class Product extends Model
     {
         return $this->belongsTo(Satuan::class);
     }
+
+    public function merk()
+    {
+        return $this->belongsTo(Merk::class);
+    }
+
     public function scopeFilter($search, array $reqs)
     {
         $search->when($reqs['q'] ?? false, function ($search, $query) {
