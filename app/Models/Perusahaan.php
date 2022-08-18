@@ -12,7 +12,10 @@ class Perusahaan extends Model
 
     protected $guarded = ['id'];
 
-
+    public function supplier()
+    {
+        return $this->hasMany(Supplier::class);
+    }
 
     public function scopeFilter($search, array $reqs)
     {

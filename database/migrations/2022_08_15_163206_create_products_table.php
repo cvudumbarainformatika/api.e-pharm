@@ -25,6 +25,7 @@ class CreateProductsTable extends Migration
             $table->double('harga_jual_resep')->default(0);
             $table->double('harga_jual_cust')->default(0);
             $table->double('stok_awal')->default(0);
+            $table->double('limit_stok')->default(2);
             $table->unsignedBigInteger('rak_id')->nullable();
             $table->unsignedBigInteger('kategori_id')->nullable();
             $table->date('expired')->nullable();

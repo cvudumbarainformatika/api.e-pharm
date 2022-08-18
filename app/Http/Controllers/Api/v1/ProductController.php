@@ -20,6 +20,7 @@ class ProductController extends Controller
         $data->load('kategori:id,nama');
         $data->load('satuan:id,nama');
         $data->load('rak:id,nama');
+        $data->load('merk:id,nama');
         return ProductResource::collection($data);
     }
     public function store(Request $request)
@@ -34,7 +35,7 @@ class ProductController extends Controller
                 $validatedData = Validator::make($request->all(), [
                     'barcode' => 'required',
                     'nama' => 'required',
-                    'merk' => 'required',
+                    'merk_id' => 'required',
                     'satuan_id' => 'required',
                     'harga_beli' => 'required',
                     'harga_jual_umum' => 'required',
@@ -49,7 +50,7 @@ class ProductController extends Controller
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Product::create($request->only(['nama', 'barcode', 'merk', 'satuan_id', 'harga_beli', 'harga_jual_umum', 'harga_jual_resep', 'harga_jual_cust', 'stok_awal', 'rak_id', 'kategori_id', 'expired']));
+                Product::create($request->only(['nama', 'barcode', 'merk_id', 'satuan_id', 'harga_beli', 'harga_jual_umum', 'harga_jual_resep', 'harga_jual_cust', 'stok_awal', 'rak_id', 'kategori_id', 'expired']));
                 // Product::create([
                 //     'nama' => $request->name
                 // ]);
@@ -60,7 +61,7 @@ class ProductController extends Controller
                 $kategori->update([
                     'barcode' => $request->barcode,
                     'nama' => $request->nama,
-                    'merk' => $request->merk,
+                    'merk_id' => $request->merk_id,
                     'satuan_id' => $request->satuan_id,
                     'harga_beli' => $request->harga_beli,
                     'harga_jual_umum' => $request->harga_jual_umum,

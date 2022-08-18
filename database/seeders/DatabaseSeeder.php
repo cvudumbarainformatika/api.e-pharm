@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
         Supplier::create([
             'nama' => 'Agung Podomoro',
             'alamat' => 'Jl. untuk kembali',
-            'perusahaan' => 'PT. Anugrah Indah Abadi',
+            'perusahaan_id' => 1,
             'kontak' => '0992839879872',
             'saldo_awal_hutang' => '8976889'
         ]);
@@ -55,6 +55,7 @@ class DatabaseSeeder extends Seeder
             'nama' => '1 A ATAS'
         ]);
         Product::create([
+            'expired' => '2022/08/31',
             'barcode' => 212323231,
             'nama' => 'Paracetamol',
             'merk_id' => 1,

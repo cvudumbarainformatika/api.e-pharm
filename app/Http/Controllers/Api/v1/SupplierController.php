@@ -15,6 +15,7 @@ class SupplierController extends Controller
     public function index()
     {
         $data = Supplier::paginate();
+        $data->load('perusahaan:id,nama');
         return SupplierResource::collection($data);
     }
     public function store(Request $request)
@@ -29,7 +30,7 @@ class SupplierController extends Controller
                 $validatedData = Validator::make($request->all(), [
                     'nama' => 'required',
                     'alamat' => 'required',
-                    'perusahaan' => 'required',
+                    'perusahaan_id' => 'required',
                     'kontak' => 'required',
                     'saldo_awal_hutang' => 'required',
                 ]);
@@ -37,7 +38,7 @@ class SupplierController extends Controller
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Supplier::create($request->only(['nama', 'alamat', 'perusahaan', 'kontak', 'saldo_awal_hutang']));
+                Supplier::create($request->only(['nama', 'alamat', 'perusahaan_id', 'kontak', 'saldo_awal_hutang']));
                 // Supplierlier::create([
                 //     'Supplierma' => $request->name
                 // ]);
@@ -48,7 +49,7 @@ class SupplierController extends Controller
                 $kategori->update([
                     'nama' => $request->nama,
                     'alamat' => $request->alamat,
-                    'perusahaan' => $request->perusahaan,
+                    'perusahaan_id' => $request->perusahaan_id,
                     'kontak' => $request->kontak,
                     'saldo_awal_hutang' => $request->saldo_awal_hutang
                 ]);

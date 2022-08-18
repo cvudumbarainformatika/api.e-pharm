@@ -9,7 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 class Supplier extends Model
 {
     use HasFactory, HasUuid;
+
     protected $guarded = ['id'];
+
+    public function perusahaan()
+    {
+        return $this->belongsTo(Perusahaan::class);
+    }
 
     public function scopeFilter($search, array $reqs)
     {
