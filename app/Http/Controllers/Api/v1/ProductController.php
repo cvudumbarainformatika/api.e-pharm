@@ -42,6 +42,7 @@ class ProductController extends Controller
                     'harga_jual_resep' => 'required',
                     'harga_jual_cust' => 'required',
                     'stok_awal' => 'required',
+                    'limit_stok' => 'required',
                     'rak_id' => 'required',
                     'kategori_id' => 'required',
                     'expired' => 'required',
@@ -50,7 +51,7 @@ class ProductController extends Controller
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Product::create($request->only(['nama', 'barcode', 'merk_id', 'satuan_id', 'harga_beli', 'harga_jual_umum', 'harga_jual_resep', 'harga_jual_cust', 'stok_awal', 'rak_id', 'kategori_id', 'expired']));
+                Product::create($request->only(['nama', 'barcode', 'merk_id', 'satuan_id', 'harga_beli', 'harga_jual_umum', 'harga_jual_resep', 'harga_jual_cust', 'stok_awal', 'limit_stok', 'rak_id', 'kategori_id', 'expired']));
                 // Product::create([
                 //     'nama' => $request->name
                 // ]);
@@ -68,6 +69,7 @@ class ProductController extends Controller
                     'harga_jual_resep' => $request->harga_jual_resep,
                     'harga_jual_cust' => $request->harga_jual_cust,
                     'stok_awal' => $request->stok_awal,
+                    'limit_stok' => $request->limit_stok,
                     'rak_id' => $request->rak_id,
                     'kategori_id' => $request->kategori_id,
                     'expired' => $request->expired,
