@@ -16,7 +16,10 @@ class CreateBebanTransactionsTable extends Migration
         Schema::create('beban_transactions', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->nullable();
-            $table->unsignedBigInteger('transaction_id')->nullable();
+            $table->foreignId('transaction_id')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->unsignedBigInteger('beban_id')->nullable();
             $table->double('total')->default(0);
             $table->string('keterangan')->nullable();

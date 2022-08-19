@@ -16,7 +16,10 @@ class CreateDetailTransactionsTable extends Migration
         Schema::create('detail_transactions', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->nullable();
-            $table->unsignedBigInteger('transaction_id')->nullable();
+            $table->foreignId('transaction_id')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->unsignedBigInteger('product_id')->nullable();
             $table->double('qty')->default(0);
             $table->double('harga')->default(0);
