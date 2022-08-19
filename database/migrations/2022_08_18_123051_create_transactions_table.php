@@ -16,6 +16,7 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->nullable();
+            $table->string('reff')->nullable();
             $table->date('tanggal')->nullable();
             $table->string('nama')->nullable();
             $table->enum('jenis', ['tunai', 'hutang', 'piutang'])->default('tunai');

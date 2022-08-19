@@ -88,7 +88,7 @@ class DatabaseSeeder extends Seeder
             'potongan' => 0,
             'bayar' => 100000,
             'kembali' => 30000,
-            'status' => 1,
+            'status' => 0,
         ]);
         DetailTransaction::create([
             'transaction_id' => 1,
