@@ -15,7 +15,7 @@ class CreateMerksTable extends Migration
     {
         Schema::create('merks', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->nullable();
+            $table->uuid('uuid')->unique();
             $table->string('nama')->nullable();
             $table->timestamps();
         });

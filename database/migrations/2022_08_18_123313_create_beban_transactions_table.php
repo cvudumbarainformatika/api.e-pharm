@@ -15,7 +15,7 @@ class CreateBebanTransactionsTable extends Migration
     {
         Schema::create('beban_transactions', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->nullable();
+            $table->uuid('uuid')->unique();
             $table->foreignId('transaction_id')
                 ->constrained()
                 ->onUpdate('cascade')

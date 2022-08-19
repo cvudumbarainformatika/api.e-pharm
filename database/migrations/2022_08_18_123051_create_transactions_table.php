@@ -15,8 +15,9 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->nullable();
-            $table->string('reff')->nullable();
+            $table->uuid('uuid')->unique();
+            $table->string('reff')->unique();
+            $table->string('faktur')->nullable();
             $table->date('tanggal')->nullable();
             $table->string('nama')->nullable();
             $table->enum('jenis', ['tunai', 'hutang', 'piutang'])->default('tunai');
@@ -27,6 +28,7 @@ class CreateTransactionsTable extends Migration
             $table->double('kembali')->default(0);
             $table->date('tempo')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('kasir_id')->nullable(); // kasir_id adalah user dengan role kasir
             $table->unsignedBigInteger('supplier_id')->nullable();
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->unsignedBigInteger('dokter_id')->nullable();
