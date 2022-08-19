@@ -36,11 +36,22 @@ class Product extends Model
         $search->when($reqs['q'] ?? false, function ($search, $query) {
             return $search->where('nama', 'LIKE', '%' . $query . '%')
                 ->orWhere('barcode', 'LIKE', '%' . $query . '%')
-                ->orWhere('merk', 'LIKE', '%' . $query . '%');
+                ->orWhere('expired', 'LIKE', '%' . $query . '%');
         });
 
-        $search->when($reqs['jenis_kepegawaian_id'] ?? false, function ($search, $query) {
-            return $search->where('jenis_kepegawaian_id', $query);
+        $search->when($reqs['merk_id'] ?? false, function ($search, $query) {
+            return $search->where('merk_id', $query);
+        });
+
+        $search->when($reqs['satuan_id'] ?? false, function ($search, $query) {
+            return $search->where('satuan_id', $query);
+        });
+
+        $search->when($reqs['rak_id'] ?? false, function ($search, $query) {
+            return $search->where('rak_id', $query);
+        });
+        $search->when($reqs['kategori_id'] ?? false, function ($search, $query) {
+            return $search->where('kategori_id', $query);
         });
 
         // $search->when($reqs['jenis_kepegawaian_id'] ?? false, function ($search, $jenis) {

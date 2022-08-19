@@ -12,6 +12,15 @@ class DetailTransaction extends Model
 
     protected $guarded = ['id'];
 
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 
     public function scopeFilter($search, array $reqs)
     {
@@ -19,9 +28,13 @@ class DetailTransaction extends Model
             return $search->where('nama', 'LIKE', '%' . $query . '%');
         });
 
-        // $search->when($reqs['jenis_kepegawaian_id'] ?? false, function ($search, $query) {
-        //     return $search->where('jenis_kepegawaian_id', $query);
-        // });
+        $search->when($reqs['transaction_id'] ?? false, function ($search, $query) {
+            return $search->where('transaction_id', $query);
+        });
+
+        $search->when($reqs['product_id'] ?? false, function ($search, $query) {
+            return $search->where('product_id', $query);
+        });
 
         // $search->when($reqs['jenis_kepegawaian_id'] ?? false, function ($search, $jenis) {
         //     return $search->whereHas('jenis', function ($search) use ($jenis) {

@@ -12,11 +12,51 @@ class Transaction extends Model
 
     protected $guarded = ['id'];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+    public function dokter()
+    {
+        return $this->belongsTo(Dokter::class);
+    }
+    public function beban_transaction()
+    {
+        return $this->hasMany(BebanTransaction::class);
+    }
+    public function detai_transaction()
+    {
+        return $this->hasMany(DetailTransaction::class);
+    }
 
     public function scopeFilter($search, array $reqs)
     {
         $search->when($reqs['q'] ?? false, function ($search, $query) {
-            return $search->where('nama', 'LIKE', '%' . $query . '%');
+            return $search->where('nama', 'LIKE', '%' . $query . '%')
+                ->orWhere('status', 'LIKE', '%' . $query . '%');
+        });
+
+        $search->when($reqs['user_id'] ?? false, function ($search, $query) {
+            return $search->where('user_id', $query);
+        });
+
+        $search->when($reqs['supplier_id'] ?? false, function ($search, $query) {
+            return $search->where('supplier_id', $query);
+        });
+
+        $search->when($reqs['customer_id'] ?? false, function ($search, $query) {
+            return $search->where('customer_id', $query);
+        });
+        $search->when($reqs['dokter_id'] ?? false, function ($search, $query) {
+            return $search->where('dokter_id', $query);
         });
 
         // $search->when($reqs['jenis_kepegawaian_id'] ?? false, function ($search, $query) {

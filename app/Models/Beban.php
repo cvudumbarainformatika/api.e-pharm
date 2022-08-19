@@ -12,6 +12,10 @@ class Beban extends Model
 
     protected $guarded = ['id'];
 
+    public function beban_transaction()
+    {
+        return $this->hasMany(BebanTransaction::class);
+    }
 
     public function scopeFilter($search, array $reqs)
     {

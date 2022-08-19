@@ -17,6 +17,13 @@ class Supplier extends Model
         return $this->belongsTo(Perusahaan::class);
     }
 
+
+    public function transaction()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+
     public function scopeFilter($search, array $reqs)
     {
         $search->when($reqs['q'] ?? false, function ($search, $query) {

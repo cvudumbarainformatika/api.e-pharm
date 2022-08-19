@@ -13,6 +13,12 @@ class Customer extends Model
     protected $guarded = ['id'];
 
 
+
+    public function transaction()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
     public function scopeFilter($search, array $reqs)
     {
         $search->when($reqs['q'] ?? false, function ($search, $query) {
