@@ -13,10 +13,10 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $data = Product::paginate();;
-        // $data = Product::orderBy(request('order_by'), request('sort'))
-        //     ->filter(request(['q']))
-        //     ->paginate(request('per_page'));;
+        // $data = Product::paginate();
+        $data = Product::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))
+            ->paginate(request('per_page'));
         $data->load('kategori:id,nama');
         $data->load('satuan:id,nama');
         $data->load('rak:id,nama');

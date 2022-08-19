@@ -13,7 +13,10 @@ class MerkController extends Controller
 {
     public function index()
     {
-        $data = Merk::paginate();
+        // $data = Merk::paginate();
+        $data = Merk::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))
+            ->paginate(request('per_page'));
         return MerkResource::collection($data);
     }
     public function store(Request $request)

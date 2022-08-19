@@ -13,7 +13,10 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $data = Customer::paginate();
+        // $data = Customer::paginate();
+        $data = Customer::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))
+            ->paginate(request('per_page'));
         return CustomerResource::collection($data);
     }
     public function store(Request $request)

@@ -13,7 +13,10 @@ class KategoriController extends Controller
 {
     public function index()
     {
-        $data = Kategori::paginate();
+        // $data = Kategori::paginate();
+        $data = Kategori::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))
+            ->paginate(request('per_page'));
         return KategoriResource::collection($data);
     }
     public function store(Request $request)

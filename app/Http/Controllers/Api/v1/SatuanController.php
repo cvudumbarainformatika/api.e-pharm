@@ -18,7 +18,10 @@ class SatuanController extends Controller
      */
     public function index()
     {
-        $data = Satuan::paginate();
+        // $data = Satuan::paginate();
+        $data = Satuan::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))
+            ->paginate(request('per_page'));
         return SatuanResource::collection($data);
     }
 

@@ -13,7 +13,10 @@ class DokterController extends Controller
 {
     public function index()
     {
-        $data = Dokter::paginate();
+        // $data = Dokter::paginate();
+        $data = Dokter::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))
+            ->paginate(request('per_page'));
         return DokterResource::collection($data);
     }
     public function store(Request $request)

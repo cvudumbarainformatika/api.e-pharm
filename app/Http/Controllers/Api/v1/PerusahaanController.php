@@ -13,7 +13,10 @@ class PerusahaanController extends Controller
 {
     public function index()
     {
-        $data = Perusahaan::paginate();
+        // $data = Perusahaan::paginate();
+        $data = Perusahaan::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))
+            ->paginate(request('per_page'));
         return PerusahaanResource::collection($data);
     }
     public function store(Request $request)

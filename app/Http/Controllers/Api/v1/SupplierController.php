@@ -14,7 +14,10 @@ class SupplierController extends Controller
 {
     public function index()
     {
-        $data = Supplier::paginate();
+        // $data = Supplier::paginate();
+        $data = Supplier::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))
+            ->paginate(request('per_page'));
         $data->load('perusahaan:id,nama');
         return SupplierResource::collection($data);
     }

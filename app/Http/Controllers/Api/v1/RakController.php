@@ -13,7 +13,10 @@ class RakController extends Controller
 {
     public function index()
     {
-        $data = Rak::paginate();
+        // $data = Rak::paginate();
+        $data = Rak::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))
+            ->paginate(request('per_page'));
         return RakResource::collection($data);
     }
     public function store(Request $request)

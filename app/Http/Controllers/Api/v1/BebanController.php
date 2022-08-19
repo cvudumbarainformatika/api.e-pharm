@@ -13,7 +13,10 @@ class BebanController extends Controller
 {
     public function index()
     {
-        $data = Beban::paginate();
+        // $data = Beban::paginate();
+        $data = Beban::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))
+            ->paginate(request('per_page'));
         return BebanResource::collection($data);
     }
     public function store(Request $request)
