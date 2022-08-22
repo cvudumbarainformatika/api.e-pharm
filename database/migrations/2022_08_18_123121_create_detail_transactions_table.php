@@ -23,7 +23,7 @@ class CreateDetailTransactionsTable extends Migration
             $table->unsignedBigInteger('product_id')->nullable();
             $table->double('qty')->default(0);
             $table->double('harga')->default(0);
-            $table->double('total')->default(0);
+            $table->double('sub_total')->default(0);
             $table->timestamps();
         });
     }

@@ -31,6 +31,10 @@ class Product extends Model
         return $this->belongsTo(Merk::class);
     }
 
+    public function detail_transaksi()
+    {
+        return $this->hasMany(DetailTransaction::class);
+    }
     public function scopeFilter($search, array $reqs)
     {
         $search->when($reqs['q'] ?? false, function ($search, $query) {

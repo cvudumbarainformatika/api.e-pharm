@@ -28,13 +28,13 @@ class DetailTransaction extends Model
             return $search->where('nama', 'LIKE', '%' . $query . '%');
         });
 
-        $search->when($reqs['transaction_id'] ?? false, function ($search, $query) {
-            return $search->where('transaction_id', $query);
-        });
+        // $search->when($reqs['transaction_id'] ?? false, function ($search, $query) {
+        //     return $search->where('transaction_id', $query);
+        // });
 
-        $search->when($reqs['product_id'] ?? false, function ($search, $query) {
-            return $search->where('product_id', $query);
-        });
+        // $search->when($reqs['product_id'] ?? false, function ($search, $query) {
+        //     return $search->where('product_id', $query);
+        // });
 
         // $search->when($reqs['jenis_kepegawaian_id'] ?? false, function ($search, $jenis) {
         //     return $search->whereHas('jenis', function ($search) use ($jenis) {

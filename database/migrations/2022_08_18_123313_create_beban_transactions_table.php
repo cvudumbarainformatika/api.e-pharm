@@ -21,7 +21,7 @@ class CreateBebanTransactionsTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->unsignedBigInteger('beban_id')->nullable();
-            $table->double('total')->default(0);
+            $table->double('sub_total')->default(0);
             $table->string('keterangan')->nullable();
             $table->timestamps();
         });
