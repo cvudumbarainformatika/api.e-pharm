@@ -102,12 +102,12 @@ class DatabaseSeeder extends Seeder
             'product_id' => 1,
             'qty' => 3,
             'harga' => 10000,
-            'total' => 30000
+            'sub_total' => 30000
         ]);
         BebanTransaction::create([
             'transaction_id' => 1,
             'beban_id' => 1,
-            'total' => 10000,
+            'sub_total' => 10000,
             'keterangan' => 'seeder jadi ya gitu lah'
         ]);
         Perusahaan::create([

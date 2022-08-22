@@ -34,13 +34,13 @@ class DetailTransactionController extends Controller
                     'product_id' => 'required',
                     'qty' => 'required',
                     'harga' => 'required',
-                    'total' => 'required'
+                    'sub_total' => 'required'
                 ]);
                 if ($validatedData->fails()) {
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                DetailTransaction::create($request->only(['transaction_id', 'product_id', 'qty', 'harga', 'total']));
+                DetailTransaction::create($request->only(['transaction_id', 'product_id', 'qty', 'harga', 'sub_total']));
                 // DetailTransaction::create([
                 //     'nama' => $request->name
                 // ]);
@@ -53,7 +53,7 @@ class DetailTransactionController extends Controller
                     'product_id' => $request->product_id,
                     'qty' => $request->qty,
                     'harga' => $request->harga,
-                    'total' => $request->total
+                    'sub_total' => $request->sub_total
                 ]);
 
                 // $auth->log("Merubah data DetailTransaction {$user->name}");

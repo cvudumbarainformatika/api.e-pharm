@@ -23,7 +23,7 @@ class DetailTransactionResource extends JsonResource
             'produk' => $this->whenLoaded('product'),
             'qty' => $this->qty,
             'harga' => $this->harga,
-            'total' => $this->total,
+            'sub_total' => $this->sub_total,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
