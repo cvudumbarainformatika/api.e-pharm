@@ -20,6 +20,15 @@ class DetailTransactionController extends Controller
         $data->load('product');
         return DetailTransactionResource::collection($data);
     }
+    public function getById()
+    {
+        // $data = DetailTransaction::paginate();
+        $data = DetailTransaction::where('transaction_id', request()->transaction_id)->orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))->get();
+        // ->paginate(request('per_page'));
+        $data->load('product');
+        return DetailTransactionResource::collection($data);
+    }
     public function store(Request $request)
     {
         // $auth = $request->user();
