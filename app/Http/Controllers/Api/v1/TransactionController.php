@@ -33,6 +33,7 @@ class TransactionController extends Controller
     {
         // $auth = $request->user();
         try {
+            $data = '';
 
             DB::beginTransaction();
 
@@ -41,24 +42,18 @@ class TransactionController extends Controller
                 $validatedData = Validator::make($request->all(), [
                     'reff' => 'required',
                     'faktur' => 'required',
-                    'tanggal' => 'required',
-                    'nama' => 'required',
-                    'jenis' => 'required',
                     'total' => 'required',
                     'ongkir' => 'required',
                     'potongan' => 'required',
                     'bayar' => 'required',
                     'kembali' => 'required',
-                    'tempo' => 'required',
-                    'kasir_id' => 'required',
-                    'supplier_id' => 'required',
                     'status' => 'required',
                 ]);
                 if ($validatedData->fails()) {
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Transaction::create($request->only([
+                $data = Transaction::create($request->only([
                     'reff',
                     'faktur',
                     'tanggal',
@@ -70,6 +65,7 @@ class TransactionController extends Controller
                     'bayar',
                     'kembali',
                     'tempo',
+                    'user_id',
                     'kasir_id',
                     'supplier_id',
                     'status',
@@ -80,8 +76,8 @@ class TransactionController extends Controller
 
                 // $auth->log("Memasukkan data Transaction {$user->name}");
             } else {
-                $kategori = Transaction::find($request->id);
-                $kategori->update([
+                $transaction = Transaction::find($request->id);
+                $transaction->update([
                     'reff' => $request->reff,
                     'faktur' => $request->faktur,
                     'tanggal' => $request->tanggal,
@@ -97,12 +93,12 @@ class TransactionController extends Controller
                     'kasir_id' => $request->kasir_id,
                     'status' => $request->status,
                 ]);
-
+                $data = $transaction;
                 // $auth->log("Merubah data Transaction {$user->name}");
             }
 
             DB::commit();
-            return response()->json(['message' => 'success'], 201);
+            return response()->json(['message' => 'success', 'data' => $data], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'ada kesalahan', 'error' => $e], 500);
