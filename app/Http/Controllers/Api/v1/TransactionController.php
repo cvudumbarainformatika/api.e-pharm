@@ -23,8 +23,7 @@ class TransactionController extends Controller
     public function withDetail()
     {
         // $data = Transaction::paginate();
-        $data = Transaction::where(['reff' => request()->reff])->with('detail_transaction')->orderBy(request('order_by'), request('sort'))
-            ->filter(request(['q']))->get();
+        $data = Transaction::where(['reff' => request()->reff])->with(['detail_transaction', 'detail_transaction.product'])->latest()->get();
         // ->paginate(request('per_page'));
         // $data->load('product');
         return TransactionResource::collection($data);
@@ -32,8 +31,7 @@ class TransactionController extends Controller
     public function withBeban()
     {
         // $data = Transaction::paginate();
-        $data = Transaction::where(['reff' => request()->reff])->with('beban_transaction')->orderBy(request('order_by'), request('sort'))
-            ->filter(request(['q']))->get();
+        $data = Transaction::where(['reff' => request()->reff])->with('beban_transaction')->latest()->get();
         // ->paginate(request('per_page'));
         // $data->load('product');
         return TransactionResource::collection($data);
@@ -58,16 +56,39 @@ class TransactionController extends Controller
 
                 $data = Transaction::updateOrCreate([
                     'reff' => $request->reff,
+                ], [
+                    'faktur' => $request->faktur,
+                    'tanggal' => $request->tanggal,
+                    'nama' => $request->nama,
+                    'jenis' => $request->jenis,
+                    'total' => $request->total,
+                    'ongkir' => $request->ongkir,
+                    'potongan' => $request->potongan,
+                    'bayar' => $request->bayar,
+                    'kembali' => $request->kembali,
+                    'tempo' => $request->tempo,
+                    'supplier_id' => $request->supplier_id,
+                    'kasir_id' => $request->kasir_id,
+                    'status' => $request->status,
                 ]);
-                $simpan = $data;
-                if ($request->nama === 'BEBAN') {
-                    $data->beban_transaction->updateOrCreate([
+
+                if ($request->nama === 'BEBAN' && $request->has('beban_id')) {
+                    $data->beban_transaction()->updateOrCreate([
                         'beban_id' => $request->beban_id
+                    ], [
+                        'sub_total' => $request->sub_total,
+                        'keterangan' => $request->keterangan
+
                     ]);
-                } else {
-                    $data->detail_transaction->updateOrCreate([
-                        'product_id' => $request->product_id
+                } else if ($request->nama === 'PEMBELIAN' && $request->has('product_id')) {
+                    $data->detail_transaction()->updateOrCreate([
+                        'product_id' => $request->product_id,
+                    ], [
+                        'harga' => $request->harga,
+                        'qty' => $request->qty,
+                        'sub_total' => $request->sub_total
                     ]);
+                    $simpan = $data;
                 }
                 // Transaction::create([
                 //     'nama' => $request->name

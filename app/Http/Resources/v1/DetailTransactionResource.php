@@ -20,7 +20,7 @@ class DetailTransactionResource extends JsonResource
             'transaction_id' => $this->transaction_id,
             'transaksi' => $this->whenLoaded('transaction'),
             'product_id' => $this->product_id,
-            'produk' => $this->whenLoaded('product'),
+            'product' => $this->whenLoaded('product'),
             'qty' => $this->qty,
             'harga' => $this->harga,
             'sub_total' => $this->sub_total,
