@@ -9,7 +9,8 @@ Route::group([
     'prefix' => 'transaksi'
 ], function () {
     Route::get('/index', [TransactionController::class, 'index']);
-    Route::get('/get-by-id', [TransactionController::class, 'getById']);
+    Route::get('/with-detail', [TransactionController::class, 'withDetail']);
+    Route::get('/with-beban', [TransactionController::class, 'withBeban']);
     Route::post('/store', [TransactionController::class, 'store']);
     Route::post('/destroy', [TransactionController::class, 'destroy']);
 });

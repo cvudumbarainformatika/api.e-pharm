@@ -20,10 +20,19 @@ class TransactionController extends Controller
         // $data->load('product');
         return TransactionResource::collection($data);
     }
-    public function getById()
+    public function withDetail()
     {
         // $data = Transaction::paginate();
-        $data = Transaction::find(request()->id)->orderBy(request('order_by'), request('sort'))
+        $data = Transaction::where(['reff' => request()->reff])->with('detail_transaction')->orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))->get();
+        // ->paginate(request('per_page'));
+        // $data->load('product');
+        return TransactionResource::collection($data);
+    }
+    public function withBeban()
+    {
+        // $data = Transaction::paginate();
+        $data = Transaction::where(['reff' => request()->reff])->with('beban_transaction')->orderBy(request('order_by'), request('sort'))
             ->filter(request(['q']))->get();
         // ->paginate(request('per_page'));
         // $data->load('product');
@@ -32,6 +41,7 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         // $auth = $request->user();
+        $simpan = '';
         try {
             $data = '';
 
@@ -41,35 +51,24 @@ class TransactionController extends Controller
 
                 $validatedData = Validator::make($request->all(), [
                     'reff' => 'required',
-                    'faktur' => 'required',
-                    'total' => 'required',
-                    'ongkir' => 'required',
-                    'potongan' => 'required',
-                    'bayar' => 'required',
-                    'kembali' => 'required',
-                    'status' => 'required',
                 ]);
                 if ($validatedData->fails()) {
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                $data = Transaction::create($request->only([
-                    'reff',
-                    'faktur',
-                    'tanggal',
-                    'nama',
-                    'jenis',
-                    'total',
-                    'ongkir',
-                    'potongan',
-                    'bayar',
-                    'kembali',
-                    'tempo',
-                    'user_id',
-                    'kasir_id',
-                    'supplier_id',
-                    'status',
-                ]));
+                $data = Transaction::updateOrCreate([
+                    'reff' => $request->reff,
+                ]);
+                $simpan = $data;
+                if ($request->nama === 'BEBAN') {
+                    $data->beban_transaction->updateOrCreate([
+                        'beban_id' => $request->beban_id
+                    ]);
+                } else {
+                    $data->detail_transaction->updateOrCreate([
+                        'product_id' => $request->product_id
+                    ]);
+                }
                 // Transaction::create([
                 //     'nama' => $request->name
                 // ]);
@@ -101,7 +100,7 @@ class TransactionController extends Controller
             return response()->json(['message' => 'success', 'data' => $data], 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'ada kesalahan', 'error' => $e], 500);
+            return response()->json(['message' => 'ada kesalahan', 'error' => $e, 'simpan' => $simpan], 500);
         }
     }
     public function destroy(Request $request)

@@ -37,7 +37,7 @@ class Transaction extends Model
     {
         return $this->hasMany(BebanTransaction::class);
     }
-    public function detai_transaction()
+    public function detail_transaction()
     {
         return $this->hasMany(DetailTransaction::class);
     }
