@@ -80,7 +80,7 @@ class TransactionController extends Controller
                         'keterangan' => $request->keterangan
 
                     ]);
-                } else if ($request->nama === 'PEMBELIAN' && $request->has('product_id')) {
+                } else if ($request->has('product_id')) {
                     $data->detail_transaction()->updateOrCreate([
                         'product_id' => $request->product_id,
                     ], [
