@@ -45,77 +45,77 @@ class TransactionController extends Controller
 
             DB::beginTransaction();
 
-            if (!$request->has('id')) {
+            // if (!$request->has('id')) {
 
-                $validatedData = Validator::make($request->all(), [
-                    'reff' => 'required',
-                ]);
-                if ($validatedData->fails()) {
-                    return response()->json($validatedData->errors(), 422);
-                }
-
-                $data = Transaction::updateOrCreate([
-                    'reff' => $request->reff,
-                ], [
-                    'faktur' => $request->faktur,
-                    'tanggal' => $request->tanggal,
-                    'nama' => $request->nama,
-                    'jenis' => $request->jenis,
-                    'total' => $request->total,
-                    'ongkir' => $request->ongkir,
-                    'potongan' => $request->potongan,
-                    'bayar' => $request->bayar,
-                    'kembali' => $request->kembali,
-                    'tempo' => $request->tempo,
-                    'supplier_id' => $request->supplier_id,
-                    'kasir_id' => $request->kasir_id,
-                    'status' => $request->status,
-                ]);
-
-                if ($request->nama === 'BEBAN' && $request->has('beban_id')) {
-                    $data->beban_transaction()->updateOrCreate([
-                        'beban_id' => $request->beban_id
-                    ], [
-                        'sub_total' => $request->sub_total,
-                        'keterangan' => $request->keterangan
-
-                    ]);
-                } else if ($request->has('product_id')) {
-                    $data->detail_transaction()->updateOrCreate([
-                        'product_id' => $request->product_id,
-                    ], [
-                        'harga' => $request->harga,
-                        'qty' => $request->qty,
-                        'sub_total' => $request->sub_total
-                    ]);
-                    $simpan = $data;
-                }
-                // Transaction::create([
-                //     'nama' => $request->name
-                // ]);
-
-                // $auth->log("Memasukkan data Transaction {$user->name}");
-            } else {
-                $transaction = Transaction::find($request->id);
-                $transaction->update([
-                    'reff' => $request->reff,
-                    'faktur' => $request->faktur,
-                    'tanggal' => $request->tanggal,
-                    'nama' => $request->nama,
-                    'jenis' => $request->jenis,
-                    'total' => $request->total,
-                    'ongkir' => $request->ongkir,
-                    'potongan' => $request->potongan,
-                    'bayar' => $request->bayar,
-                    'kembali' => $request->kembali,
-                    'tempo' => $request->tempo,
-                    'supplier_id' => $request->supplier_id,
-                    'kasir_id' => $request->kasir_id,
-                    'status' => $request->status,
-                ]);
-                $data = $transaction;
-                // $auth->log("Merubah data Transaction {$user->name}");
+            $validatedData = Validator::make($request->all(), [
+                'reff' => 'required',
+            ]);
+            if ($validatedData->fails()) {
+                return response()->json($validatedData->errors(), 422);
             }
+
+            $data = Transaction::updateOrCreate([
+                'reff' => $request->reff,
+            ], [
+                'faktur' => $request->faktur,
+                'tanggal' => $request->tanggal,
+                'nama' => $request->nama,
+                'jenis' => $request->jenis,
+                'total' => $request->total,
+                'ongkir' => $request->ongkir,
+                'potongan' => $request->potongan,
+                'bayar' => $request->bayar,
+                'kembali' => $request->kembali,
+                'tempo' => $request->tempo,
+                'supplier_id' => $request->supplier_id,
+                'kasir_id' => $request->kasir_id,
+                'status' => $request->status,
+            ]);
+
+            if ($request->nama === 'BEBAN' && $request->has('beban_id')) {
+                $data->beban_transaction()->updateOrCreate([
+                    'beban_id' => $request->beban_id
+                ], [
+                    'sub_total' => $request->sub_total,
+                    'keterangan' => $request->keterangan
+
+                ]);
+            } else if ($request->has('product_id')) {
+                $data->detail_transaction()->updateOrCreate([
+                    'product_id' => $request->product_id,
+                ], [
+                    'harga' => $request->harga,
+                    'qty' => $request->qty,
+                    'sub_total' => $request->sub_total
+                ]);
+                $simpan = $data;
+            }
+            // Transaction::create([
+            //     'nama' => $request->name
+            // ]);
+
+            // $auth->log("Memasukkan data Transaction {$user->name}");
+            // } else {
+            //     $transaction = Transaction::find($request->id);
+            //     $transaction->update([
+            //         'reff' => $request->reff,
+            //         'faktur' => $request->faktur,
+            //         'tanggal' => $request->tanggal,
+            //         'nama' => $request->nama,
+            //         'jenis' => $request->jenis,
+            //         'total' => $request->total,
+            //         'ongkir' => $request->ongkir,
+            //         'potongan' => $request->potongan,
+            //         'bayar' => $request->bayar,
+            //         'kembali' => $request->kembali,
+            //         'tempo' => $request->tempo,
+            //         'supplier_id' => $request->supplier_id,
+            //         'kasir_id' => $request->kasir_id,
+            //         'status' => $request->status,
+            //     ]);
+            //     $data = $transaction;
+            //     // $auth->log("Merubah data Transaction {$user->name}");
+            // }
 
             DB::commit();
             return response()->json(['message' => 'success', 'data' => $data], 201);
