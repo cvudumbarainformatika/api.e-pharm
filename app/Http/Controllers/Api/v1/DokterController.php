@@ -30,8 +30,8 @@ class DokterController extends Controller
 
                 $validatedData = Validator::make($request->all(), [
                     'nama' => 'required',
-                    'alamat' => 'required',
-                    'kontak' => 'required'
+                    // 'alamat' => 'required',
+                    // 'kontak' => 'required'
                 ]);
                 if ($validatedData->fails()) {
                     return response()->json($validatedData->errors(), 422);

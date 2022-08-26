@@ -30,9 +30,9 @@ class CustomerController extends Controller
 
                 $validatedData = Validator::make($request->all(), [
                     'nama' => 'required',
-                    'alamat' => 'required',
-                    'kontak' => 'required',
-                    'saldo_awal_piutang' => 'required'
+                    // 'alamat' => 'required',
+                    // 'kontak' => 'required',
+                    // 'saldo_awal_piutang' => 'required'
                 ]);
                 if ($validatedData->fails()) {
                     return response()->json($validatedData->errors(), 422);

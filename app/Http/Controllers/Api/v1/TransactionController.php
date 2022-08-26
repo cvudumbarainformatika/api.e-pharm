@@ -69,6 +69,8 @@ class TransactionController extends Controller
                 'tempo' => $request->tempo,
                 'supplier_id' => $request->supplier_id,
                 'kasir_id' => $request->kasir_id,
+                'customer_id' => $request->customer_id,
+                'dokter_id' => $request->dokter_id,
                 'status' => $request->status,
             ]);
 
