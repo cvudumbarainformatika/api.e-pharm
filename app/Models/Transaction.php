@@ -45,8 +45,9 @@ class Transaction extends Model
     public function scopeFilter($search, array $reqs)
     {
         $search->when($reqs['q'] ?? false, function ($search, $query) {
-            return $search->where('nama', 'LIKE', '%' . $query . '%')
-                ->orWhere('status', 'LIKE', '%' . $query . '%');
+            return $search->where('faktur', 'LIKE', '%' . $query . '%')
+                ->orWhere('reff', 'LIKE', '%' . $query . '%');
+            // ->orWhere('nama', 'LIKE', '%' . $query . '%')
         });
 
         $search->when($reqs['user_id'] ?? false, function ($search, $query) {

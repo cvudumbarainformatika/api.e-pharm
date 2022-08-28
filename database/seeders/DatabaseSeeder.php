@@ -29,9 +29,15 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         User::create([
+            'name' => 'root',
+            'email' => 'root@app.com',
+            'role' => 'root',
+            'password' => bcrypt('123456789')
+        ]);
+        User::create([
             'name' => 'admin',
             'email' => 'admin@app.com',
-            'role' => 'root',
+            'role' => 'admin',
             'password' => bcrypt('123456789')
         ]);
         User::create([
@@ -41,7 +47,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('123456789')
         ]);
         Satuan::create([
-            'nama' => 'ATM'
+            'nama' => 'PCS'
         ]);
         Dokter::create([
             'nama' => 'Sugeng',
@@ -79,7 +85,7 @@ class DatabaseSeeder extends Seeder
             'nama' => 'KALBE'
         ]);
         Beban::create([
-            'nama' => 'KALBE'
+            'nama' => 'ATK'
         ]);
         Customer::create([
             'nama' => 'Suhar',
@@ -87,29 +93,29 @@ class DatabaseSeeder extends Seeder
             'kontak' => '00904293040',
             'saldo_awal_piutang' => 100000
         ]);
-        Transaction::create([
-            'nama' => 'di isi nama',
-            'tanggal' => '2020/08/12',
-            'total' => 70000,
-            'ongkir' => 0,
-            'potongan' => 0,
-            'bayar' => 100000,
-            'kembali' => 30000,
-            'status' => 0,
-        ]);
-        DetailTransaction::create([
-            'transaction_id' => 1,
-            'product_id' => 1,
-            'qty' => 3,
-            'harga' => 10000,
-            'sub_total' => 30000
-        ]);
-        BebanTransaction::create([
-            'transaction_id' => 1,
-            'beban_id' => 1,
-            'sub_total' => 10000,
-            'keterangan' => 'seeder jadi ya gitu lah'
-        ]);
+        // Transaction::create([
+        //     'nama' => 'di isi nama',
+        //     'tanggal' => '2020/08/12',
+        //     'total' => 70000,
+        //     'ongkir' => 0,
+        //     'potongan' => 0,
+        //     'bayar' => 100000,
+        //     'kembali' => 30000,
+        //     'status' => 0,
+        // ]);
+        // DetailTransaction::create([
+        //     'transaction_id' => 1,
+        //     'product_id' => 1,
+        //     'qty' => 3,
+        //     'harga' => 10000,
+        //     'sub_total' => 30000
+        // ]);
+        // BebanTransaction::create([
+        //     'transaction_id' => 1,
+        //     'beban_id' => 1,
+        //     'sub_total' => 10000,
+        //     'keterangan' => 'seeder jadi ya gitu lah'
+        // ]);
         Perusahaan::create([
             'nama' => 'PT. KALBE'
         ]);

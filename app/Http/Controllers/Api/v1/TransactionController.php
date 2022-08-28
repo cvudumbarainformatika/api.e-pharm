@@ -14,7 +14,7 @@ class TransactionController extends Controller
     public function index()
     {
         // $data = Transaction::paginate();
-        $data = Transaction::orderBy(request(('order_by'), request('sort')))
+        $data = Transaction::orderBy(request()->order_by, request()->sort)
             ->filter(request(['q']))->get();
         // ->paginate(request('per_page'));
         // $data->load('product');
