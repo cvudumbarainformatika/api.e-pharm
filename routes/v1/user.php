@@ -12,4 +12,5 @@ Route::group([
 ], function () {
     Route::get('/profile', [AuthController::class, 'userProfile']);
     Route::get('/all', [AuthController::class, 'userAll']);
+    Route::get('/kasir', [AuthController::class, 'userKasir']);
 });

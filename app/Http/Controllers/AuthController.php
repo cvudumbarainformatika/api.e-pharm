@@ -49,19 +49,18 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|confirmed|min:6',
-            'role' => 'required'
+            'role' => 'required',
+            'password' => 'required|string|confirmed|min:6'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-        $user = User::create(array_merge(
-            $validator->validated(),
-            ['password' => bcrypt($request->password)]
-        ));
+        $user = User::create(array_merge($validator->validated(), ['password' => bcrypt($request->password)]));
+
         return response()->json([
             'message' => 'User successfully registered',
-            'user' => $user
+            'user' => $user,
+            // 'valid' => array_merge($validator->validated(), ['password' => bcrypt($request->password)])
         ], 201);
     }
     /**
@@ -96,6 +95,12 @@ class AuthController extends Controller
     public function userAll()
     {
         $data = User::paginate();
+        return UserResource::collection($data);
+    }
+
+    public function userKasir()
+    {
+        $data = User::where(['role' => 'kasir'])->get();
         return UserResource::collection($data);
     }
 

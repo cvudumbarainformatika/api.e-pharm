@@ -85,7 +85,22 @@ class DatabaseSeeder extends Seeder
             'nama' => 'KALBE'
         ]);
         Beban::create([
-            'nama' => 'ATK'
+            'nama' => 'BIAYA ADMINISTRASI'
+        ]);
+        Beban::create([
+            'nama' => 'BEBAN LISTRIK'
+        ]);
+        Beban::create([
+            'nama' => 'BEBAN PDAM'
+        ]);
+        Beban::create([
+            'nama' => 'BIAYA ONGKIR'
+        ]);
+        Beban::create([
+            'nama' => 'BEBAN GAJI PEGAWAI'
+        ]);
+        Beban::create([
+            'nama' => 'BIAYA LAIN-LAIN'
         ]);
         Customer::create([
             'nama' => 'Suhar',
