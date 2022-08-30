@@ -9,6 +9,7 @@ use App\Models\DetailTransaction;
 use App\Models\Dokter;
 use App\Models\Kategori;
 use App\Models\Merk;
+use App\Models\Penerimaan;
 use App\Models\Perusahaan;
 use App\Models\Product;
 use App\Models\Rak;
@@ -46,8 +47,23 @@ class DatabaseSeeder extends Seeder
             'role' => 'kasir',
             'password' => bcrypt('123456789')
         ]);
+        User::create([
+            'name' => 'kasir2',
+            'email' => 'kasir2@app.com',
+            'role' => 'kasir',
+            'password' => bcrypt('123456789')
+        ]);
+        User::create([
+            'name' => 'kasir3',
+            'email' => 'kasir3@app.com',
+            'role' => 'kasir',
+            'password' => bcrypt('123456789')
+        ]);
         Satuan::create([
             'nama' => 'PCS'
+        ]);
+        Satuan::create([
+            'nama' => 'KAPLET'
         ]);
         Dokter::create([
             'nama' => 'Sugeng',
@@ -68,7 +84,7 @@ class DatabaseSeeder extends Seeder
             'nama' => '1 A ATAS'
         ]);
         Product::create([
-            'expired' => '2022/08/31',
+            'expired' => '2024/08/31',
             'barcode' => 212323231,
             'nama' => 'Paracetamol',
             'merk_id' => 1,
@@ -77,6 +93,20 @@ class DatabaseSeeder extends Seeder
             'harga_jual_umum' => 8000,
             'harga_jual_resep' => 9000,
             'harga_jual_cust' => 9500,
+            'stok_awal' => 12,
+            'rak_id' => 1,
+            'kategori_id' => 1
+        ]);
+        Product::create([
+            'expired' => '2024/08/31',
+            'barcode' => 212323231,
+            'nama' => 'Sanmol',
+            'merk_id' => 1,
+            'satuan_id' => 1,
+            'harga_beli' => 7500,
+            'harga_jual_umum' => 10000,
+            'harga_jual_resep' => 11000,
+            'harga_jual_cust' => 10500,
             'stok_awal' => 12,
             'rak_id' => 1,
             'kategori_id' => 1
@@ -107,6 +137,12 @@ class DatabaseSeeder extends Seeder
             'alamat' => 'Jl. mana yang akan kau pilih',
             'kontak' => '00904293040',
             'saldo_awal_piutang' => 100000
+        ]);
+        Penerimaan::create([
+            'nama' => 'piutang dibayar'
+        ]);
+        Penerimaan::create([
+            'nama' => 'penerimaan lain-lain'
         ]);
         // Transaction::create([
         //     'nama' => 'di isi nama',

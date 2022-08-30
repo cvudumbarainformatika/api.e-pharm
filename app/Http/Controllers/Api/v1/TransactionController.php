@@ -28,6 +28,7 @@ class TransactionController extends Controller
         // $data->load('product');
         return TransactionResource::collection($data);
     }
+
     public function withBeban()
     {
         // $data = Transaction::paginate();
@@ -36,6 +37,16 @@ class TransactionController extends Controller
         // $data->load('product');
         return TransactionResource::collection($data);
     }
+
+    public function withPenerimaan()
+    {
+        // $data = Transaction::paginate();
+        $data = Transaction::where(['nama' => 'PENERIMAAN'])->with(['penerimaan_transaction.beban', 'kasir'])->latest()->get();
+        // ->paginate(request('per_page'));
+        // $data->load('product');
+        return TransactionResource::collection($data);
+    }
+
     public function store(Request $request)
     {
         // $data = $request->all();
@@ -149,6 +160,7 @@ class TransactionController extends Controller
             ], 500);
         }
     }
+
     public function destroy(Request $request)
     {
         // $auth = auth()->user()->id;

@@ -33,6 +33,10 @@ class Transaction extends Model
     {
         return $this->belongsTo(Dokter::class);
     }
+    public function penerimaan_transaction()
+    {
+        return $this->belongsTo(DetailPenerimaan::class);
+    }
     public function beban_transaction()
     {
         return $this->hasMany(BebanTransaction::class);

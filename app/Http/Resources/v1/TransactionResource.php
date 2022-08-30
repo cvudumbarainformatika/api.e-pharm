@@ -40,6 +40,7 @@ class TransactionResource extends JsonResource
             'dokter' => $this->whenLoaded('dokter'),
             'detail_transaction' => $this->whenLoaded('detail_transaction'),
             'beban_transaction' => $this->whenLoaded('beban_transaction'),
+            'penerimaan_transaction' => $this->whenLoaded('penerimaan_transaction'),
             'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
