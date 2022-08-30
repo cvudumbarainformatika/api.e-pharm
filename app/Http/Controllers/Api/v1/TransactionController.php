@@ -45,6 +45,11 @@ class TransactionController extends Controller
         // return response()->json(['message' => 'success', 'data' => $data, 'request' => $request->all()], 201);
         // $auth = $request->user();
         $simpan = '';
+        $simpan2 = '';
+        $array2 = '';
+        // $secondArray = '';
+        $secondArray = $request->all();
+        unset($secondArray['reff']);
         try {
             $data = '';
 
@@ -59,33 +64,30 @@ class TransactionController extends Controller
                 return response()->json($validatedData->errors(), 422);
             }
 
-            $secondArray = $request->all();
-            unset($seceondArray['reff']);
+            $array2 = $secondArray;
+            // return response()->json(['message' => 'success', 'data' => $array2, 'request' => $request->all()], 201);
 
-            $data = Transaction::updateOrCreate(
-                [
-                    'reff' => $request->reff,
-                ],
-                $secondArray
-                // [
+            $data = Transaction::updateOrCreate(['reff' => $request->reff,], $secondArray);
+            // [
 
-                // 'faktur' => $request->faktur,
-                // 'tanggal' => $request->tanggal,
-                // 'nama' => $request->nama,
-                // 'jenis' => $request->jenis,
-                // 'total' => $request->total,
-                // 'ongkir' => $request->ongkir,
-                // 'potongan' => $request->potongan,
-                // 'bayar' => $request->bayar,
-                // 'kembali' => $request->kembali,
-                // 'tempo' => $request->tempo,
-                // 'supplier_id' => $request->supplier_id,
-                // 'kasir_id' => $request->kasir_id,
-                // 'customer_id' => $request->customer_id,
-                // 'dokter_id' => $request->dokter_id,
-                // 'status' => $request->status,
-                // ]
-            );
+            // 'faktur' => $request->faktur,
+            // 'tanggal' => $request->tanggal,
+            // 'nama' => $request->nama,
+            // 'jenis' => $request->jenis,
+            // 'total' => $request->total,
+            // 'ongkir' => $request->ongkir,
+            // 'potongan' => $request->potongan,
+            // 'bayar' => $request->bayar,
+            // 'kembali' => $request->kembali,
+            // 'tempo' => $request->tempo,
+            // 'supplier_id' => $request->supplier_id,
+            // 'kasir_id' => $request->kasir_id,
+            // 'customer_id' => $request->customer_id,
+            // 'dokter_id' => $request->dokter_id,
+            // 'status' => $request->status,
+            // ]
+            // );
+            $simpan2 = $data;
 
             if ($request->nama === 'BEBAN' && $request->has('beban_id')) {
                 $data->beban_transaction()->updateOrCreate([
@@ -137,7 +139,14 @@ class TransactionController extends Controller
             return response()->json(['message' => 'success', 'data' => $data], 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'ada kesalahan', 'error' => $e, 'simpan' => $simpan], 500);
+            return response()->json([
+                'message' => 'ada kesalahan',
+                'error' => $e,
+                'simpan' => $simpan,
+                'simpan 2' => $simpan2,
+                'second array' => $array2,
+                'request' => $request->all()
+            ], 500);
         }
     }
     public function destroy(Request $request)
