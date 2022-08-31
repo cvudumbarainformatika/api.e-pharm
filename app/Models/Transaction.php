@@ -35,7 +35,7 @@ class Transaction extends Model
     }
     public function penerimaan_transaction()
     {
-        return $this->belongsTo(DetailPenerimaan::class);
+        return $this->hasMany(DetailPenerimaan::class);
     }
     public function beban_transaction()
     {

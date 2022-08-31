@@ -20,7 +20,7 @@ class CreateDetailPenerimaansTable extends Migration
                 ->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->unsignedBigInteger('peneriaan_id')->nullable();
+            $table->unsignedBigInteger('penerimaan_id')->nullable();
             $table->double('sub_total')->default(0);
             $table->string('keterangan')->nullable();
             $table->timestamps();
