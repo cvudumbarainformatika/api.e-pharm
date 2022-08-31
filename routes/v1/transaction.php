@@ -11,6 +11,7 @@ Route::group([
     Route::get('/index', [TransactionController::class, 'index']);
     Route::get('/with-detail', [TransactionController::class, 'withDetail']);
     Route::get('/with-beban', [TransactionController::class, 'withBeban']);
+    Route::get('/with-penerimaan', [TransactionController::class, 'withPenerimaan']);
     Route::post('/store', [TransactionController::class, 'store']);
     Route::post('/destroy', [TransactionController::class, 'destroy']);
 });

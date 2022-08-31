@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'middleware' => 'auth:api',
     // 'middleware' => 'jwt.verify',
-    'prefix' => 'beban'
+    'prefix' => 'penerimaan'
 ], function () {
     Route::get('/index', [PenerimaanController::class, 'index']);
     Route::post('/store', [PenerimaanController::class, 'store']);
