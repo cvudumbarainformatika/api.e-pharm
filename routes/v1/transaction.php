@@ -12,6 +12,9 @@ Route::group([
     Route::get('/with-detail', [TransactionController::class, 'withDetail']);
     Route::get('/with-beban', [TransactionController::class, 'withBeban']);
     Route::get('/with-penerimaan', [TransactionController::class, 'withPenerimaan']);
+    Route::get('/history', [TransactionController::class, 'history']);
+    Route::get('/expired', [TransactionController::class, 'getExpired']);
+    Route::get('/destroy-draft', [TransactionController::class, 'destroyDraft']);
     Route::post('/store', [TransactionController::class, 'store']);
     Route::post('/destroy', [TransactionController::class, 'destroy']);
 });

@@ -29,6 +29,24 @@ class DetailTransactionController extends Controller
         $data->load('product');
         return DetailTransactionResource::collection($data);
     }
+
+
+    public function getExpired()
+    {
+        $data = DetailTransaction::whereNotNull('expired')->get();
+        $data2 = [];
+        foreach ($data as &$value) {
+            array_push($data2, $value->expired);
+        }
+        $filterd = array_unique($data2);
+        // $filterd = isset($data['expired']);
+        return response()->json([
+            'data2' => $data2,
+            'filtered' => $filterd,
+            'data' => $data
+        ]);
+    }
+
     public function store(Request $request)
     {
         // $auth = $request->user();

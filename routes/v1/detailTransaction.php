@@ -9,6 +9,7 @@ Route::group([
     'prefix' => 'detail-transaksi'
 ], function () {
     Route::get('/index', [DetailTransactionController::class, 'index']);
+    Route::get('/expired', [DetailTransactionController::class, 'getExpired']);
     Route::get('/get-by-id', [DetailTransactionController::class, 'getById']);
     Route::post('/store', [DetailTransactionController::class, 'store']);
     Route::post('/destroy', [DetailTransactionController::class, 'destroy']);

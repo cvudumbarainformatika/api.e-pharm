@@ -22,6 +22,7 @@ class DetailTransactionResource extends JsonResource
             'product_id' => $this->product_id,
             'product' => $this->whenLoaded('product'),
             'qty' => $this->qty,
+            'expired' => $this->expired,
             'harga' => $this->harga,
             'sub_total' => $this->sub_total,
             'created_at' => $this->created_at,
