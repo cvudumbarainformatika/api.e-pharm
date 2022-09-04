@@ -49,43 +49,31 @@ class TransactionController extends Controller
 
     public function history()
     {
+        $query = Transaction::query();
+
         if (request('nama') !== 'all' && request('nama') !== 'draft') {
 
-            $data = Transaction::where(['nama' => request(['nama'])])
-                ->with([
-                    'kasir',
-                    'supplier',
-                    'customer',
-                    'dokter',
-                    'penerimaan_transaction.penerimaan',
-                    'beban_transaction.beban',
-                    'detail_transaction.product'
-                ])
-                ->orderBy(request()->order_by, request()->sort)
-                ->filter(request(['q']))->latest()->paginate(request('per_page'));
-            return TransactionResource::collection($data);
+            $query->where(['nama' => request(['nama'])]);
         } else if (request('nama') === 'draft') {
 
-            $data = Transaction::where(['status' => 0])
-                ->with(['kasir', 'supplier', 'customer', 'dokter', 'penerimaan_transaction', 'beban_transaction'])
-                ->orderBy(request()->order_by, request()->sort)
-                ->filter(request(['q']))->latest()->paginate(request('per_page'));
-            return TransactionResource::collection($data);
+            $query->where(['status' => 0]);
         } else {
 
-            $data = Transaction::with([
-                'kasir',
-                'supplier',
-                'customer',
-                'dokter',
-                'penerimaan_transaction.penerimaan',
-                'beban_transaction.beban',
-                'detail_transaction.product'
-            ])
-                ->orderBy(request()->order_by, request()->sort)
-                ->filter(request(['q']))->latest()->paginate(request('per_page'));
-            return TransactionResource::collection($data);
+            $query;
         }
+        $data = $query->with([
+            'kasir',
+            'supplier',
+            'customer',
+            'dokter',
+            'penerimaan_transaction.penerimaan',
+            'beban_transaction.beban',
+            'detail_transaction.product'
+        ])
+            ->orderBy(request()->order_by, request()->sort)
+            ->filter(request(['q']))->latest()->paginate(request('per_page'));
+
+        return TransactionResource::collection($data);
     }
 
     public function getExpired()
