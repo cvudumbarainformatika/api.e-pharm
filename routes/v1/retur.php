@@ -11,7 +11,7 @@ Route::group([
     'prefix' => 'retur'
 ], function () {
     Route::get('/index', [ReturController::class, 'index']);
-    Route::get('/pembelian', [ReturController::class, 'pembelian']);
+    Route::get('/all', [ReturController::class, 'returPembelianDanPejualan']);
     // Route::post('/store', [ReturController::class, 'store']);
     // Route::post('/update', [ReturController::class, 'update']);
     // Route::post('/destroy', [ReturController::class, 'destroy']);

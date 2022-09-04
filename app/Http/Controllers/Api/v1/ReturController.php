@@ -17,12 +17,13 @@ class ReturController extends Controller
 
         return TransactionResource::collection($data);
     }
-    public function pembelian()
+    public function returPembelianDanPejualan()
     {
-        $data = Transaction::where(['nama' => 'PEMBELIAN', 'status' => 1])
-            ->with(['kasir', 'supplier.perusahaan'])
-            ->orderBy(request()->order_by, request()->sort)
-            ->filter(request(['q']))->limit(10)->get();
+        $data = Transaction::where('status', 1)
+            ->whereIn('nama', ['PEMBELIAN', 'PENJUALAN'])
+            // ->orWhere('nama', request('nama2'))
+            ->with(['kasir', 'supplier.perusahaan', 'customer', 'dokter'])
+            ->latest()->filter(request(['q']))->limit(20)->get();
 
         return TransactionResource::collection($data);
     }
