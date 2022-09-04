@@ -32,7 +32,7 @@ class TransactionController extends Controller
     public function withBeban()
     {
         // $data = Transaction::paginate();
-        $data = Transaction::where(['nama' => 'BEBAN'])->with(['beban_transaction.beban', 'kasir', 'supplier'])->latest()->get();
+        $data = Transaction::where(['nama' => 'BEBAN'])->whereMonth('created_at', '=', date('m'))->with(['beban_transaction.beban', 'kasir', 'supplier'])->latest()->get();
         // ->paginate(request('per_page'));
         // $data->load('product');
         return TransactionResource::collection($data);
@@ -41,7 +41,7 @@ class TransactionController extends Controller
     public function withPenerimaan()
     {
         // $data = Transaction::paginate();
-        $data = Transaction::where(['nama' => 'PENERIMAAN'])->with(['penerimaan_transaction.penerimaan', 'kasir', 'customer', 'dokter'])->latest()->get();
+        $data = Transaction::where(['nama' => 'PENERIMAAN'])->whereMonth('created_at', '=', date('m'))->with(['penerimaan_transaction.penerimaan', 'kasir', 'customer', 'dokter'])->latest()->get();
         // ->paginate(request('per_page'));
         // $data->load('product');
         return TransactionResource::collection($data);
@@ -52,7 +52,15 @@ class TransactionController extends Controller
         if (request('nama') !== 'all' && request('nama') !== 'draft') {
 
             $data = Transaction::where(['nama' => request(['nama'])])
-                ->with(['kasir', 'supplier', 'customer', 'dokter', 'penerimaan_transaction', 'beban_transaction'])
+                ->with([
+                    'kasir',
+                    'supplier',
+                    'customer',
+                    'dokter',
+                    'penerimaan_transaction.penerimaan',
+                    'beban_transaction.beban',
+                    'detail_transaction.product'
+                ])
                 ->orderBy(request()->order_by, request()->sort)
                 ->filter(request(['q']))->latest()->paginate(request('per_page'));
             return TransactionResource::collection($data);
@@ -65,7 +73,15 @@ class TransactionController extends Controller
             return TransactionResource::collection($data);
         } else {
 
-            $data = Transaction::with(['kasir', 'supplier', 'customer', 'dokter', 'penerimaan_transaction', 'beban_transaction'])
+            $data = Transaction::with([
+                'kasir',
+                'supplier',
+                'customer',
+                'dokter',
+                'penerimaan_transaction.penerimaan',
+                'beban_transaction.beban',
+                'detail_transaction.product'
+            ])
                 ->orderBy(request()->order_by, request()->sort)
                 ->filter(request(['q']))->latest()->paginate(request('per_page'));
             return TransactionResource::collection($data);
@@ -223,20 +239,27 @@ class TransactionController extends Controller
         }
         // return response()->json(['data' => $data]);
         $del = [];
-        foreach ($data as &$value) {
+        if (count($data) >= 1) {
 
-            $del = $value->delete();
-        }
+            foreach ($data as &$value) {
 
-        if (!$del) {
+                $del = $value->delete();
+            }
+
+            if (!$del) {
+                return response()->json([
+                    'message' => 'Error on Delete'
+                ], 500);
+            }
+
+            // $user->log("Menghapus Data Transaction {$data->nama}");
             return response()->json([
-                'message' => 'Error on Delete'
-            ], 500);
+                'message' => 'Data sukses terhapus'
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Tidak ada draft yang perlu di hapus'
+            ], 200);
         }
-
-        // $user->log("Menghapus Data Transaction {$data->nama}");
-        return response()->json([
-            'message' => 'Data sukses terhapus'
-        ], 200);
     }
 }
