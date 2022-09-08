@@ -9,6 +9,7 @@ Route::group([
     'prefix' => 'produk'
 ], function () {
     Route::get('/index', [ProductController::class, 'index']);
+    Route::get('/product', [ProductController::class, 'produk']);
     Route::post('/store', [ProductController::class, 'store']);
     Route::post('/destroy', [ProductController::class, 'destroy']);
 });

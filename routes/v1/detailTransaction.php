@@ -11,6 +11,7 @@ Route::group([
     Route::get('/index', [DetailTransactionController::class, 'index']);
     Route::get('/expired', [DetailTransactionController::class, 'getExpired']);
     Route::get('/get-by-id', [DetailTransactionController::class, 'getById']);
+    Route::get('/get-by-date', [DetailTransactionController::class, 'getByDate']);
     Route::post('/store', [DetailTransactionController::class, 'store']);
     Route::post('/destroy', [DetailTransactionController::class, 'destroy']);
 });

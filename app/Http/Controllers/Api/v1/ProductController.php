@@ -23,6 +23,13 @@ class ProductController extends Controller
         $data->load('merk:id,nama');
         return ProductResource::collection($data);
     }
+
+    public function produk()
+    {
+        $data = Product::latest()->paginate(request('per_page'));
+        return ProductResource::collection($data);
+    }
+
     public function store(Request $request)
     {
         // $auth = $request->user();
