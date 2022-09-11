@@ -19,6 +19,11 @@ class BebanController extends Controller
             ->paginate(request('per_page'));
         return BebanResource::collection($data);
     }
+    public function beban()
+    {
+        $data = Beban::latest()->paginate(request('per_page'));
+        return BebanResource::collection($data);
+    }
     public function store(Request $request)
     {
         // $auth = $request->user();

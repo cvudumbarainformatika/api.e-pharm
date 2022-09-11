@@ -138,7 +138,7 @@ class TransactionController extends Controller
             $query->whereBetween('created_at', [request('from'), request('to')]);
         }
 
-        $data = $query->with('detail_transaction')->latest()->get();
+        $data = $query->with(['detail_transaction', 'penerimaan_transaction', 'beban_transaction'])->latest()->get();
 
         return TransactionResource::collection($data);
     }

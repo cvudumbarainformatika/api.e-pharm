@@ -9,6 +9,7 @@ Route::group([
     'prefix' => 'penerimaan'
 ], function () {
     Route::get('/index', [PenerimaanController::class, 'index']);
+    Route::get('/penerimaan', [PenerimaanController::class, 'penerimaan']);
     Route::post('/store', [PenerimaanController::class, 'store']);
     Route::post('/destroy', [PenerimaanController::class, 'destroy']);
 });

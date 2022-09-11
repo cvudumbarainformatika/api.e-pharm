@@ -19,6 +19,11 @@ class PenerimaanController extends Controller
             ->paginate(request('per_page'));
         return PenerimaanResource::collection($data);
     }
+    public function penerimaan()
+    {
+        $data = Penerimaan::latest()->paginate(request('per_page'));
+        return PenerimaanResource::collection($data);
+    }
     public function store(Request $request)
     {
         // $auth = $request->user();
