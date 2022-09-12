@@ -99,7 +99,7 @@ class DatabaseSeeder extends Seeder
         ]);
         Product::create([
             'expired' => '2024/08/31',
-            'barcode' => 212323231,
+            'barcode' => 212323232,
             'nama' => 'Sanmol',
             'merk_id' => 1,
             'satuan_id' => 1,
