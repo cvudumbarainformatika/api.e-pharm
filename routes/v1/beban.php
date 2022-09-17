@@ -10,6 +10,7 @@ Route::group([
 ], function () {
     Route::get('/index', [BebanController::class, 'index']);
     Route::get('/beban', [BebanController::class, 'beban']);
+    Route::get('/get-by-date', [BebanController::class, 'getByDate']);
     Route::post('/store', [BebanController::class, 'store']);
     Route::post('/destroy', [BebanController::class, 'destroy']);
 });

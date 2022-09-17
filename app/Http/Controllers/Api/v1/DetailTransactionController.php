@@ -12,6 +12,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 
 class DetailTransactionController extends Controller
 {
@@ -53,123 +54,35 @@ class DetailTransactionController extends Controller
 
     public function getByDate()
     {
-        // between
+        $periode = [];
+        $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');
+        $query->whereHas('transaction', function ($gg) {
+            $gg->where(['nama' => request('nama'), 'status' => 1]);
 
-        // $from = date('2022-08-29'); // tanggal yang menjadi parameter tidak masuk dalam data yang di caari
-        // $to = date('2022-09-04'); // jadi rumus nya (from < x < to) ga ada '=' nya..
-
-        // $data = DetailTransaction::whereBetween('created_at', [$from, $to])->latest()->get();
-
-        // day
-        // $data = DetailTransaction::whereDate('created_at', '=', date('2022-08-29'))->latest()->get();
-        // $data = DetailTransaction::whereDay('created_at', '=', date('d'))->latest()->get(); // today
-
-        // this month
-        // $data = DetailTransaction::whereMonth('created_at', '=', date('m'))->latest()->get(); // this month
-
-        // this year
-        // $data = DetailTransaction::whereYear('created_at', '=', date('Y'))->latest()->get();
-
-        // coba
-        $query = Transaction::query();
-        // $query->where('status', 1)
-        //     ->whereIn('nama', ['PEMBELIAN', 'PENJUALAN']);
-        $query->where(['nama' => request('nama'), 'status' => 1]);
-
-        if (request('date') === 'hari') {
-            if (request()->has('hari') && request('hari') !== null) {
-                $query->whereDay('created_at', '=', request('hari'));
+            if (request('date') === 'hari') {
+                if (request()->has('hari') && request('hari') !== null) {
+                    $gg->whereDay('tanggal', '=', request('hari'));
+                } else {
+                    $gg->whereDay('tanggal', '=', date('d'));
+                }
+            } else if (request('date') === 'bulan') {
+                if (request()->has('bulan') && request('bulan') !== null) {
+                    $gg->whereMonth('tanggal', '=', request('bulan'));
+                } else {
+                    $gg->whereMonth('tanggal', '=', date('m'));
+                }
+            } else if (request('date') === 'spesifik') {
+                $gg->whereDate('tanggal', '=', request('from'));
             } else {
-                $query->whereDay('created_at', '=', date('d'));
+                $gg->whereBetween('tanggal', [request('from'), request('to')]);
             }
-        } else if (request('date') === 'bulan') {
-            if (request()->has('bulan') && request('bulan') !== null) {
-                $query->whereMonth('created_at', '=', request('bulan'));
-            } else {
-                $query->whereMonth('created_at', '=', date('m'));
-            }
-        } else if (request('date') === 'tahun') {
-            if (request()->has('tahun') && request('tahun') !== null) {
-                $query->whereYear('created_at', '=', request('tahun'));
-            } else {
-                $query->whereYear('created_at', '=', date('Y'));
-            }
-        } else if (request('date') === 'spesifik') {
-            $query->whereDate('created_at', '=', request('from'));
-        } else {
-            $query->whereBetween('created_at', [request('from'), request('to')]);
-        }
-
-        $data = $query->with('detail_transaction')->latest()->get();
-
-        return TransactionResource::collection($data);
-
-        // $produk = Product::paginate(10);
-        // foreach ($produk as &$key) {
-        //     $key->qty_old = [];
-        //     $key->harga_old = [];
-        //     $key->subtotal_old = [];
-        // }
-        // if (request('nama') === 'PEMBELIAN' || request('nama') === 'PENJUALAN') {
-        //     foreach ($data as &$transaction) {
-        //         foreach ($transaction->detail_transaction as &$value) {
-        //             foreach ($produk as &$key) {
-        //                 $qty_old = $key->qty_old;
-        //                 $harga_old = $key->harga_old;
-        //                 $subtotal_old = $key->subtotal_old;
-        //                 if (request('nama') === 'PENJUALAN') {
-        //                     if ($value->product_id === $key->id) {
-        //                         if ($value->harga === $key->harga_jual_umum) {
-        //                             $key->qty_umum += $value->qty;
-        //                             $key->harga_umum = $value->harga;
-        //                             $key->subtotal_umum += ($value->qty * $value->harga);
-        //                         } else if ($value->harga === $key->harga_jual_resep) {
-        //                             $key->qty_resep += $value->qty;
-        //                             $key->harga_resep = $value->harga;
-        //                             $key->subtotal_resep += ($value->qty * $value->harga);
-        //                         } else if ($value->harga === $key->harga_jual_cust) {
-        //                             $key->qty_cust += $value->qty;
-        //                             $key->harga_cust = $value->harga;
-        //                             $key->subtotal_cust += ($value->qty * $value->harga);
-        //                         } else {
-        //                             array_push($qty_old, $value->qty);
-        //                             array_push($harga_old, $value->harga);
-        //                             array_push($subtotal_old, ($value->qty * $value->harga));
-        //                         }
-        //                     }
-        //                 }
-        //                 if (request('nama') === 'PEMBELIAN') {
-        //                     if ($value->product_id === $key->id) {
-        //                         if ($value->harga === $key->harga_beli) {
-        //                             $key->qty += $value->qty;
-        //                             $key->harga = $value->harga;
-        //                             $key->subtotal += ($value->qty * $value->harga);
-        //                         } else {
-        //                             array_push($qty_old, $value->qty);
-        //                             array_push($harga_old, $value->harga);
-        //                             array_push($subtotal_old, ($value->qty * $value->harga));
-        //                         }
-        //                     }
-        //                 }
-        //                 $key->qty_old = $qty_old;
-        //                 $key->harga_old = $harga_old;
-        //                 $key->subtotal_old = $subtotal_old;
-        //             }
-        //         }
-        //     }
-        // }
-
-        // return ProductResource::collection($produk);
-        // $kirim =  TransactionResource::collection($data);
-        // return  TransactionResource::collection($data);
-        // return response()->json([
-        //     // 'bulan' => date('m') - 1,
-        //     'product' => $produk,
-        //     'data' => $data,
-        //     // 'kirim' => $kirim
-        // ]);
+        });
 
 
+        $data = $query->groupBy('product_id', 'harga')
+            ->with(['product'])
+            ->get();
+        return new JsonResponse($data);
     }
 
     public function store(Request $request)

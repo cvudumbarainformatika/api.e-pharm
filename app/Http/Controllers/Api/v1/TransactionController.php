@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\TransactionResource;
+use App\Models\DetailTransaction;
 use App\Models\Product;
 use App\Models\Transaction;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -112,33 +114,37 @@ class TransactionController extends Controller
     public function getByDate()
     {
         $query = Transaction::query();
-        $query->where(['nama' => request('nama'), 'status' => 1]);
+        // ->selectRaw('product_id, harga, sum(qty) as jml');
+        // $query->whereHas('transaction', function ($gg) {
+        //     $gg->where(['nama' => request('nama'), 'status' => 1]);
 
+        // });
+        $query->where(['nama' => request('nama'), 'status' => 1]);
         if (request('date') === 'hari') {
             if (request()->has('hari') && request('hari') !== null) {
-                $query->whereDay('created_at', '=', request('hari'));
+                $query->whereDay('tanggal', '=', request('hari'));
             } else {
-                $query->whereDay('created_at', '=', date('d'));
+                $query->whereDay('tanggal', '=', date('d'));
             }
         } else if (request('date') === 'bulan') {
             if (request()->has('bulan') && request('bulan') !== null) {
-                $query->whereMonth('created_at', '=', request('bulan'));
+                $query->whereMonth('tanggal', '=', request('bulan'));
             } else {
-                $query->whereMonth('created_at', '=', date('m'));
-            }
-        } else if (request('date') === 'tahun') {
-            if (request()->has('tahun') && request('tahun') !== null) {
-                $query->whereYear('created_at', '=', request('tahun'));
-            } else {
-                $query->whereYear('created_at', '=', date('Y'));
+                $query->whereMonth('tanggal', '=', date('m'));
             }
         } else if (request('date') === 'spesifik') {
-            $query->whereDate('created_at', '=', request('from'));
+            $query->whereDate('tanggal', '=', request('from'));
         } else {
-            $query->whereBetween('created_at', [request('from'), request('to')]);
+            $query->whereBetween('tanggal', [request('from'), request('to')]);
         }
 
-        $data = $query->with(['detail_transaction', 'penerimaan_transaction', 'beban_transaction'])->latest()->get();
+
+        // $data = $query->groupBy('product_id', 'harga')
+        //     ->with(['product'])
+        //     ->get();
+        // return new JsonResponse($data);
+        $data = $query->with(['detail_transaction', 'penerimaan_transaction', 'beban_transaction', 'dokter', 'customer', 'supplier'])
+            ->latest()->paginate(request('per_page'));
 
         return TransactionResource::collection($data);
     }

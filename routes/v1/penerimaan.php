@@ -10,6 +10,7 @@ Route::group([
 ], function () {
     Route::get('/index', [PenerimaanController::class, 'index']);
     Route::get('/penerimaan', [PenerimaanController::class, 'penerimaan']);
+    Route::get('/get-by-date', [PenerimaanController::class, 'getByDate']);
     Route::post('/store', [PenerimaanController::class, 'store']);
     Route::post('/destroy', [PenerimaanController::class, 'destroy']);
 });

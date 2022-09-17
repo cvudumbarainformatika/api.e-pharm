@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\BebanResource;
 use App\Models\Beban;
+use App\Models\BebanTransaction;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -23,6 +25,40 @@ class BebanController extends Controller
     {
         $data = Beban::latest()->paginate(request('per_page'));
         return BebanResource::collection($data);
+    }
+
+
+    public function getByDate()
+    {
+        $periode = [];
+        $query = BebanTransaction::query()->selectRaw('beban_id, sum(sub_total) as sub_total');
+        $query->whereHas('transaction', function ($gg) {
+            $gg->where(['nama' => request('nama'), 'status' => 1]);
+
+            if (request('date') === 'hari') {
+                if (request()->has('hari') && request('hari') !== null) {
+                    $gg->whereDay('tanggal', '=', request('hari'));
+                } else {
+                    $gg->whereDay('tanggal', '=', date('d'));
+                }
+            } else if (request('date') === 'bulan') {
+                if (request()->has('bulan') && request('bulan') !== null) {
+                    $gg->whereMonth('tanggal', '=', request('bulan'));
+                } else {
+                    $gg->whereMonth('tanggal', '=', date('m'));
+                }
+            } else if (request('date') === 'spesifik') {
+                $gg->whereDate('tanggal', '=', request('from'));
+            } else {
+                $gg->whereBetween('tanggal', [request('from'), request('to')]);
+            }
+        });
+
+
+        $data = $query->groupBy('beban_id')
+            ->with(['beban'])
+            ->get();
+        return new JsonResponse($data);
     }
     public function store(Request $request)
     {

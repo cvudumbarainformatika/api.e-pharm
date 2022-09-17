@@ -28,7 +28,6 @@ class CreateProductsTable extends Migration
             $table->double('limit_stok')->default(2);
             $table->unsignedBigInteger('rak_id')->nullable();
             $table->unsignedBigInteger('kategori_id')->nullable();
-            $table->date('expired')->nullable();
             $table->timestamps();
         });
     }
