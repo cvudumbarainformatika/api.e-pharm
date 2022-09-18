@@ -111,6 +111,27 @@ class TransactionController extends Controller
         ]);
     }
 
+    public function periode($query, $date, $hari, $bulan, $to, $from)
+    {
+        if ($date === 'hari') {
+            if (request()->has('hari') && $hari !== null) {
+                $query->whereDay('tanggal', '=', $hari);
+            } else {
+                $query->whereDay('tanggal', '=', date('d'));
+            }
+        } else if ($date === 'bulan') {
+            if (request()->has('bulan') && $bulan !== null) {
+                $query->whereMonth('tanggal', '=', $bulan);
+            } else {
+                $query->whereMonth('tanggal', '=', date('m'));
+            }
+        } else if ($date === 'spesifik') {
+            $query->whereDate('tanggal', '=', $from);
+        } else {
+            $query->whereBetween('tanggal', [$from, $to]);
+        }
+    }
+
     public function getByDate()
     {
         $query = Transaction::query();
@@ -120,23 +141,8 @@ class TransactionController extends Controller
 
         // });
         $query->where(['nama' => request('nama'), 'status' => 1]);
-        if (request('date') === 'hari') {
-            if (request()->has('hari') && request('hari') !== null) {
-                $query->whereDay('tanggal', '=', request('hari'));
-            } else {
-                $query->whereDay('tanggal', '=', date('d'));
-            }
-        } else if (request('date') === 'bulan') {
-            if (request()->has('bulan') && request('bulan') !== null) {
-                $query->whereMonth('tanggal', '=', request('bulan'));
-            } else {
-                $query->whereMonth('tanggal', '=', date('m'));
-            }
-        } else if (request('date') === 'spesifik') {
-            $query->whereDate('tanggal', '=', request('from'));
-        } else {
-            $query->whereBetween('tanggal', [request('from'), request('to')]);
-        }
+        $this->periode($query, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
+
 
 
         // $data = $query->groupBy('product_id', 'harga')

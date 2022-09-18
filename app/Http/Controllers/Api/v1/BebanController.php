@@ -27,31 +27,37 @@ class BebanController extends Controller
         return BebanResource::collection($data);
     }
 
+    public function periode($query, $date, $hari, $bulan, $to, $from)
+    {
+        if ($date === 'hari') {
+            if (request()->has('hari') && $hari !== null) {
+                $query->whereDay('tanggal', '=', $hari);
+            } else {
+                $query->whereDay('tanggal', '=', date('d'));
+            }
+        } else if ($date === 'bulan') {
+            if (request()->has('bulan') && $bulan !== null) {
+                $query->whereMonth('tanggal', '=', $bulan);
+            } else {
+                $query->whereMonth('tanggal', '=', date('m'));
+            }
+        } else if ($date === 'spesifik') {
+            $query->whereDate('tanggal', '=', $from);
+        } else {
+            $query->whereBetween('tanggal', [$from, $to]);
+        }
+    }
 
     public function getByDate()
     {
         $periode = [];
         $query = BebanTransaction::query()->selectRaw('beban_id, sum(sub_total) as sub_total');
         $query->whereHas('transaction', function ($gg) {
-            $gg->where(['nama' => request('nama'), 'status' => 1]);
-
-            if (request('date') === 'hari') {
-                if (request()->has('hari') && request('hari') !== null) {
-                    $gg->whereDay('tanggal', '=', request('hari'));
-                } else {
-                    $gg->whereDay('tanggal', '=', date('d'));
-                }
-            } else if (request('date') === 'bulan') {
-                if (request()->has('bulan') && request('bulan') !== null) {
-                    $gg->whereMonth('tanggal', '=', request('bulan'));
-                } else {
-                    $gg->whereMonth('tanggal', '=', date('m'));
-                }
-            } else if (request('date') === 'spesifik') {
-                $gg->whereDate('tanggal', '=', request('from'));
-            } else {
-                $gg->whereBetween('tanggal', [request('from'), request('to')]);
-            }
+            $gg->where(['nama' => request('nama'), 'status' => 1])
+                ->when(request('supplier_id'), function ($sp) {
+                    return $sp->where('supplier_id', request('supplier_id'));
+                });
+            $this->periode($gg, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
         });
 
 
