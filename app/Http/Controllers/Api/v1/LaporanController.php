@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\BebanTransaction;
+use App\Models\Customer;
+use App\Models\DetailPenerimaan;
 use App\Models\DetailTransaction;
 use App\Models\Supplier;
 use Illuminate\Http\JsonResponse;
@@ -36,7 +38,6 @@ class LaporanController extends Controller
     {
         $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');
         $query->whereHas('transaction', function ($gg) {
-            // $gg->where(['nama' => 'PENJUALAN', 'status' => 1, 'jenis' => 'hutang', 'supplier_id' => request('supplier_id')])
             $gg->where('nama', '=', 'PEMBELIAN')
                 ->where('status', '=', 1)
                 ->where('jenis', '=', 'hutang')
@@ -49,12 +50,32 @@ class LaporanController extends Controller
         $dibayar = BebanTransaction::selectRaw('beban_id, sum(sub_total) as total')->whereHas('transaction', function ($apem) {
             $apem->where(['nama' => 'BEBAN', 'status' => 1, 'supplier_id' => request('supplier_id')])
                 ->whereDate('tanggal', '<=', date('Y-m-d'));
-        })
-            // ->groupBy('beban_id')
-            ->with('beban')->get();
+        });
         $supplier = Supplier::find(request('supplier_id'));
 
 
         return new JsonResponse(['hutang' => $hutang, 'dibayar' => $dibayar, 'awal' => $supplier->saldo_awal_hutang]);
+    }
+    public function getPiutangCustomer()
+    {
+        $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');
+        $query->whereHas('transaction', function ($gg) {
+            $gg->where('nama', '=', 'PENJUALAN')
+                ->where('status', '=', 1)
+                ->where('jenis', '=', 'piutang')
+                ->where('customer_id', '=', request('customer_id'))
+                ->whereDate('tanggal', '<=', date('Y-m-d'));
+        });
+        $hutang = $query->groupBy('product_id', 'harga')
+            // ->with(['product'])
+            ->get();
+        $dibayar = DetailPenerimaan::selectRaw('penerimaan_id, sum(sub_total) as total')->whereHas('transaction', function ($apem) {
+            $apem->where(['nama' => 'PENERIMAAN', 'status' => 1, 'customer_id' => request('customer_id')])
+                ->whereDate('tanggal', '<=', date('Y-m-d'));
+        });
+        $customer = Customer::find(request('customer_id'));
+
+
+        return new JsonResponse(['hutang' => $hutang, 'dibayar' => $dibayar, 'awal' => $customer->saldo_awal_piutang]);
     }
 }
