@@ -75,7 +75,7 @@ class DetailTransactionController extends Controller
 
     public function getByDate()
     {
-        $periode = [];
+        // ambil detail transaction
         $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');
         $query->whereHas('transaction', function ($gg) {
             $gg->where(['nama' => request('nama'), 'status' => 1])
@@ -90,11 +90,10 @@ class DetailTransactionController extends Controller
                 });
             $this->periode($gg, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
         });
-
-
         $data = $query->groupBy('product_id', 'harga')
             ->with(['product'])
             ->get();
+
         return new JsonResponse($data);
     }
 
