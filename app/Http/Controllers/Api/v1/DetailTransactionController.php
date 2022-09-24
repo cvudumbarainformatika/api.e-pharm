@@ -8,6 +8,7 @@ use App\Http\Resources\v1\ProductResource;
 use App\Http\Resources\v1\TransactionResource;
 use App\Models\DetailTransaction;
 use App\Models\Product;
+use App\Models\Supplier;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -78,15 +79,20 @@ class DetailTransactionController extends Controller
         // ambil detail transaction
         $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');
         $query->whereHas('transaction', function ($gg) {
-            $gg->where(['nama' => request('nama'), 'status' => 1])
-                ->when(request('supplier_id'), function ($sp) {
-                    return $sp->where('supplier_id', request('supplier_id'));
+            $gg->where('nama', '=', request('nama'))
+                ->where('status', '=', 1)
+                ->when(request('supplier_id'), function ($sp, $q) {
+                    return $sp->where('supplier_id', '=', $q);
                 })
                 ->when(request('customer_id'), function ($sp) {
-                    return $sp->where('customer_id', request('customer_id'));
+                    return $sp->where('customer_id', '=', request('customer_id'));
                 })
                 ->when(request('dokter_id'), function ($sp) {
-                    return $sp->where('dokter_id', request('dokter_id'));
+                    return $sp->where('dokter_id', '=', request('dokter_id'));
+                })
+                ->when(request('umum'), function ($sp) {
+                    return $sp->where('dokter_id', '=', null)
+                        ->where('customer_id', '=', null);
                 });
             $this->periode($gg, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
         });

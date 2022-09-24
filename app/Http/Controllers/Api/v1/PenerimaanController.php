@@ -53,7 +53,8 @@ class PenerimaanController extends Controller
         $periode = [];
         $query = DetailPenerimaan::query()->selectRaw('penerimaan_id, sum(sub_total) as sub_total');
         $query->whereHas('transaction', function ($gg) {
-            $gg->where(['nama' => request('nama'), 'status' => 1])
+            $gg->where('nama', '=', request('nama'))
+                ->where('status', '=', 1)
                 ->when(request('customer_id'), function ($sp) {
                     return $sp->where('customer_id', request('customer_id'));
                 });

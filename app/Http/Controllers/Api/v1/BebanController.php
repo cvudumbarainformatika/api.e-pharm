@@ -53,7 +53,8 @@ class BebanController extends Controller
         $periode = [];
         $query = BebanTransaction::query()->selectRaw('beban_id, sum(sub_total) as sub_total');
         $query->whereHas('transaction', function ($gg) {
-            $gg->where(['nama' => request('nama'), 'status' => 1])
+            $gg->where('nama', '=', request('nama'))
+                ->where('status', '=', 1)
                 ->when(request('supplier_id'), function ($sp) {
                     return $sp->where('supplier_id', request('supplier_id'));
                 });
