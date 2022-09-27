@@ -36,6 +36,17 @@ class LaporanController extends Controller
         }
     }
 
+    public function until($query, $selection, $from, $to)
+    {
+        if ($selection === 'tillToday') {
+            $query->whereDate('tanggal', '<=', date('Y-m-d'));
+        } else if ($selection === 'spesifik') {
+            $query->whereDate('tanggal', '<=', $from);
+        } else if ($selection === 'range') {
+            $query->whereDate('tanggal', '<=', $from)->whereDate('tanggal', '=>', $to);
+        }
+    }
+
     public function getHutangSupplier()
     {
         $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');

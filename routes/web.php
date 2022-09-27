@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AutogeneratorController;
+use App\Http\Controllers\PrintController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,4 +19,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::view("login", "login");
+Route::view("print.penjualan", "print");
 Route::get('/autogen', [AutogeneratorController::class, 'index']);
+Route::get('/print', [PrintController::class, 'print']);
