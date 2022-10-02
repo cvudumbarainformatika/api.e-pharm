@@ -69,6 +69,11 @@ class Transaction extends Model
         $search->when($reqs['dokter_id'] ?? false, function ($search, $query) {
             return $search->where('dokter_id', $query);
         });
+        $search->when($reqs['product'] ?? false, function ($search, $query) {
+            return $search->whereHas('detail_transaction.product', function ($q) use ($query) {
+                $q->where('nama', 'LIKE', '%' . $query . '%');
+            });
+        });
 
         // $search->when($reqs['jenis_kepegawaian_id'] ?? false, function ($search, $query) {
         //     return $search->where('jenis_kepegawaian_id', $query);

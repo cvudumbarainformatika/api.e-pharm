@@ -8,6 +8,7 @@ use App\Models\BebanTransaction;
 use App\Models\Customer;
 use App\Models\DetailPenerimaan;
 use App\Models\DetailTransaction;
+use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
@@ -43,8 +44,100 @@ class LaporanController extends Controller
         } else if ($selection === 'spesifik') {
             $query->whereDate('tanggal', '<=', $from);
         } else if ($selection === 'range') {
-            $query->whereDate('tanggal', '<=', $from)->whereDate('tanggal', '=>', $to);
+            $query->whereDate('tanggal', '>=', $from)->whereDate('tanggal', '<=', $to);
         }
+    }
+
+    public function getStok()
+    {
+
+        $masuk = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
+        $masuk->whereHas('transaction', function ($f) {
+            $f->where('nama', '=', 'PEMBELIAN')
+                ->where('status', '=', 1);
+            $this->until($f, request('selection'), request('from'), request('to'));
+        });
+        $stokMasuk = $masuk->groupBy('product_id')->get();
+
+        $returMa = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
+        $returMa->whereHas('transaction', function ($f) {
+            $f->where('nama', '=', 'RETUR PEMBELIAN')
+                ->where('status', '=', 1);
+            $this->until($f, request('selection'), request('from'), request('to'));
+        });
+        $returPembelian = $returMa->groupBy('product_id')->get();
+
+        $keluar = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
+        $keluar->whereHas('transaction', function ($f) {
+            $f->where('nama', '=', 'PENJUALAN')
+                ->where('status', '=', 1);
+            $this->until($f, request('selection'), request('from'), request('to'));
+        });
+        $stokKeluar = $keluar->groupBy('product_id')->get();
+
+        $returKe = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
+        $returKe->whereHas('transaction', function ($f) {
+            $f->where('nama', '=', 'RETUR PENJUALAN')
+                ->where('status', '=', 1);
+            $this->until($f, request('selection'), request('from'), request('to'));
+        });
+        $returPenjualan = $returKe->groupBy('product_id')->get();
+
+        $penyes = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
+        $penyes->whereHas('transaction', function ($f) {
+            $f->where('nama', '=', 'FORM PENYESUAIAN')
+                ->where('status', '=', 1);
+            $this->until($f, request('selection'), request('from'), request('to'));
+        });
+        $penyesuaian = $penyes->groupBy('product_id')->get();
+
+        $product = Product::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))->with('rak')->paginate(request('per_page'));
+
+        return new JsonResponse([
+            'product' => $product,
+            'masuk' => $stokMasuk,
+            'keluar' => $stokKeluar,
+            'returPembelian' => $returPembelian,
+            'returPenjualan' => $returPenjualan,
+            'penyesuaian' => $penyesuaian,
+        ], 200);
+    }
+
+    public function moreStok()
+    {
+        $q = DetailTransaction::query()->where('product_id', '=', request('id'))
+            ->whereHas('transaction', function ($n) {
+                $n->where('status', '=', 1);
+                $this->until($n, request('selection'), request('from'), request('to'));
+            });
+        $details = $q->orderBy(request('order_by'), request('sort'))->paginate(request('per_page'));
+        $product = Product::find(request('id'));
+        $product->details = $details;
+
+        return new JsonResponse($product);
+        // return new JsonResponse([
+        //     'product' => $product,
+        //     'details' => $details
+        // ]);
+    }
+
+    public function stokTransaction()
+    {
+        $q = Transaction::query()->where('status', '=', 1);
+        $this->until($q, request('selection'), request('from'), request('to'));
+        $q->whereHas('detail_transaction', function ($m) {
+            $m->where('product_id', '=', request('id'));
+        });;
+        $data = $q->with('detail_transaction')->latest('tanggal')->paginate(request('per_page'));
+        return new JsonResponse($data);
+    }
+
+    public function cari()
+    {
+        $q = Transaction::filter(['product'])->with('detail_transaction.product');
+        $data = $q->get();
+        return new JsonResponse($data);
     }
 
     public function getHutangSupplier()

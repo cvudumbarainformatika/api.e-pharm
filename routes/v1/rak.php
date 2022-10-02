@@ -9,6 +9,7 @@ Route::group([
     'prefix' => 'rak'
 ], function () {
     Route::get('/index', [RakController::class, 'index']);
+    Route::get('/all-rak', [RakController::class, 'rakAll']);
     Route::post('/store', [RakController::class, 'store']);
     Route::post('/destroy', [RakController::class, 'destroy']);
 });

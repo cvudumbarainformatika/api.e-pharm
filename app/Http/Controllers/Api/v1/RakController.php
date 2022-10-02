@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\RakResource;
 use App\Models\Rak;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -18,6 +19,11 @@ class RakController extends Controller
             ->filter(request(['q']))
             ->paginate(request('per_page'));
         return RakResource::collection($data);
+    }
+    public function rakAll()
+    {
+        $data = Rak::get();
+        return new JsonResponse($data);
     }
     public function store(Request $request)
     {

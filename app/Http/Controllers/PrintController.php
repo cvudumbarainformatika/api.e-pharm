@@ -28,6 +28,6 @@ class PrintController extends Controller
             'total' => DetailTransaction::where('transaction_id', $trans->id)->sum('sub_total')
         );
         // return new JsonResponse($data);
-        return view('print', $data);
+        return view('print.penjualan', $data);
     }
 }

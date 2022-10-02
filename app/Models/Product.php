@@ -39,8 +39,8 @@ class Product extends Model
     {
         $search->when($reqs['q'] ?? false, function ($search, $query) {
             return $search->where('nama', 'LIKE', '%' . $query . '%')
-                ->orWhere('barcode', 'LIKE', '%' . $query . '%')
-                ->orWhere('expired', 'LIKE', '%' . $query . '%');
+                ->orWhere('barcode', 'LIKE', '%' . $query . '%');
+            // ->orWhere('expired', 'LIKE', '%' . $query . '%');
         });
 
         $search->when($reqs['merk_id'] ?? false, function ($search, $query) {
