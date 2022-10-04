@@ -23,7 +23,7 @@ class BebanController extends Controller
     }
     public function beban()
     {
-        $data = Beban::latest()->paginate(request('per_page'));
+        $data = Beban::latest()->get();
         return BebanResource::collection($data);
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\v1\LaporanController;
 use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\PrintController;
 use Illuminate\Support\Facades\Route;
@@ -24,3 +25,7 @@ Route::get('/autogen', [AutogeneratorController::class, 'index']);
 Route::get('/coba', [AutogeneratorController::class, 'coba']);
 Route::get('/cari', [AutogeneratorController::class, 'cari']);
 Route::get('/print', [PrintController::class, 'print']);
+Route::get('/time', function () {
+    echo time();
+});
+Route::get('/get-stok', [LaporanController::class, 'ambilStok']);

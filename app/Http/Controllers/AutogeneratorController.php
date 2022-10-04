@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetailTransaction;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,13 +35,19 @@ class AutogeneratorController extends Controller
     }
     public function coba()
     {
-        $q = Transaction::query()->where('status', '=', 1);
-        $this->until($q, 'range', '2022-09-22', '2022-09-24');
-        $q->whereHas('detail_transaction', function ($m) {
-            $m->where('product_id', '=', 2);
-        });
-        $data = $q->with('detail_transaction')->paginate(15);
-        return new JsonResponse($data);
+        // $q = Transaction::query()->where('status', '=', 1);
+        // $this->until($q, 'range', '2022-09-22', '2022-09-24');
+        // $q->whereHas('detail_transaction', function ($m) {
+        //     $m->where('product_id', '=', 2);
+        // });
+        // $data = $q->with('detail_transaction')->paginate(15);
+        $masuk = DetailTransaction::all();
+        // ->with('transaction', 'product');
+
+        $data = collect($masuk)->except(['created_at', 'updated_at', 'uuid', 'id']);
+        // $grup = $data->only(['created_at', 'updated_at', 'uuid', 'id']);
+        // return $grup->all();
+        return $data;
     }
 
     public function cari()

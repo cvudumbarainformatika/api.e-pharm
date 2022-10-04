@@ -23,7 +23,7 @@ class PenerimaanController extends Controller
     }
     public function penerimaan()
     {
-        $data = Penerimaan::latest()->paginate(request('per_page'));
+        $data = Penerimaan::latest()->get();
         return PenerimaanResource::collection($data);
     }
 

@@ -37,15 +37,99 @@ class LaporanController extends Controller
         }
     }
 
-    public function until($query, $selection, $from, $to)
+    public function until($query, $header)
     {
-        if ($selection === 'tillToday') {
+        if ($header->selection === 'tillToday') {
             $query->whereDate('tanggal', '<=', date('Y-m-d'));
-        } else if ($selection === 'spesifik') {
-            $query->whereDate('tanggal', '<=', $from);
-        } else if ($selection === 'range') {
-            $query->whereDate('tanggal', '>=', $from)->whereDate('tanggal', '<=', $to);
+        } else if ($header->selection === 'spesifik') {
+            $query->whereDate('tanggal', '<=', $header->from);
+        } else if ($header->selection === 'range') {
+            $query->whereDate('tanggal', '>=', $header->from)->whereDate('tanggal', '<=', $header->to);
         }
+    }
+
+    public function getPeriod($query, $header)
+    {
+        $beforePeriod = $query->whereDate('tanggal', '<', $header->from);
+        $Period = $query->whereDate('tanggal', '>=', $header->from)->whereDate('tanggal', '<=', $header->to);
+        $data = (object) array(
+            'beforePeriod' => $beforePeriod,
+            'period' => $Period
+        );
+        return $data;
+    }
+
+    public function getDetails($header, $nama)
+    {
+        $masuk = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
+        $masuk->whereHas('transaction', function ($f) use ($header, $nama) {
+            $f->where('nama', '=', $nama)
+                ->where('status', '=', 1);
+            $this->until($f, $header);
+        });
+
+        $data = $masuk->groupBy('product_id')->get();
+        return $data;
+    }
+
+    public function getDetailsPeriod($header, $nama)
+    {
+
+        $before = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
+            ->whereHas('transaction', function ($f) use ($header, $nama) {
+                $f->where('nama', '=', $nama)
+                    ->where('status', '=', 1)
+                    ->whereDate('tanggal', '<', $header->from);
+            })->groupBy('product_id')->get();
+
+        $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
+            ->whereHas('transaction', function ($f) use ($header, $nama) {
+                $f->where('nama', '=', $nama)
+                    ->where('status', '=', 1)
+                    ->whereDate('tanggal', '>=', $header->from)
+                    ->whereDate('tanggal', '<=', $header->to);
+            })->groupBy('product_id')->get();
+
+        $data = (object) array(
+            'before' => $before,
+            'period' => $period,
+        );
+
+        return $data;
+    }
+
+    public function ambilStok()
+    {
+        $header = (object) array(
+            'from' => request('from'),
+            'to' => request('to'),
+            'selection' => request('selection'),
+        );
+        if ($header->selection === 'range') {
+            $stokMasuk = $this->getDetailsPeriod($header, 'PEMBELIAN');
+            $returPembelian = $this->getDetailsPeriod($header, 'RETUR PEMBELIAN');
+            $stokKeluar = $this->getDetailsPeriod($header, 'PENJUALAN');
+            $returPenjualan = $this->getDetailsPeriod($header, 'RETUR PENJUALAN');
+            $penyesuaian = $this->getDetailsPeriod($header, 'FORM PENYESUAIAN');
+        } else {
+            $stokMasuk = $this->getDetails($header, 'PEMBELIAN');
+            $returPembelian = $this->getDetails($header, 'RETUR PEMBELIAN');
+            $stokKeluar = $this->getDetails($header, 'PENJUALAN');
+            $returPenjualan = $this->getDetails($header, 'RETUR PENJUALAN');
+            $penyesuaian = $this->getDetails($header, 'FORM PENYESUAIAN');
+        }
+
+        $product = Product::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))->with('rak')->paginate(request('per_page'));
+
+        return new JsonResponse([
+            'product' => $product,
+            'masuk' => $stokMasuk,
+            'keluar' => $stokKeluar,
+            'returPembelian' => $returPembelian,
+            'returPenjualan' => $returPenjualan,
+            'penyesuaian' => $penyesuaian,
+        ], 200);
     }
 
     public function getStok()
@@ -124,8 +208,13 @@ class LaporanController extends Controller
 
     public function stokTransaction()
     {
+        $header = (object) array(
+            'from' => request('from'),
+            'to' => request('to'),
+            'selection' => request('selection'),
+        );
         $q = Transaction::query()->where('status', '=', 1);
-        $this->until($q, request('selection'), request('from'), request('to'));
+        $this->until($q, $header);
         $q->whereHas('detail_transaction', function ($m) {
             $m->where('product_id', '=', request('id'));
         });;
