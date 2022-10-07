@@ -134,44 +134,49 @@ class LaporanController extends Controller
 
     public function getStok()
     {
+        $header = (object) array(
+            'from' => request('from'),
+            'to' => request('to'),
+            'selection' => request('selection'),
+        );
 
         $masuk = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
-        $masuk->whereHas('transaction', function ($f) {
+        $masuk->whereHas('transaction', function ($f) use ($header) {
             $f->where('nama', '=', 'PEMBELIAN')
                 ->where('status', '=', 1);
-            $this->until($f, request('selection'), request('from'), request('to'));
+            $this->until($f, $header);
         });
         $stokMasuk = $masuk->groupBy('product_id')->get();
 
         $returMa = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
-        $returMa->whereHas('transaction', function ($f) {
+        $returMa->whereHas('transaction', function ($f) use ($header) {
             $f->where('nama', '=', 'RETUR PEMBELIAN')
                 ->where('status', '=', 1);
-            $this->until($f, request('selection'), request('from'), request('to'));
+            $this->until($f, $header);
         });
         $returPembelian = $returMa->groupBy('product_id')->get();
 
         $keluar = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
-        $keluar->whereHas('transaction', function ($f) {
+        $keluar->whereHas('transaction', function ($f) use ($header) {
             $f->where('nama', '=', 'PENJUALAN')
                 ->where('status', '=', 1);
-            $this->until($f, request('selection'), request('from'), request('to'));
+            $this->until($f, $header);
         });
         $stokKeluar = $keluar->groupBy('product_id')->get();
 
         $returKe = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
-        $returKe->whereHas('transaction', function ($f) {
+        $returKe->whereHas('transaction', function ($f) use ($header) {
             $f->where('nama', '=', 'RETUR PENJUALAN')
                 ->where('status', '=', 1);
-            $this->until($f, request('selection'), request('from'), request('to'));
+            $this->until($f, $header);
         });
         $returPenjualan = $returKe->groupBy('product_id')->get();
 
         $penyes = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
-        $penyes->whereHas('transaction', function ($f) {
+        $penyes->whereHas('transaction', function ($f) use ($header) {
             $f->where('nama', '=', 'FORM PENYESUAIAN')
                 ->where('status', '=', 1);
-            $this->until($f, request('selection'), request('from'), request('to'));
+            $this->until($f, $header);
         });
         $penyesuaian = $penyes->groupBy('product_id')->get();
 
@@ -190,10 +195,15 @@ class LaporanController extends Controller
 
     public function moreStok()
     {
+        $header = (object) array(
+            'from' => request('from'),
+            'to' => request('to'),
+            'selection' => request('selection'),
+        );
         $q = DetailTransaction::query()->where('product_id', '=', request('id'))
-            ->whereHas('transaction', function ($n) {
+            ->whereHas('transaction', function ($n) use ($header) {
                 $n->where('status', '=', 1);
-                $this->until($n, request('selection'), request('from'), request('to'));
+                $this->until($n, $header);
             });
         $details = $q->orderBy(request('order_by'), request('sort'))->paginate(request('per_page'));
         $product = Product::find(request('id'));
@@ -341,5 +351,208 @@ class LaporanController extends Controller
             ->latest()->paginate(request('per_page'));
 
         return TransactionResource::collection($data);
+    }
+
+    public function getBebans($header, $nama)
+    {
+        $masuk = BebanTransaction::query()->selectRaw('beban_id, sum(sub_total) as total');
+        $masuk->whereHas('transaction', function ($f) use ($header, $nama) {
+            $f->where('nama', '=', $nama)
+                ->where('jenis', '=', 'tunai')
+                ->where('status', '=', 1);
+            $this->until($f, $header);
+        });
+
+        $data = $masuk->groupBy('beban_id')->get();
+        return $data;
+    }
+
+    public function getBebansPeriod($header, $nama)
+    {
+
+        $before = BebanTransaction::selectRaw('beban_id, sum(sub_total) as total')
+            ->whereHas('transaction', function ($f) use ($header, $nama) {
+                $f->where('nama', '=', $nama)
+                    ->where('status', '=', 1)
+                    ->where('jenis', '=', 'tunai')
+                    ->whereDate('tanggal', '<', $header->from);
+            })->groupBy('beban_id')->get();
+
+        $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
+            ->whereHas('transaction', function ($f) use ($header, $nama) {
+                $f->where('nama', '=', $nama)
+                    ->where('status', '=', 1)
+                    ->where('jenis', '=', 'tunai')
+                    ->whereDate('tanggal', '>=', $header->from)
+                    ->whereDate('tanggal', '<=', $header->to);
+            })->groupBy('beban_id')->get();
+
+        $data = (object) array(
+            'before' => $before,
+            'period' => $period,
+        );
+
+        return $data->period;
+    }
+    public function getPenerimaans($header, $nama)
+    {
+        $masuk = DetailPenerimaan::query()->selectRaw('penerimaan_id, sum(sub_total) as total');
+        $masuk->whereHas('transaction', function ($f) use ($header, $nama) {
+            $f->where('nama', '=', $nama)
+                ->where('jenis', '=', 'tunai')
+                ->where('status', '=', 1);
+            $this->until($f, $header);
+        });
+
+        $data = $masuk->groupBy('penerimaan_id')->get();
+        return $data;
+    }
+
+    public function getPenerimaansPeriod($header, $nama)
+    {
+
+        $before = DetailPenerimaan::selectRaw('penerimaan_id, sum(sub_total) as total')
+            ->whereHas('transaction', function ($f) use ($header, $nama) {
+                $f->where('nama', '=', $nama)
+                    ->where('status', '=', 1)
+                    ->where('jenis', '=', 'tunai')
+                    ->whereDate('tanggal', '<', $header->from);
+            })->groupBy('penerimaan_id')->get();
+
+        $period = DetailPenerimaan::selectRaw('penerimaan_id, sum(sub_total) as total')
+            ->whereHas('transaction', function ($f) use ($header, $nama) {
+                $f->where('nama', '=', $nama)
+                    ->where('status', '=', 1)
+                    ->where('jenis', '=', 'tunai')
+                    ->whereDate('tanggal', '>=', $header->from)
+                    ->whereDate('tanggal', '<=', $header->to);
+            })->groupBy('penerimaan_id')->get();
+
+        $data = (object) array(
+            'before' => $before,
+            'period' => $period,
+        );
+
+        return $data->period;
+    }
+    public function getDetailsUang($header, $nama)
+    {
+        $masuk = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml,  harga');
+        $masuk->whereHas('transaction', function ($f) use ($header, $nama) {
+            $f->where('nama', '=', $nama)
+                ->where('jenis', '=', 'tunai')
+                ->where('status', '=', 1);
+            $this->until($f, $header);
+        });
+
+        $data = $masuk->groupBy('product_id', 'harga')->get();
+        return $data;
+    }
+
+    public function getDetailsPeriodUang($header, $nama)
+    {
+
+        $before = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
+            ->whereHas('transaction', function ($f) use ($header, $nama) {
+                $f->where('nama', '=', $nama)
+                    ->where('status', '=', 1)
+                    ->where('jenis', '=', 'tunai')
+                    ->whereDate('tanggal', '<', $header->from);
+            })->groupBy('product_id', 'harga')->get();
+
+        $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
+            ->whereHas('transaction', function ($f) use ($header, $nama) {
+                $f->where('nama', '=', $nama)
+                    ->where('status', '=', 1)
+                    ->where('jenis', '=', 'tunai')
+                    ->whereDate('tanggal', '>=', $header->from)
+                    ->whereDate('tanggal', '<=', $header->to);
+            })->groupBy('product_id', 'harga')->get();
+
+        $data = (object) array(
+            'before' => $before,
+            'period' => $period,
+        );
+
+        return $data;
+    }
+
+    public function getDiscOngkirPeriode($header, $nama)
+    {
+        $before = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
+            ->where('nama', '=', $nama)
+            ->where('status', '=', 1)
+            ->whereDate('tanggal', '<', $header->from)
+            ->get();
+        $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
+            ->where('nama', '=', $nama)
+            ->where('status', '=', 1)
+            ->whereDate('tanggal', '>=', $header->from)
+            ->whereDate('tanggal', '<=', $header->to)
+            ->get();
+
+        $data = (object) array(
+            'before' => $before,
+            'period' => $period
+        );
+        return $data;
+    }
+
+    public function getDiscOngkir($nama)
+    {
+        $data = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
+            ->where('nama', '=', $nama)
+            ->where('status', '=', 1)
+            ->whereDate('tanggal', '<=', date('Y-m-d'))
+            ->get();
+        return $data;
+    }
+    public function laporanKeuangan()
+    {
+        $header = (object) array(
+            'from' => request('from'),
+            'to' => request('to'),
+            'selection' => request('selection'),
+        );
+        // if ($header->selection === 'range') {
+        //     $pembelian = $this->getDetailsPeriodUang($header, 'PEMBELIAN');
+        //     $returPembelian = $this->getDetailsPeriodUang($header, 'RETUR PEMBELIAN');
+        //     $penjualan = $this->getDetailsPeriodUang($header, 'PENJUALAN');
+        //     $returPenjualan = $this->getDetailsPeriodUang($header, 'RETUR PENJUALAN');
+        //     $beban = $this->getBebansPeriod($header, 'BEBAN');
+        //     $penerimaan = $this->getPenerimaansPeriod($header, 'PENERIMAAN');
+        // } else {
+        $pembelian = $this->getDetailsUang($header, 'PEMBELIAN');
+        $returPembelian = $this->getDetailsUang($header, 'RETUR PEMBELIAN');
+        $penjualan = $this->getDetailsUang($header, 'PENJUALAN');
+        $returPenjualan = $this->getDetailsUang($header, 'RETUR PENJUALAN');
+        $beban = $this->getBebans($header, 'BEBAN');
+        $penerimaan = $this->getPenerimaans($header, 'PENERIMAAN');
+        // }
+        $product = Product::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))->with('rak')->paginate(request('per_page'));
+
+        // hpp
+        if ($header->selection === 'range') {
+            $ongkir = $this->getDiscOngkirPeriode($header, 'PEMBELIAN');
+            $hitungPembelian = $this->getDetailsPeriodUang($header, 'PEMBELIAN');
+        } else {
+            $ongkir = $this->getDiscOngkir('PEMBELIAN');
+            $hitungPembelian = $this->getDetailsUang($header, 'PEMBELIAN');
+        }
+
+
+        return new JsonResponse([
+            'product' => $product,
+            'pembelian' => $pembelian,
+            'penjualan' => $penjualan,
+            'returPembelian' => $returPembelian,
+            'returPenjualan' => $returPenjualan,
+            'beban' => $beban,
+            'penerimaan' => $penerimaan,
+            'hitungPembelian' => $hitungPembelian,
+            'ongkir' => $ongkir,
+
+        ], 200);
     }
 }

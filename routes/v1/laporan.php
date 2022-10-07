@@ -13,7 +13,7 @@ Route::group([
     Route::get('/total-by-date', [LaporanController::class, 'getTotalByDate']);
     Route::get('/get-by-date', [LaporanController::class, 'getByDate']);
     Route::get('/get-stok', [LaporanController::class, 'ambilStok']);
-    // Route::get('/get-stok', [LaporanController::class, 'getStok']);
+    Route::get('/get-laporan-keuangan', [LaporanController::class, 'laporanKeuangan']);
     Route::get('/more-stok', [LaporanController::class, 'moreStok']);
     Route::get('/cari', [LaporanController::class, 'cari']);
     Route::get('/stok-transaction', [LaporanController::class, 'stokTransaction']);
