@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 
 class LaporanController extends Controller
 {
+    // fungsi periode
     public function periode($query, $date, $hari, $bulan, $to, $from)
     {
         if ($date === 'hari') {
@@ -37,17 +38,28 @@ class LaporanController extends Controller
         }
     }
 
+    // fungsi periode
     public function until($query, $header)
     {
         if ($header->selection === 'tillToday') {
             $query->whereDate('tanggal', '<=', date('Y-m-d'));
         } else if ($header->selection === 'spesifik') {
-            $query->whereDate('tanggal', '<=', $header->from);
+            $query->whereDate('tanggal', '=', $header->from);
         } else if ($header->selection === 'range') {
             $query->whereDate('tanggal', '>=', $header->from)->whereDate('tanggal', '<=', $header->to);
         }
     }
-
+    public function newUntil($query, $header)
+    {
+        if ($header->selection === 'tillToday') {
+            $query->whereDate('tanggal', '=', date('Y-m-d')); // bedanya disini
+        } else if ($header->selection === 'spesifik') {
+            $query->whereDate('tanggal', '=', $header->from);
+        } else if ($header->selection === 'range') {
+            $query->whereDate('tanggal', '>=', $header->from)->whereDate('tanggal', '<=', $header->to);
+        }
+    }
+    // sepertinya ga ada yang pake, ga bisa masuk query
     public function getPeriod($query, $header)
     {
         $beforePeriod = $query->whereDate('tanggal', '<', $header->from);
@@ -59,19 +71,22 @@ class LaporanController extends Controller
         return $data;
     }
 
+    // jumlah produk hingga periode pilihan
     public function getDetails($header, $nama)
     {
         $masuk = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
         $masuk->whereHas('transaction', function ($f) use ($header, $nama) {
             $f->where('nama', '=', $nama)
-                ->where('status', '=', 1);
-            $this->until($f, $header);
+                ->where('status', '=', 1)
+                ->whereDate('tanggal', '=', $header->from);
+            // $this->until($f, $header);
         });
 
         $data = $masuk->groupBy('product_id')->get();
         return $data;
     }
 
+    // jumlah produk sebelum periode pilihan dan pada periode pilihan
     public function getDetailsPeriod($header, $nama)
     {
 
@@ -82,13 +97,22 @@ class LaporanController extends Controller
                     ->whereDate('tanggal', '<', $header->from);
             })->groupBy('product_id')->get();
 
-        $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
-            ->whereHas('transaction', function ($f) use ($header, $nama) {
-                $f->where('nama', '=', $nama)
-                    ->where('status', '=', 1)
-                    ->whereDate('tanggal', '>=', $header->from)
-                    ->whereDate('tanggal', '<=', $header->to);
-            })->groupBy('product_id')->get();
+        if ($header->selection === 'range') {
+            $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
+                ->whereHas('transaction', function ($f) use ($header, $nama) {
+                    $f->where('nama', '=', $nama)
+                        ->where('status', '=', 1)
+                        ->whereDate('tanggal', '>=', $header->from)
+                        ->whereDate('tanggal', '<=', $header->to);
+                })->groupBy('product_id')->get();
+        } else {
+            $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
+                ->whereHas('transaction', function ($f) use ($header, $nama) {
+                    $f->where('nama', '=', $nama)
+                        ->where('status', '=', 1)
+                        ->whereDate('tanggal', '=', date('Y-m-d'));
+                })->groupBy('product_id')->get();
+        }
 
         $data = (object) array(
             'before' => $before,
@@ -98,6 +122,7 @@ class LaporanController extends Controller
         return $data;
     }
 
+    // ambil jumlah produk berdasarkan nama transaksi terkait
     public function ambilStok()
     {
         $header = (object) array(
@@ -105,18 +130,18 @@ class LaporanController extends Controller
             'to' => request('to'),
             'selection' => request('selection'),
         );
-        if ($header->selection === 'range') {
-            $stokMasuk = $this->getDetailsPeriod($header, 'PEMBELIAN');
-            $returPembelian = $this->getDetailsPeriod($header, 'RETUR PEMBELIAN');
-            $stokKeluar = $this->getDetailsPeriod($header, 'PENJUALAN');
-            $returPenjualan = $this->getDetailsPeriod($header, 'RETUR PENJUALAN');
-            $penyesuaian = $this->getDetailsPeriod($header, 'FORM PENYESUAIAN');
-        } else {
+        if ($header->selection === 'spesifik') {
             $stokMasuk = $this->getDetails($header, 'PEMBELIAN');
             $returPembelian = $this->getDetails($header, 'RETUR PEMBELIAN');
             $stokKeluar = $this->getDetails($header, 'PENJUALAN');
             $returPenjualan = $this->getDetails($header, 'RETUR PENJUALAN');
             $penyesuaian = $this->getDetails($header, 'FORM PENYESUAIAN');
+        } else {
+            $stokMasuk = $this->getDetailsPeriod($header, 'PEMBELIAN');
+            $returPembelian = $this->getDetailsPeriod($header, 'RETUR PEMBELIAN');
+            $stokKeluar = $this->getDetailsPeriod($header, 'PENJUALAN');
+            $returPenjualan = $this->getDetailsPeriod($header, 'RETUR PENJUALAN');
+            $penyesuaian = $this->getDetailsPeriod($header, 'FORM PENYESUAIAN');
         }
 
         $product = Product::orderBy(request('order_by'), request('sort'))
@@ -132,67 +157,7 @@ class LaporanController extends Controller
         ], 200);
     }
 
-    public function getStok()
-    {
-        $header = (object) array(
-            'from' => request('from'),
-            'to' => request('to'),
-            'selection' => request('selection'),
-        );
-
-        $masuk = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
-        $masuk->whereHas('transaction', function ($f) use ($header) {
-            $f->where('nama', '=', 'PEMBELIAN')
-                ->where('status', '=', 1);
-            $this->until($f, $header);
-        });
-        $stokMasuk = $masuk->groupBy('product_id')->get();
-
-        $returMa = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
-        $returMa->whereHas('transaction', function ($f) use ($header) {
-            $f->where('nama', '=', 'RETUR PEMBELIAN')
-                ->where('status', '=', 1);
-            $this->until($f, $header);
-        });
-        $returPembelian = $returMa->groupBy('product_id')->get();
-
-        $keluar = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
-        $keluar->whereHas('transaction', function ($f) use ($header) {
-            $f->where('nama', '=', 'PENJUALAN')
-                ->where('status', '=', 1);
-            $this->until($f, $header);
-        });
-        $stokKeluar = $keluar->groupBy('product_id')->get();
-
-        $returKe = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
-        $returKe->whereHas('transaction', function ($f) use ($header) {
-            $f->where('nama', '=', 'RETUR PENJUALAN')
-                ->where('status', '=', 1);
-            $this->until($f, $header);
-        });
-        $returPenjualan = $returKe->groupBy('product_id')->get();
-
-        $penyes = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
-        $penyes->whereHas('transaction', function ($f) use ($header) {
-            $f->where('nama', '=', 'FORM PENYESUAIAN')
-                ->where('status', '=', 1);
-            $this->until($f, $header);
-        });
-        $penyesuaian = $penyes->groupBy('product_id')->get();
-
-        $product = Product::orderBy(request('order_by'), request('sort'))
-            ->filter(request(['q']))->with('rak')->paginate(request('per_page'));
-
-        return new JsonResponse([
-            'product' => $product,
-            'masuk' => $stokMasuk,
-            'keluar' => $stokKeluar,
-            'returPembelian' => $returPembelian,
-            'returPenjualan' => $returPenjualan,
-            'penyesuaian' => $penyesuaian,
-        ], 200);
-    }
-
+    // lihat detail transaksi produk bersangkutan
     public function moreStok()
     {
         $header = (object) array(
@@ -210,12 +175,8 @@ class LaporanController extends Controller
         $product->details = $details;
 
         return new JsonResponse($product);
-        // return new JsonResponse([
-        //     'product' => $product,
-        //     'details' => $details
-        // ]);
     }
-
+    // Transaksi pada periode terkait hanya untuk produk terpilih
     public function stokTransaction()
     {
         $header = (object) array(
@@ -232,6 +193,7 @@ class LaporanController extends Controller
         return new JsonResponse($data);
     }
 
+    // belum dipake sepertinya
     public function cari()
     {
         $q = Transaction::filter(['product'])->with('detail_transaction.product');
@@ -239,6 +201,7 @@ class LaporanController extends Controller
         return new JsonResponse($data);
     }
 
+    // ambil jumlah hutang supplier
     public function getHutangSupplier()
     {
         $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');
@@ -264,6 +227,8 @@ class LaporanController extends Controller
 
         return new JsonResponse(['hutang' => $hutang, 'dibayar' => $dibayar, 'awal' => $supplier->saldo_awal_hutang]);
     }
+
+    // ambil jumlah piutng customer
     public function getPiutangCustomer()
     {
         $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');
@@ -289,6 +254,9 @@ class LaporanController extends Controller
         return new JsonResponse(['hutang' => $hutang, 'dibayar' => $dibayar, 'awal' => $customer->saldo_awal_piutang]);
     }
 
+    // hitung total uang yang ada di tabel transaksi
+    // jika ada supplier / customer / dokter / umum
+    // hitung transaksi milik _id terkait
     public function getTotalByDate()
     {
         $query = Transaction::query();
@@ -316,6 +284,10 @@ class LaporanController extends Controller
     }
 
 
+
+    // ambil transaksi yang ada di tabel transaksi berdasarkan periode
+    // jika ada supplier / customer / dokter / umum
+    // hitung transaksi milik _id terkait
     public function getByDate()
     {
         $query = Transaction::query();
@@ -353,6 +325,7 @@ class LaporanController extends Controller
         return TransactionResource::collection($data);
     }
 
+    //ambil beban pada periode tertentu
     public function getBebans($header, $nama)
     {
         $masuk = BebanTransaction::query()->selectRaw('beban_id, sum(sub_total) as total');
@@ -367,6 +340,7 @@ class LaporanController extends Controller
         return $data;
     }
 
+    //ambil beban pada periode dan sebelum periode tertentu
     public function getBebansPeriod($header, $nama)
     {
 
@@ -378,14 +352,24 @@ class LaporanController extends Controller
                     ->whereDate('tanggal', '<', $header->from);
             })->groupBy('beban_id')->get();
 
-        $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
-            ->whereHas('transaction', function ($f) use ($header, $nama) {
-                $f->where('nama', '=', $nama)
-                    ->where('status', '=', 1)
-                    ->where('jenis', '=', 'tunai')
-                    ->whereDate('tanggal', '>=', $header->from)
-                    ->whereDate('tanggal', '<=', $header->to);
-            })->groupBy('beban_id')->get();
+        if ($header->selection === 'range') {
+            $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
+                ->whereHas('transaction', function ($f) use ($header, $nama) {
+                    $f->where('nama', '=', $nama)
+                        ->where('status', '=', 1)
+                        ->where('jenis', '=', 'tunai')
+                        ->whereDate('tanggal', '>=', $header->from)
+                        ->whereDate('tanggal', '<=', $header->to);
+                })->groupBy('beban_id')->get();
+        } else {
+            $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
+                ->whereHas('transaction', function ($f) use ($header, $nama) {
+                    $f->where('nama', '=', $nama)
+                        ->where('status', '=', 1)
+                        ->where('jenis', '=', 'tunai')
+                        ->whereDate('tanggal', '=', date('Y-m-d'));
+                })->groupBy('beban_id')->get();
+        }
 
         $data = (object) array(
             'before' => $before,
@@ -394,6 +378,8 @@ class LaporanController extends Controller
 
         return $data->period;
     }
+
+    //ambil penerimaan pada periode tertentu
     public function getPenerimaans($header, $nama)
     {
         $masuk = DetailPenerimaan::query()->selectRaw('penerimaan_id, sum(sub_total) as total');
@@ -408,6 +394,8 @@ class LaporanController extends Controller
         return $data;
     }
 
+
+    //ambil penerimaan pada periode dan sebelum periode tertentu
     public function getPenerimaansPeriod($header, $nama)
     {
 
@@ -419,14 +407,24 @@ class LaporanController extends Controller
                     ->whereDate('tanggal', '<', $header->from);
             })->groupBy('penerimaan_id')->get();
 
-        $period = DetailPenerimaan::selectRaw('penerimaan_id, sum(sub_total) as total')
-            ->whereHas('transaction', function ($f) use ($header, $nama) {
-                $f->where('nama', '=', $nama)
-                    ->where('status', '=', 1)
-                    ->where('jenis', '=', 'tunai')
-                    ->whereDate('tanggal', '>=', $header->from)
-                    ->whereDate('tanggal', '<=', $header->to);
-            })->groupBy('penerimaan_id')->get();
+        if ($header->selection === 'range') {
+            $period = DetailPenerimaan::selectRaw('penerimaan_id, sum(sub_total) as total')
+                ->whereHas('transaction', function ($f) use ($header, $nama) {
+                    $f->where('nama', '=', $nama)
+                        ->where('status', '=', 1)
+                        ->where('jenis', '=', 'tunai')
+                        ->whereDate('tanggal', '>=', $header->from)
+                        ->whereDate('tanggal', '<=', $header->to);
+                })->groupBy('penerimaan_id')->get();
+        } else {
+            $period = DetailPenerimaan::selectRaw('penerimaan_id, sum(sub_total) as total')
+                ->whereHas('transaction', function ($f) use ($header, $nama) {
+                    $f->where('nama', '=', $nama)
+                        ->where('status', '=', 1)
+                        ->where('jenis', '=', 'tunai')
+                        ->whereDate('tanggal', '=', date('Y-m-d'));
+                })->groupBy('penerimaan_id')->get();
+        }
 
         $data = (object) array(
             'before' => $before,
@@ -435,6 +433,9 @@ class LaporanController extends Controller
 
         return $data->period;
     }
+
+
+    //ambil detail transaksi pada periode  tertentu
     public function getDetailsUang($header, $nama)
     {
         $masuk = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml,  harga');
@@ -448,7 +449,21 @@ class LaporanController extends Controller
         $data = $masuk->groupBy('product_id', 'harga')->get();
         return $data;
     }
+    //ambil pembelian TUNAI dan NON TUNAI  pada periode  tertentu
+    public function getDetailsWithCredit($header, $nama)
+    {
+        $masuk = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
+        $masuk->whereHas('transaction', function ($f) use ($header, $nama) {
+            $f->where('nama', '=', $nama)
+                ->where('status', '=', 1);
+            $this->newUntil($f, $header);
+        });
 
+        $data = $masuk->groupBy('product_id')->get();
+        return $data;
+    }
+
+    //ambil detail transaksi pada periode dan sebelum periode tertentu
     public function getDetailsPeriodUang($header, $nama)
     {
 
@@ -460,14 +475,24 @@ class LaporanController extends Controller
                     ->whereDate('tanggal', '<', $header->from);
             })->groupBy('product_id', 'harga')->get();
 
-        $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
-            ->whereHas('transaction', function ($f) use ($header, $nama) {
-                $f->where('nama', '=', $nama)
-                    ->where('status', '=', 1)
-                    ->where('jenis', '=', 'tunai')
-                    ->whereDate('tanggal', '>=', $header->from)
-                    ->whereDate('tanggal', '<=', $header->to);
-            })->groupBy('product_id', 'harga')->get();
+        if ($header->selection === 'range') {
+            $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
+                ->whereHas('transaction', function ($f) use ($header, $nama) {
+                    $f->where('nama', '=', $nama)
+                        ->where('status', '=', 1)
+                        ->where('jenis', '=', 'tunai')
+                        ->whereDate('tanggal', '>=', $header->from)
+                        ->whereDate('tanggal', '<=', $header->to);
+                })->groupBy('product_id', 'harga')->get();
+        } else {
+            $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
+                ->whereHas('transaction', function ($f) use ($header, $nama) {
+                    $f->where('nama', '=', $nama)
+                        ->where('status', '=', 1)
+                        ->where('jenis', '=', 'tunai')
+                        ->whereDate('tanggal', '=', date('Y-m-d'));
+                })->groupBy('product_id', 'harga')->get();
+        }
 
         $data = (object) array(
             'before' => $before,
@@ -477,6 +502,8 @@ class LaporanController extends Controller
         return $data;
     }
 
+
+    //ambil diskon, ongkir, dan total pada periode dan sebelum periode tertentu
     public function getDiscOngkirPeriode($header, $nama)
     {
         $before = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
@@ -484,12 +511,20 @@ class LaporanController extends Controller
             ->where('status', '=', 1)
             ->whereDate('tanggal', '<', $header->from)
             ->get();
-        $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
-            ->where('nama', '=', $nama)
-            ->where('status', '=', 1)
-            ->whereDate('tanggal', '>=', $header->from)
-            ->whereDate('tanggal', '<=', $header->to)
-            ->get();
+        if ($header->selection === 'range') {
+            $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
+                ->where('nama', '=', $nama)
+                ->where('status', '=', 1)
+                ->whereDate('tanggal', '>=', $header->from)
+                ->whereDate('tanggal', '<=', $header->to)
+                ->get();
+        } else {
+            $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
+                ->where('nama', '=', $nama)
+                ->where('status', '=', 1)
+                ->whereDate('tanggal', '=', date('Y-m-d'))
+                ->get();
+        }
 
         $data = (object) array(
             'before' => $before,
@@ -498,15 +533,19 @@ class LaporanController extends Controller
         return $data;
     }
 
-    public function getDiscOngkir($nama)
+
+    //ambil ongkir, diskon dan total pada periode tertentu
+    public function getDiscOngkir($header, $nama)
     {
         $data = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
             ->where('nama', '=', $nama)
             ->where('status', '=', 1)
-            ->whereDate('tanggal', '<=', date('Y-m-d'))
+            ->whereDate('tanggal', '=', $header->from)
             ->get();
         return $data;
     }
+
+    // ambil apa yang dutuhkan  oleh laporan keuangan
     public function laporanKeuangan()
     {
         $header = (object) array(
@@ -514,34 +553,35 @@ class LaporanController extends Controller
             'to' => request('to'),
             'selection' => request('selection'),
         );
-        // if ($header->selection === 'range') {
-        //     $pembelian = $this->getDetailsPeriodUang($header, 'PEMBELIAN');
-        //     $returPembelian = $this->getDetailsPeriodUang($header, 'RETUR PEMBELIAN');
-        //     $penjualan = $this->getDetailsPeriodUang($header, 'PENJUALAN');
-        //     $returPenjualan = $this->getDetailsPeriodUang($header, 'RETUR PENJUALAN');
-        //     $beban = $this->getBebansPeriod($header, 'BEBAN');
-        //     $penerimaan = $this->getPenerimaansPeriod($header, 'PENERIMAAN');
-        // } else {
-        $pembelian = $this->getDetailsUang($header, 'PEMBELIAN');
-        $returPembelian = $this->getDetailsUang($header, 'RETUR PEMBELIAN');
-        $penjualan = $this->getDetailsUang($header, 'PENJUALAN');
-        $returPenjualan = $this->getDetailsUang($header, 'RETUR PENJUALAN');
-        $beban = $this->getBebans($header, 'BEBAN');
-        $penerimaan = $this->getPenerimaans($header, 'PENERIMAAN');
-        // }
+        if ($header->selection === 'spesifik') {
+            $ongkir = $this->getDiscOngkir($header, 'PEMBELIAN');
+            $pembelian = $this->getDetailsUang($header, 'PEMBELIAN');
+            $returPembelian = $this->getDetailsUang($header, 'RETUR PEMBELIAN');
+            $penjualan = $this->getDetailsUang($header, 'PENJUALAN');
+            $returPenjualan = $this->getDetailsUang($header, 'RETUR PENJUALAN');
+            $beban = $this->getBebans($header, 'BEBAN');
+            $penerimaan = $this->getPenerimaans($header, 'PENERIMAAN');
+        } else {
+            $ongkir = $this->getDiscOngkirPeriode($header, 'PEMBELIAN');
+            $pembelian = $this->getDetailsPeriodUang($header, 'PEMBELIAN');
+            $returPembelian = $this->getDetailsPeriodUang($header, 'RETUR PEMBELIAN');
+            $penjualan = $this->getDetailsPeriodUang($header, 'PENJUALAN');
+            $returPenjualan = $this->getDetailsPeriodUang($header, 'RETUR PENJUALAN');
+            $beban = $this->getBebansPeriod($header, 'BEBAN');
+            $penerimaan = $this->getPenerimaansPeriod($header, 'PENERIMAAN');
+        }
         $product = Product::orderBy(request('order_by'), request('sort'))
             ->filter(request(['q']))->with('rak')->paginate(request('per_page'));
 
-        // hpp
-        if ($header->selection === 'range') {
-            $ongkir = $this->getDiscOngkirPeriode($header, 'PEMBELIAN');
-            $hitungPembelian = $this->getDetailsPeriodUang($header, 'PEMBELIAN');
-        } else {
-            $ongkir = $this->getDiscOngkir('PEMBELIAN');
-            $hitungPembelian = $this->getDetailsUang($header, 'PEMBELIAN');
-        }
+        // hpp = pemelian bersih + persediaan awal - persediaan akhir
+        // pembelian bersih = pembelian tunai dan kredit + biaya (mis: ongkir) - potongan pembelian - retur pembelian
+        // persediaan awal = nilai barang tersedia di periode awal neraca akuntansi
+        // persediaan akhir = nilai barang tersedia di akhir periode transaksi
 
 
+        $totalOngkir = $this->total($header, 'PEMBELIAN');
+        $pembelianDgKredit = $this->getDetailsWithCredit($header, 'PEMBELIAN');
+        $stok = $this->ambilAllStok();
         return new JsonResponse([
             'product' => $product,
             'pembelian' => $pembelian,
@@ -550,9 +590,55 @@ class LaporanController extends Controller
             'returPenjualan' => $returPenjualan,
             'beban' => $beban,
             'penerimaan' => $penerimaan,
-            'hitungPembelian' => $hitungPembelian,
+            // 'hitungPembelian' => $hitungPembelian,
             'ongkir' => $ongkir,
+            'totalOngkir' => $totalOngkir,
+            'pembelianDgKredit' => $pembelianDgKredit,
+            'stok' => $stok,
 
         ], 200);
+    }
+    public function total($header, $nama)
+    {
+        $query = Transaction::query();
+        $query->selectRaw('sum(total) as jml, sum(potongan) as diskon, sum(ongkir) as ongkos')
+            ->where('nama', '=', $nama)
+            ->where('status', '=', 1);
+        $this->until($query, $header);
+        $data = $query->get();
+        return $data;
+    }
+    public function ambilAllStok()
+    {
+        $header = (object) array(
+            'from' => request('from'),
+            'to' => request('to'),
+            'selection' => request('selection'),
+        );
+        if ($header->selection === 'spesifik') {
+            $stokMasuk = $this->getDetails($header, 'PEMBELIAN');
+            $returPembelian = $this->getDetails($header, 'RETUR PEMBELIAN');
+            $stokKeluar = $this->getDetails($header, 'PENJUALAN');
+            $returPenjualan = $this->getDetails($header, 'RETUR PENJUALAN');
+            $penyesuaian = $this->getDetails($header, 'FORM PENYESUAIAN');
+        } else {
+            $stokMasuk = $this->getDetailsPeriod($header, 'PEMBELIAN');
+            $returPembelian = $this->getDetailsPeriod($header, 'RETUR PEMBELIAN');
+            $stokKeluar = $this->getDetailsPeriod($header, 'PENJUALAN');
+            $returPenjualan = $this->getDetailsPeriod($header, 'RETUR PENJUALAN');
+            $penyesuaian = $this->getDetailsPeriod($header, 'FORM PENYESUAIAN');
+        }
+
+        $product = Product::orderBy(request('order_by'), request('sort'))
+            ->get();
+        $data = (object) array(
+            'product' => $product,
+            'masuk' => $stokMasuk,
+            'keluar' => $stokKeluar,
+            'returPembelian' => $returPembelian,
+            'returPenjualan' => $returPenjualan,
+            'penyesuaian' => $penyesuaian,
+        );
+        return $data;
     }
 }
