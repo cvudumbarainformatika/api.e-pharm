@@ -105,12 +105,19 @@ class LaporanController extends Controller
                         ->whereDate('tanggal', '>=', $header->from)
                         ->whereDate('tanggal', '<=', $header->to);
                 })->groupBy('product_id')->get();
-        } else {
+        } else if ($header->selection === 'tillToday') {
             $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
                 ->whereHas('transaction', function ($f) use ($header, $nama) {
                     $f->where('nama', '=', $nama)
                         ->where('status', '=', 1)
                         ->whereDate('tanggal', '=', date('Y-m-d'));
+                })->groupBy('product_id')->get();
+        } else {
+            $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
+                ->whereHas('transaction', function ($f) use ($header, $nama) {
+                    $f->where('nama', '=', $nama)
+                        ->where('status', '=', 1)
+                        ->whereDate('tanggal', '=', $header->from);
                 })->groupBy('product_id')->get();
         }
 
@@ -130,19 +137,19 @@ class LaporanController extends Controller
             'to' => request('to'),
             'selection' => request('selection'),
         );
-        if ($header->selection === 'spesifik') {
-            $stokMasuk = $this->getDetails($header, 'PEMBELIAN');
-            $returPembelian = $this->getDetails($header, 'RETUR PEMBELIAN');
-            $stokKeluar = $this->getDetails($header, 'PENJUALAN');
-            $returPenjualan = $this->getDetails($header, 'RETUR PENJUALAN');
-            $penyesuaian = $this->getDetails($header, 'FORM PENYESUAIAN');
-        } else {
-            $stokMasuk = $this->getDetailsPeriod($header, 'PEMBELIAN');
-            $returPembelian = $this->getDetailsPeriod($header, 'RETUR PEMBELIAN');
-            $stokKeluar = $this->getDetailsPeriod($header, 'PENJUALAN');
-            $returPenjualan = $this->getDetailsPeriod($header, 'RETUR PENJUALAN');
-            $penyesuaian = $this->getDetailsPeriod($header, 'FORM PENYESUAIAN');
-        }
+        // if ($header->selection === 'spesifik') {
+        //     $stokMasuk = $this->getDetails($header, 'PEMBELIAN');
+        //     $returPembelian = $this->getDetails($header, 'RETUR PEMBELIAN');
+        //     $stokKeluar = $this->getDetails($header, 'PENJUALAN');
+        //     $returPenjualan = $this->getDetails($header, 'RETUR PENJUALAN');
+        //     $penyesuaian = $this->getDetails($header, 'FORM PENYESUAIAN');
+        // } else {
+        $stokMasuk = $this->getDetailsPeriod($header, 'PEMBELIAN');
+        $returPembelian = $this->getDetailsPeriod($header, 'RETUR PEMBELIAN');
+        $stokKeluar = $this->getDetailsPeriod($header, 'PENJUALAN');
+        $returPenjualan = $this->getDetailsPeriod($header, 'RETUR PENJUALAN');
+        $penyesuaian = $this->getDetailsPeriod($header, 'FORM PENYESUAIAN');
+        // }
 
         $product = Product::orderBy(request('order_by'), request('sort'))
             ->filter(request(['q']))->with('rak')->paginate(request('per_page'));
@@ -361,13 +368,21 @@ class LaporanController extends Controller
                         ->whereDate('tanggal', '>=', $header->from)
                         ->whereDate('tanggal', '<=', $header->to);
                 })->groupBy('beban_id')->get();
-        } else {
+        } else if ($header->selection === 'tillToday') {
             $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
                 ->whereHas('transaction', function ($f) use ($header, $nama) {
                     $f->where('nama', '=', $nama)
                         ->where('status', '=', 1)
                         ->where('jenis', '=', 'tunai')
                         ->whereDate('tanggal', '=', date('Y-m-d'));
+                })->groupBy('beban_id')->get();
+        } else {
+            $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
+                ->whereHas('transaction', function ($f) use ($header, $nama) {
+                    $f->where('nama', '=', $nama)
+                        ->where('status', '=', 1)
+                        ->where('jenis', '=', 'tunai')
+                        ->whereDate('tanggal', '=', $header->from);
                 })->groupBy('beban_id')->get();
         }
 
@@ -416,13 +431,21 @@ class LaporanController extends Controller
                         ->whereDate('tanggal', '>=', $header->from)
                         ->whereDate('tanggal', '<=', $header->to);
                 })->groupBy('penerimaan_id')->get();
-        } else {
+        } else if ($header->selection === 'tillToday') {
             $period = DetailPenerimaan::selectRaw('penerimaan_id, sum(sub_total) as total')
                 ->whereHas('transaction', function ($f) use ($header, $nama) {
                     $f->where('nama', '=', $nama)
                         ->where('status', '=', 1)
                         ->where('jenis', '=', 'tunai')
                         ->whereDate('tanggal', '=', date('Y-m-d'));
+                })->groupBy('penerimaan_id')->get();
+        } else {
+            $period = DetailPenerimaan::selectRaw('penerimaan_id, sum(sub_total) as total')
+                ->whereHas('transaction', function ($f) use ($header, $nama) {
+                    $f->where('nama', '=', $nama)
+                        ->where('status', '=', 1)
+                        ->where('jenis', '=', 'tunai')
+                        ->whereDate('tanggal', '=', $header->from);
                 })->groupBy('penerimaan_id')->get();
         }
 
@@ -484,13 +507,21 @@ class LaporanController extends Controller
                         ->whereDate('tanggal', '>=', $header->from)
                         ->whereDate('tanggal', '<=', $header->to);
                 })->groupBy('product_id', 'harga')->get();
-        } else {
+        } else if ($header->selection === 'tillToday') {
             $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
                 ->whereHas('transaction', function ($f) use ($header, $nama) {
                     $f->where('nama', '=', $nama)
                         ->where('status', '=', 1)
                         ->where('jenis', '=', 'tunai')
                         ->whereDate('tanggal', '=', date('Y-m-d'));
+                })->groupBy('product_id', 'harga')->get();
+        } else {
+            $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
+                ->whereHas('transaction', function ($f) use ($header, $nama) {
+                    $f->where('nama', '=', $nama)
+                        ->where('status', '=', 1)
+                        ->where('jenis', '=', 'tunai')
+                        ->whereDate('tanggal', '=', $header->from);
                 })->groupBy('product_id', 'harga')->get();
         }
 
@@ -518,11 +549,17 @@ class LaporanController extends Controller
                 ->whereDate('tanggal', '>=', $header->from)
                 ->whereDate('tanggal', '<=', $header->to)
                 ->get();
-        } else {
+        } else if ($header->selection === 'tillToday') {
             $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
                 ->where('nama', '=', $nama)
                 ->where('status', '=', 1)
                 ->whereDate('tanggal', '=', date('Y-m-d'))
+                ->get();
+        } else {
+            $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
+                ->where('nama', '=', $nama)
+                ->where('status', '=', 1)
+                ->whereDate('tanggal', '=', $header->from)
                 ->get();
         }
 
@@ -553,7 +590,7 @@ class LaporanController extends Controller
             'to' => request('to'),
             'selection' => request('selection'),
         );
-        if ($header->selection === 'spesifik') {
+        if ($header->selection === 'apem') {
             $ongkir = $this->getDiscOngkir($header, 'PEMBELIAN');
             $pembelian = $this->getDetailsUang($header, 'PEMBELIAN');
             $returPembelian = $this->getDetailsUang($header, 'RETUR PEMBELIAN');
@@ -615,19 +652,19 @@ class LaporanController extends Controller
             'to' => request('to'),
             'selection' => request('selection'),
         );
-        if ($header->selection === 'spesifik') {
-            $stokMasuk = $this->getDetails($header, 'PEMBELIAN');
-            $returPembelian = $this->getDetails($header, 'RETUR PEMBELIAN');
-            $stokKeluar = $this->getDetails($header, 'PENJUALAN');
-            $returPenjualan = $this->getDetails($header, 'RETUR PENJUALAN');
-            $penyesuaian = $this->getDetails($header, 'FORM PENYESUAIAN');
-        } else {
-            $stokMasuk = $this->getDetailsPeriod($header, 'PEMBELIAN');
-            $returPembelian = $this->getDetailsPeriod($header, 'RETUR PEMBELIAN');
-            $stokKeluar = $this->getDetailsPeriod($header, 'PENJUALAN');
-            $returPenjualan = $this->getDetailsPeriod($header, 'RETUR PENJUALAN');
-            $penyesuaian = $this->getDetailsPeriod($header, 'FORM PENYESUAIAN');
-        }
+        // if ($header->selection === 'spesifik') {
+        //     $stokMasuk = $this->getDetails($header, 'PEMBELIAN');
+        //     $returPembelian = $this->getDetails($header, 'RETUR PEMBELIAN');
+        //     $stokKeluar = $this->getDetails($header, 'PENJUALAN');
+        //     $returPenjualan = $this->getDetails($header, 'RETUR PENJUALAN');
+        //     $penyesuaian = $this->getDetails($header, 'FORM PENYESUAIAN');
+        // } else {
+        $stokMasuk = $this->getDetailsPeriod($header, 'PEMBELIAN');
+        $returPembelian = $this->getDetailsPeriod($header, 'RETUR PEMBELIAN');
+        $stokKeluar = $this->getDetailsPeriod($header, 'PENJUALAN');
+        $returPenjualan = $this->getDetailsPeriod($header, 'RETUR PENJUALAN');
+        $penyesuaian = $this->getDetailsPeriod($header, 'FORM PENYESUAIAN');
+        // }
 
         $product = Product::orderBy(request('order_by'), request('sort'))
             ->get();
