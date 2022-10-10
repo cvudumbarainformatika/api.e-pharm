@@ -52,7 +52,7 @@ class LaporanController extends Controller
     public function newUntil($query, $header)
     {
         if ($header->selection === 'tillToday') {
-            $query->whereDate('tanggal', '=', date('Y-m-d')); // bedanya disini
+            $query->whereMonth('tanggal', '=', date('m')); // bedanya disini
         } else if ($header->selection === 'spesifik') {
             $query->whereDate('tanggal', '=', $header->from);
         } else if ($header->selection === 'range') {
@@ -96,7 +96,7 @@ class LaporanController extends Controller
                 ->whereHas('transaction', function ($f) use ($header, $nama) {
                     $f->where('nama', '=', $nama)
                         ->where('status', '=', 1)
-                        ->whereDate('tanggal', '=', date('Y-m-d'));
+                        ->whereMonth('tanggal', '=', date('m'));
                 })->groupBy('product_id')->get();
         } else {
             $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
@@ -155,7 +155,7 @@ class LaporanController extends Controller
         $q = DetailTransaction::query()->where('product_id', '=', request('id'))
             ->whereHas('transaction', function ($n) use ($header) {
                 $n->where('status', '=', 1);
-                $this->until($n, $header);
+                $this->newUntil($n, $header);
             });
         $details = $q->orderBy(request('order_by'), request('sort'))->paginate(request('per_page'));
         $product = Product::find(request('id'));
@@ -172,7 +172,7 @@ class LaporanController extends Controller
             'selection' => request('selection'),
         );
         $q = Transaction::query()->where('status', '=', 1);
-        $this->until($q, $header);
+        $this->newUntil($q, $header);
         $q->whereHas('detail_transaction', function ($m) {
             $m->where('product_id', '=', request('id'));
         });;
@@ -340,7 +340,7 @@ class LaporanController extends Controller
                     $f->where('nama', '=', $nama)
                         ->where('status', '=', 1)
                         ->where('jenis', '=', 'tunai')
-                        ->whereDate('tanggal', '=', date('Y-m-d'));
+                        ->whereMonth('tanggal', '=', date('m'));
                 })->groupBy('beban_id')->get();
         } else {
             $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
@@ -387,7 +387,7 @@ class LaporanController extends Controller
                     $f->where('nama', '=', $nama)
                         ->where('status', '=', 1)
                         ->where('jenis', '=', 'tunai')
-                        ->whereDate('tanggal', '=', date('Y-m-d'));
+                        ->whereMonth('tanggal', '=', date('m'));
                 })->groupBy('penerimaan_id')->get();
         } else {
             $period = DetailPenerimaan::selectRaw('penerimaan_id, sum(sub_total) as total')
@@ -448,7 +448,7 @@ class LaporanController extends Controller
                     $f->where('nama', '=', $nama)
                         ->where('status', '=', 1)
                         ->where('jenis', '=', 'tunai')
-                        ->whereDate('tanggal', '=', date('Y-m-d'));
+                        ->whereMonth('tanggal', '=', date('m'));
                 })->groupBy('product_id', 'harga')->get();
         } else {
             $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
@@ -488,7 +488,7 @@ class LaporanController extends Controller
             $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
                 ->where('nama', '=', $nama)
                 ->where('status', '=', 1)
-                ->whereDate('tanggal', '=', date('Y-m-d'))
+                ->whereMonth('tanggal', '=', date('m'))
                 ->get();
         } else {
             $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
@@ -558,7 +558,7 @@ class LaporanController extends Controller
         $query->selectRaw('sum(total) as jml, sum(potongan) as diskon, sum(ongkir) as ongkos')
             ->where('nama', '=', $nama)
             ->where('status', '=', 1);
-        $this->until($query, $header);
+        $this->newUntil($query, $header);
         $data = $query->get();
         return $data;
     }
