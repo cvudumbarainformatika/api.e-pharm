@@ -72,7 +72,8 @@ class User extends Authenticatable implements JWTSubject
     public function scopeFilter($search, array $reqs)
     {
         $search->when($reqs['q'] ?? false, function ($search, $query) {
-            return $search->where('name', 'LIKE', '%' . $query . '%');
+            return $search->where('name', 'LIKE', '%' . $query . '%')
+                ->where('role', 'LIKE', '%' . $query . '%');
         });
 
         // $search->when($reqs['jenis_kepegawaian_id'] ?? false, function ($search, $query) {

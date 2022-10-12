@@ -6,6 +6,7 @@ use App\Http\Resources\v1\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -53,15 +54,78 @@ class AuthController extends Controller
             'password' => 'required|string|confirmed|min:6'
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors()->toJson(), 422);
         }
-        $user = User::create(array_merge($validator->validated(), ['password' => bcrypt($request->password)]));
+        $level = 4;
+        switch ($request->role) {
+            case 'kasir':
+                $level = 4;
+                break;
+            case 'admin':
+                $level = 3;
+                break;
+            case 'supervisor':
+                $level = 2;
+                break;
+            case 'owner':
+                $level = 1;
+                break;
 
+            default:
+                $level = 4;
+                break;
+        }
+        $user = User::create(array_merge($validator->validated(), ['password' => bcrypt($request->password), 'level' => $level]));
+
+        if (!$user) {
+            return new JsonResponse(['message' => 'registrasi gagal'], 204);
+        }
         return response()->json([
             'message' => 'User successfully registered',
             'user' => $user,
             // 'valid' => array_merge($validator->validated(), ['password' => bcrypt($request->password)])
         ], 201);
+    }
+    public function update(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|between:2,100',
+            'email' => 'required|string|email|max:100|unique:users',
+            'role' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 422);
+        }
+        $level = 4;
+        switch ($request->role) {
+            case 'kasir':
+                $level = 4;
+                break;
+            case 'admin':
+                $level = 3;
+                break;
+            case 'supervisor':
+                $level = 2;
+                break;
+            case 'owner':
+                $level = 1;
+                break;
+
+            default:
+                $level = 4;
+                break;
+        }
+        $user = User::find($request->id);
+        $user->update(array_merge($validator->validated(), ['level' => $level]));
+
+        if (!$user) {
+            return new JsonResponse(['message' => 'update gagal'], 204);
+        }
+        return response()->json([
+            'message' => 'User Berhasil di update',
+            'user' => $user,
+            // 'valid' => array_merge($validator->validated(), ['password' => bcrypt($request->password)])
+        ], 200);
     }
     /**
      * Log the user out (Invalidate the token).
@@ -94,7 +158,7 @@ class AuthController extends Controller
 
     public function userAll()
     {
-        $data = User::paginate();
+        $data = User::filter(request(['q']))->latest()->paginate(request('per_page'));
         return UserResource::collection($data);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Api\v1\SettingController;
 use App\Models\DetailTransaction;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
@@ -35,19 +36,31 @@ class AutogeneratorController extends Controller
     }
     public function coba()
     {
+        $menu = ["menu" => [
+            ["name" => "dashboard", "icon" => "icon-mat-dashboard", "link" => "dashboard"],
+            ["name" => "master", "icon" => "icon-mat-dataset", "link" => "master"],
+            ["name" => "transaksi", "icon" => "icon-mat-sync_alt", "link" => "transaksi"],
+            ["name" => "history", "icon" => "icon-mat-history", "link" => "history"],
+            ["name" => "laporan", "icon" => "icon-mat-description", "link" => "laporan"],
+            ["name" => "setting", "icon" => "icon-mat-settings", "link" => "setting"]
+        ]];
+
+        // $data = SettingController::simpanMenu($menu);
+        return new JsonResponse($menu);
+
         // $q = Transaction::query()->where('status', '=', 1);
         // $this->until($q, 'range', '2022-09-22', '2022-09-24');
         // $q->whereHas('detail_transaction', function ($m) {
         //     $m->where('product_id', '=', 2);
         // });
         // $data = $q->with('detail_transaction')->paginate(15);
-        $masuk = DetailTransaction::all();
+        // $masuk = DetailTransaction::all();
         // ->with('transaction', 'product');
 
-        $data = collect($masuk)->except(['created_at', 'updated_at', 'uuid', 'id']);
+        // $data = collect($masuk)->except(['created_at', 'updated_at', 'uuid', 'id']);
         // $grup = $data->only(['created_at', 'updated_at', 'uuid', 'id']);
         // return $grup->all();
-        return $data;
+        // return $data;
     }
 
     public function cari()
