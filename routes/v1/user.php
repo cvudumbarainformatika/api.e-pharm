@@ -13,4 +13,5 @@ Route::group([
     Route::get('/profile', [AuthController::class, 'userProfile']);
     Route::get('/all', [AuthController::class, 'userAll']);
     Route::get('/kasir', [AuthController::class, 'userKasir']);
+    Route::post('/update', [AuthController::class, 'update']);
 });

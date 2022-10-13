@@ -8,6 +8,7 @@ use App\Models\Setting\Menu;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class SettingController extends Controller
 {
@@ -15,24 +16,37 @@ class SettingController extends Controller
     public function getInfo()
     {
         $data = Info::get();
-        return new JsonResponse($data);
+        return new JsonResponse($data, 200);
     }
 
     public function storeInfo(Request $request)
     {
-        return new JsonResponse((array) $request->all());
+        // return new JsonResponse((array) $request->all());
+        $data = null;
+        $first = $request->nama;
+        $second = $request->all();
+        unset($second['nama']);
         try {
             DB::beginTransaction();
-            Info::updatOrCreate(
-                ['id' => $request->id],
-                $request->all()
-            );
+            $valid = Validator::make($request->all(), [
+                'nama' => 'required'
+            ]);
+            if ($valid->fails()) {
+                return new JsonResponse($valid->errors(), 422);
+            }
+            $data = Info::updateOrCreate(['nama' => $first], $second);
 
             DB::commit();
             return new JsonResponse(['message' => 'sukses'], 201);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return new JsonResponse(['message' => 'error', 'error' => $e], 500);
+            return new JsonResponse([
+                'message' => 'error',
+                'error' => $e,
+                'first' => $first,
+                'second' => $second,
+                'data' => $data,
+            ], 500);
         }
     }
     // bagian menu
@@ -47,16 +61,26 @@ class SettingController extends Controller
         // return new JsonResponse((array) $request->all());
         try {
             DB::beginTransaction();
-            if ($request->has('id')) {
-                $data = Menu::find($request->id);
-                $data->update($request->all());
-            } else {
-                Menu::create($request->all());
+            $valid = Validator::make($request->all(), [
+                'nama' => 'required'
+            ]);
+            if ($valid->fails()) {
+                return new JsonResponse($valid->errors(), 422);
             }
+            Menu::updateOrCreate(
+                ['nama' => $request->nama],
+                $request->all()
+            );
+            // if ($request->has('id')) {
+            //     $data = Menu::find($request->id);
+            //     $data->update($request->all());
+            // } else {
+            //     Menu::create($request->all());
+            // }
 
             DB::commit();
             return new JsonResponse(['message' => 'sukses'], 201);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             return new JsonResponse(['message' => 'error', 'error' => $e], 500);
         }
@@ -65,12 +89,12 @@ class SettingController extends Controller
     {
         // return (array) $request;
 
-        $data = Menu::updatOrCreate(
-            ['id' => $request->id],
+        $data = Info::updatOrCreate(
+            ['nama' => $request['nama']],
             $request
         );
         if (!$data) {
-            return new JsonResponse(['message' => 'gagal'], 500);
+            return new JsonResponse(['message' => 'gagal'], 204);
         }
         return new JsonResponse(['message' => 'good'], 201);
 

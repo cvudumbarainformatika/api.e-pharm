@@ -11,7 +11,9 @@ class Info extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
-        'info' => 'array',
-        'theme' => 'array',
+        'infos' => 'array',
+        'themes' => 'array',
+        'menus' => 'array',
+        'levels' => 'array',
     ];
 }

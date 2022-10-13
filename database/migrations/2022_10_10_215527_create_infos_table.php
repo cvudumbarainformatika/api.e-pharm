@@ -15,8 +15,11 @@ class CreateInfosTable extends Migration
     {
         Schema::create('infos', function (Blueprint $table) {
             $table->id();
-            $table->json('info')->nullable();
-            $table->json('theme')->nullable();
+            $table->string('nama');
+            $table->json('menus')->nullable();
+            $table->json('infos')->nullable();
+            $table->json('themes')->nullable();
+            $table->json('levels')->nullable();
             $table->timestamps();
         });
     }

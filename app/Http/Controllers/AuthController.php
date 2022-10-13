@@ -86,11 +86,12 @@ class AuthController extends Controller
             // 'valid' => array_merge($validator->validated(), ['password' => bcrypt($request->password)])
         ], 201);
     }
+
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:users',
+            'name' => 'required',
+            'email' => 'required',
             'role' => 'required',
         ]);
         if ($validator->fails()) {

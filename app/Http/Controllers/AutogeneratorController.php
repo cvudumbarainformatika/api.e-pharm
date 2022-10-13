@@ -36,17 +36,19 @@ class AutogeneratorController extends Controller
     }
     public function coba()
     {
-        $menu = ["menu" => [
+        $menu =  [
             ["name" => "dashboard", "icon" => "icon-mat-dashboard", "link" => "dashboard"],
             ["name" => "master", "icon" => "icon-mat-dataset", "link" => "master"],
             ["name" => "transaksi", "icon" => "icon-mat-sync_alt", "link" => "transaksi"],
             ["name" => "history", "icon" => "icon-mat-history", "link" => "history"],
             ["name" => "laporan", "icon" => "icon-mat-description", "link" => "laporan"],
             ["name" => "setting", "icon" => "icon-mat-settings", "link" => "setting"]
-        ]];
-
-        // $data = SettingController::simpanMenu($menu);
-        return new JsonResponse($menu);
+        ];
+        $nama = 'eAchy';
+        $masuk = ['nama' => $nama, 'menu' => $menu];
+        // return new JsonResponse($masuk['nama']);
+        $data = SettingController::simpanMenu($masuk);
+        return new JsonResponse($data);
 
         // $q = Transaction::query()->where('status', '=', 1);
         // $this->until($q, 'range', '2022-09-22', '2022-09-24');
