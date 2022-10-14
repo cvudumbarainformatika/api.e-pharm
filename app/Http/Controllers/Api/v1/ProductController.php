@@ -48,17 +48,15 @@ class ProductController extends Controller
                     'harga_jual_umum' => 'required',
                     'harga_jual_resep' => 'required',
                     'harga_jual_cust' => 'required',
-                    'stok_awal' => 'required',
                     'limit_stok' => 'required',
                     'rak_id' => 'required',
                     'kategori_id' => 'required',
-                    'expired' => 'required',
                 ]);
                 if ($validatedData->fails()) {
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Product::create($request->only(['nama', 'barcode', 'merk_id', 'satuan_id', 'harga_beli', 'harga_jual_umum', 'harga_jual_resep', 'harga_jual_cust', 'stok_awal', 'limit_stok', 'rak_id', 'kategori_id', 'expired']));
+                Product::create($request->only(['nama', 'barcode', 'merk_id', 'satuan_id', 'harga_beli', 'harga_jual_umum', 'harga_jual_resep', 'harga_jual_cust', 'stok_awal', 'limit_stok', 'rak_id', 'kategori_id']));
                 // Product::create([
                 //     'nama' => $request->name
                 // ]);
@@ -66,21 +64,20 @@ class ProductController extends Controller
                 // $auth->log("Memasukkan data Product {$user->name}");
             } else {
                 $kategori = Product::find($request->id);
-                $kategori->update([
-                    'barcode' => $request->barcode,
-                    'nama' => $request->nama,
-                    'merk_id' => $request->merk_id,
-                    'satuan_id' => $request->satuan_id,
-                    'harga_beli' => $request->harga_beli,
-                    'harga_jual_umum' => $request->harga_jual_umum,
-                    'harga_jual_resep' => $request->harga_jual_resep,
-                    'harga_jual_cust' => $request->harga_jual_cust,
-                    'stok_awal' => $request->stok_awal,
-                    'limit_stok' => $request->limit_stok,
-                    'rak_id' => $request->rak_id,
-                    'kategori_id' => $request->kategori_id,
-                    'expired' => $request->expired,
-                ]);
+                $kategori->update($request->only(
+                    'barcode',
+                    'nama',
+                    'merk_id',
+                    'satuan_id',
+                    'harga_beli',
+                    'harga_jual_umum',
+                    'harga_jual_resep',
+                    'harga_jual_cust',
+                    'stok_awal',
+                    'limit_stok',
+                    'rak_id',
+                    'kategori_id',
+                ));
 
                 // $auth->log("Merubah data Product {$user->name}");
             }
