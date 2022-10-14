@@ -215,7 +215,7 @@ class DatabaseSeeder extends Seeder
         ]);
         Info::create([
             'nama' => 'eAchy',
-            'info' => [
+            'infos' => [
                 'nama' => 'apotek sehat selalu',
                 'alamat' => 'alamat belum di isi',
                 'tlp' => 'nomor telepon belum ada'
