@@ -15,16 +15,22 @@ class ProductController extends Controller
     {
         // $data = Product::paginate();
         $data = Product::orderBy(request('order_by'), request('sort'))
+            ->with('rak:id,nama', 'merk:id,nama', 'satuan:id,nama', 'satuanBesar:id,nama', 'kategori:id,nama')
             ->filter(request(['q']))
             ->paginate(request('per_page'));
-        $data->load('kategori:id,nama');
-        $data->load('satuan:id,nama');
-        $data->load('rak:id,nama');
-        $data->load('merk:id,nama');
+        // $data->load('kategori:id,nama');
+        // $data->load('satuan:id,nama');
+        // $data->load('rak:id,nama');
+        // $data->load('merk:id,nama');
         return ProductResource::collection($data);
     }
 
     public function produk()
+    {
+        $data = Product::latest()->paginate(request('per_page'));
+        return ProductResource::collection($data);
+    }
+    public function allProduk()
     {
         $data = Product::latest()->paginate(request('per_page'));
         return ProductResource::collection($data);
@@ -44,6 +50,8 @@ class ProductController extends Controller
                     'nama' => 'required',
                     'merk_id' => 'required',
                     'satuan_id' => 'required',
+                    'pengali' => 'required',
+                    'satuan_id' => 'required',
                     'harga_beli' => 'required',
                     'harga_jual_umum' => 'required',
                     'harga_jual_resep' => 'required',
@@ -56,7 +64,22 @@ class ProductController extends Controller
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Product::create($request->only(['nama', 'barcode', 'merk_id', 'satuan_id', 'harga_beli', 'harga_jual_umum', 'harga_jual_resep', 'harga_jual_cust', 'stok_awal', 'limit_stok', 'rak_id', 'kategori_id']));
+                Product::create($request->only([
+                    'nama',
+                    'barcode',
+                    'merk_id',
+                    'satuan_id',
+                    'pengali',
+                    'satuan_besar_id',
+                    'harga_beli',
+                    'harga_jual_umum',
+                    'harga_jual_resep',
+                    'harga_jual_cust',
+                    'stok_awal',
+                    'limit_stok',
+                    'rak_id',
+                    'kategori_id'
+                ]));
                 // Product::create([
                 //     'nama' => $request->name
                 // ]);
@@ -69,6 +92,8 @@ class ProductController extends Controller
                     'nama',
                     'merk_id',
                     'satuan_id',
+                    'pengali',
+                    'satuan_besar_id',
                     'harga_beli',
                     'harga_jual_umum',
                     'harga_jual_resep',

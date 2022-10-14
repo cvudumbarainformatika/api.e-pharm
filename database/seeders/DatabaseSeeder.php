@@ -15,6 +15,7 @@ use App\Models\Perusahaan;
 use App\Models\Product;
 use App\Models\Rak;
 use App\Models\Satuan;
+use App\Models\SatuanBesar;
 use App\Models\Supplier;
 use App\Models\Transaction;
 // use App\Models\Transaction::detail_transaction();
@@ -36,37 +37,48 @@ class DatabaseSeeder extends Seeder
             'name' => 'root',
             'email' => 'root@app.com',
             'role' => 'root',
+            'level' => 1,
             'password' => bcrypt('sekarep123456789')
         ]);
         User::create([
-            'name' => 'admin',
-            'email' => 'admin@app.com',
-            'role' => 'admin',
-            'password' => bcrypt('123456789')
+            'name' => 'owner',
+            'email' => 'owner@app.com',
+            'role' => 'owner',
+            'level' => 2,
+            'password' => bcrypt('12345')
         ]);
         User::create([
             'name' => 'kasir',
             'email' => 'kasir@app.com',
             'role' => 'kasir',
-            'password' => bcrypt('123456789')
+            'level' => 3,
+            'password' => bcrypt('12345')
         ]);
         User::create([
             'name' => 'kasir2',
             'email' => 'kasir2@app.com',
             'role' => 'kasir',
-            'password' => bcrypt('123456789')
+            'level' => 4,
+            'password' => bcrypt('12345')
         ]);
         User::create([
             'name' => 'kasir3',
             'email' => 'kasir3@app.com',
             'role' => 'kasir',
-            'password' => bcrypt('123456789')
+            'level' => 4,
+            'password' => bcrypt('12345')
         ]);
         Satuan::create([
             'nama' => 'PCS'
         ]);
         Satuan::create([
             'nama' => 'KAPLET'
+        ]);
+        SatuanBesar::create([
+            'nama' => 'KARDUS'
+        ]);
+        SatuanBesar::create([
+            'nama' => 'KOTAK'
         ]);
         Dokter::create([
             'nama' => 'Sugeng',
@@ -109,6 +121,8 @@ class DatabaseSeeder extends Seeder
             'nama' => 'Paracetamol',
             'merk_id' => 1,
             'satuan_id' => 1,
+            'pengali' => 10,
+            'satuan_besar_id' => 1,
             'harga_beli' => 5500,
             'harga_jual_umum' => 8000,
             'harga_jual_resep' => 9000,
@@ -122,6 +136,8 @@ class DatabaseSeeder extends Seeder
             'nama' => 'Sanmol',
             'merk_id' => 1,
             'satuan_id' => 1,
+            'pengali' => 10,
+            'satuan_besar_id' => 1,
             'harga_beli' => 7500,
             'harga_jual_umum' => 10000,
             'harga_jual_resep' => 11000,
@@ -135,6 +151,8 @@ class DatabaseSeeder extends Seeder
             'nama' => 'Vitamin C',
             'merk_id' => 2,
             'satuan_id' => 2,
+            'pengali' => 10,
+            'satuan_besar_id' => 2,
             'harga_beli' => 4500,
             'harga_jual_umum' => 5500,
             'harga_jual_resep' => 7000,
@@ -168,7 +186,7 @@ class DatabaseSeeder extends Seeder
             'nama' => 'BIAYA LAIN-LAIN'
         ]);
         Beban::create([
-            'nama' => 'BEBAN HUTANG'
+            'nama' => 'BAYAR HUTANG'
         ]);
         Customer::create([
             'nama' => 'Suhar',
@@ -183,10 +201,10 @@ class DatabaseSeeder extends Seeder
             'saldo_awal_piutang' => 1000000
         ]);
         Penerimaan::create([
-            'nama' => 'PIUTANG DIBAYAR'
+            'nama' => 'PENDAPATAN PIUTANG'
         ]);
         Penerimaan::create([
-            'nama' => 'PENERIMAAN LAIN-LAIN'
+            'nama' => 'PENDAPATAN LAIN-LAIN'
         ]);
         Perusahaan::create([
             'nama' => 'PT. KALBE'

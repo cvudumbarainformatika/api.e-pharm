@@ -25,6 +25,10 @@ class Product extends Model
     {
         return $this->belongsTo(Satuan::class);
     }
+    public function satuanBesar()
+    {
+        return $this->belongsTo(SatuanBesar::class);
+    }
 
     public function merk()
     {

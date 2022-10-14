@@ -20,6 +20,8 @@ class CreateProductsTable extends Migration
             $table->string('nama')->nullable();
             $table->unsignedBigInteger('merk_id')->nullable();
             $table->unsignedBigInteger('satuan_id')->nunllable();
+            $table->unsignedBigInteger('pengali')->nunllable();
+            $table->unsignedBigInteger('satuan_besar_id')->nunllable();
             $table->double('harga_beli')->default(0);
             $table->double('harga_jual_umum')->default(0);
             $table->double('harga_jual_resep')->default(0);
