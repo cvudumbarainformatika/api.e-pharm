@@ -16,6 +16,7 @@ use App\Models\Product;
 use App\Models\Rak;
 use App\Models\Satuan;
 use App\Models\SatuanBesar;
+use App\Models\Setting\Info;
 use App\Models\Supplier;
 use App\Models\Transaction;
 // use App\Models\Transaction::detail_transaction();
@@ -51,21 +52,21 @@ class DatabaseSeeder extends Seeder
             'name' => 'kasir',
             'email' => 'kasir@app.com',
             'role' => 'kasir',
-            'level' => 3,
+            'level' => 5,
             'password' => bcrypt('12345')
         ]);
         User::create([
             'name' => 'kasir2',
             'email' => 'kasir2@app.com',
             'role' => 'kasir',
-            'level' => 4,
+            'level' => 5,
             'password' => bcrypt('12345')
         ]);
         User::create([
-            'name' => 'kasir3',
-            'email' => 'kasir3@app.com',
-            'role' => 'kasir',
-            'level' => 4,
+            'name' => 'Gudang',
+            'email' => 'gudang@app.com',
+            'role' => 'gudang',
+            'level' => 5,
             'password' => bcrypt('12345')
         ]);
         Satuan::create([
@@ -211,6 +212,97 @@ class DatabaseSeeder extends Seeder
         ]);
         Perusahaan::create([
             'nama' => 'PT. AMPUNAN'
+        ]);
+        Info::create([
+            'nama' => 'eAchy',
+            'info' => [
+                'nama' => 'apotek sehat selalu',
+                'alamat' => 'alamat belum di isi',
+                'tlp' => 'nomor telepon belum ada'
+            ],
+            'levels' => [
+                'owner' => 2,
+                'manager' => 3,
+                'admin' => 4,
+                'kasir' => 5,
+                'gudang' => 5,
+            ],
+            'themes' => [
+                'primary'   => '#30268f',
+                'secondary' => '#06b8b8',
+                'accent'    => '#9C27B0',
+                'primary-light'   => '#cac5f0',
+                'dark'      => '#0d101a',
+                'dark-page' => '#0d101a',
+                'dark-light' => '#262e47',
+                'positive'  => '#198754',
+                'negative'  => '#dc3545',
+                'info'      => '#0d6efd',
+                'warning'   => '#d6a100',
+                'danger'   => '#990000',
+                'white'   => '#ffffff',
+            ],
+            'menus' => [
+                ['name' => 'dashboard', 'icon' => 'icon-mat-dashboard', 'link' => 'dashboard', 'submenus' => []],
+                [
+                    'name' => 'master',
+                    'icon' => 'icon-mat-dataset',
+                    'link' => 'master',
+                    'submenus' => [
+                        ['name' => 'Satuan', 'icon' => 'icon-mat-gas_meter', 'link' => 'satuan'],
+                        ['name' => 'Rak', 'icon' => 'icon-mat-table_rows', 'link' => 'rak'],
+                        ['name' => 'Kategori', 'icon' => 'icon-mat-category', 'link' => 'kategori'],
+                        ['name' => 'Distributor', 'icon' => 'icon-mat-rv_hookup', 'link' => 'supplier'],
+                        ['name' => 'Dokter', 'icon' => 'icon-mat-medication', 'link' => 'dokter'],
+                        ['name' => 'Produk', 'icon' => 'icon-mat-workspaces', 'link' => 'produk'],
+                        ['name' => 'Beban', 'icon' => 'icon-mat-assessment', 'link' => 'beban'],
+                        ['name' => 'Penerimaan', 'icon' => 'icon-mat-attach_money', 'link' => 'penerimaan'],
+                        ['name' => 'Customer', 'icon' => 'icon-mat-local_shipping', 'link' => 'customer'],
+                        ['name' => 'Merk', 'icon' => 'icon-mat-auto_awesome_mosaic', 'link' => 'merk'],
+                        ['name' => 'Perusahaan', 'icon' => 'icon-mat-business', 'link' => 'perusahaan']
+
+                    ]
+                ],
+                [
+                    'name' => 'transaksi',
+                    'icon' => 'icon-mat-sync_alt',
+                    'link' => 'transaksi',
+                    'submenus' => [
+                        ['name' => 'Pembelian', 'value' => 'pembelian', 'icon' => 'icon-mat-inventory_2', 'link' => '/pembelian/PBL-'],
+                        ['name' => 'Penjualan', 'value' => 'penjualan', 'icon' => 'icon-mat-shopping_bag', 'link' => '/penjualan/PJL-'],
+                        ['name' => 'Transaksi Penerimaan', 'value' => 'transaksi.penerimaan', 'icon' => 'icon-mat-account_balance_wallet', 'link' => '/transaksi/penerimaan'],
+                        ['name' => 'Beban Biaya', 'value' => 'biaya', 'icon' => 'icon-mat-payment', 'link' => '/biaya'],
+                        ['name' => 'Retur', 'value' => 'retur', 'icon' => 'icon-mat-assignment_return', 'link' => '/retur']
+
+                    ]
+                ],
+                [
+                    'name' => 'history',
+                    'icon' => 'icon-mat-history',
+                    'link' => 'history',
+                    'submenus' => [
+                        ['name' => 'Seluruhnya', 'value' => 'all', 'icon' => 'icon-mat-density_small'],
+                        ['name' => 'Draft', 'value' => 'draft', 'icon' => 'icon-mat-insert_drive_file'],
+                        ['name' => 'Pembelian', 'value' => 'PEMBELIAN', 'icon' => 'icon-mat-inventory_2'],
+                        ['name' => 'Penjualan', 'value' => 'PENJUALAN', 'icon' => 'icon-mat-shopping_bag'],
+                        ['name' => 'Transaksi Penerimaan', 'value' => 'PENERIMAAN', 'icon' => 'icon-mat-account_balance_wallet'],
+                        ['name' => 'Beban Biaya', 'value' => 'BEBAN', 'icon' => 'icon-mat-payment'],
+                        ['name' => 'Retur Pembelian', 'value' => 'RETUR PEMBELIAN', 'icon' => 'icon-mat-assignment_return'],
+                        ['name' => 'Retur Penjualan', 'value' => 'RETUR PENJUALAN', 'icon' => 'icon-mat-assignment_return'],
+                        ['name' => 'Form Penyesuaian', 'value' => 'FORM PENYESUAIAN', 'icon' => 'icon-mat-tune']
+                    ]
+                ],
+                ['name' => 'laporan', 'icon' => 'icon-mat-description', 'link' => 'laporan', 'submenus' => []],
+                [
+                    'name' => 'setting',
+                    'icon' => 'icon-mat-settings',
+                    'link' => 'setting',
+                    'submenus' => [
+                        ['name' => 'User', 'value' => 'user', 'icon' => 'icon-mat-density_small'],
+                        ['name' => 'Menu', 'value' => 'menu', 'icon' => 'icon-mat-insert_drive_file']
+                    ]
+                ]
+            ]
         ]);
 
 

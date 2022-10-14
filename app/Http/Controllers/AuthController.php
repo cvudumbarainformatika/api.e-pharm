@@ -59,20 +59,23 @@ class AuthController extends Controller
         $level = 4;
         switch ($request->role) {
             case 'kasir':
-                $level = 4;
+                $level = 5;
+                break;
+            case 'gudang':
+                $level = 5;
                 break;
             case 'admin':
+                $level = 4;
+                break;
+            case 'manager':
                 $level = 3;
                 break;
-            case 'supervisor':
-                $level = 2;
-                break;
             case 'owner':
-                $level = 1;
+                $level = 2;
                 break;
 
             default:
-                $level = 4;
+                $level = 5;
                 break;
         }
         $user = User::create(array_merge($validator->validated(), ['password' => bcrypt($request->password), 'level' => $level]));
@@ -100,20 +103,23 @@ class AuthController extends Controller
         $level = 4;
         switch ($request->role) {
             case 'kasir':
-                $level = 4;
+                $level = 5;
+                break;
+            case 'gudang':
+                $level = 5;
                 break;
             case 'admin':
+                $level = 4;
+                break;
+            case 'manager':
                 $level = 3;
                 break;
-            case 'supervisor':
-                $level = 2;
-                break;
             case 'owner':
-                $level = 1;
+                $level = 2;
                 break;
 
             default:
-                $level = 4;
+                $level = 5;
                 break;
         }
         $user = User::find($request->id);
