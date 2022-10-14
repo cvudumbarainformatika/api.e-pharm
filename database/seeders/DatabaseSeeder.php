@@ -255,8 +255,8 @@ class DatabaseSeeder extends Seeder
                         ['name' => 'Distributor', 'icon' => 'icon-mat-rv_hookup', 'link' => 'supplier'],
                         ['name' => 'Dokter', 'icon' => 'icon-mat-medication', 'link' => 'dokter'],
                         ['name' => 'Produk', 'icon' => 'icon-mat-workspaces', 'link' => 'produk'],
-                        ['name' => 'Beban', 'icon' => 'icon-mat-assessment', 'link' => 'beban'],
-                        ['name' => 'Penerimaan', 'icon' => 'icon-mat-attach_money', 'link' => 'penerimaan'],
+                        ['name' => 'Pengeluaran', 'icon' => 'icon-mat-assessment', 'link' => 'beban'],
+                        ['name' => 'Pendapatan', 'icon' => 'icon-mat-attach_money', 'link' => 'penerimaan'],
                         ['name' => 'Customer', 'icon' => 'icon-mat-local_shipping', 'link' => 'customer'],
                         ['name' => 'Merk', 'icon' => 'icon-mat-auto_awesome_mosaic', 'link' => 'merk'],
                         ['name' => 'Perusahaan', 'icon' => 'icon-mat-business', 'link' => 'perusahaan']
@@ -270,8 +270,8 @@ class DatabaseSeeder extends Seeder
                     'submenus' => [
                         ['name' => 'Pembelian', 'value' => 'pembelian', 'icon' => 'icon-mat-inventory_2', 'link' => '/pembelian/PBL-'],
                         ['name' => 'Penjualan', 'value' => 'penjualan', 'icon' => 'icon-mat-shopping_bag', 'link' => '/penjualan/PJL-'],
-                        ['name' => 'Transaksi Penerimaan', 'value' => 'transaksi.penerimaan', 'icon' => 'icon-mat-account_balance_wallet', 'link' => '/transaksi/penerimaan'],
-                        ['name' => 'Beban Biaya', 'value' => 'biaya', 'icon' => 'icon-mat-payment', 'link' => '/biaya'],
+                        ['name' => 'Transaksi Pendapatan', 'value' => 'transaksi.penerimaan', 'icon' => 'icon-mat-account_balance_wallet', 'link' => '/transaksi/penerimaan'],
+                        ['name' => 'Transaksi Pengeluaran', 'value' => 'biaya', 'icon' => 'icon-mat-payment', 'link' => '/biaya'],
                         ['name' => 'Retur', 'value' => 'retur', 'icon' => 'icon-mat-assignment_return', 'link' => '/retur']
 
                     ]
@@ -285,8 +285,8 @@ class DatabaseSeeder extends Seeder
                         ['name' => 'Draft', 'value' => 'draft', 'icon' => 'icon-mat-insert_drive_file'],
                         ['name' => 'Pembelian', 'value' => 'PEMBELIAN', 'icon' => 'icon-mat-inventory_2'],
                         ['name' => 'Penjualan', 'value' => 'PENJUALAN', 'icon' => 'icon-mat-shopping_bag'],
-                        ['name' => 'Transaksi Penerimaan', 'value' => 'PENERIMAAN', 'icon' => 'icon-mat-account_balance_wallet'],
-                        ['name' => 'Beban Biaya', 'value' => 'BEBAN', 'icon' => 'icon-mat-payment'],
+                        ['name' => 'Transaksi Pendapatan', 'value' => 'PENERIMAAN', 'icon' => 'icon-mat-account_balance_wallet'],
+                        ['name' => 'Transaki Pengeluaran', 'value' => 'BEBAN', 'icon' => 'icon-mat-payment'],
                         ['name' => 'Retur Pembelian', 'value' => 'RETUR PEMBELIAN', 'icon' => 'icon-mat-assignment_return'],
                         ['name' => 'Retur Penjualan', 'value' => 'RETUR PENJUALAN', 'icon' => 'icon-mat-assignment_return'],
                         ['name' => 'Form Penyesuaian', 'value' => 'FORM PENYESUAIAN', 'icon' => 'icon-mat-tune']
