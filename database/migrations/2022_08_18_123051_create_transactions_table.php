@@ -20,6 +20,7 @@ class CreateTransactionsTable extends Migration
             $table->string('faktur')->nullable();
             $table->date('tanggal')->nullable();
             $table->string('nama')->nullable();
+            $table->json('pasien')->nullable();
             $table->enum('jenis', ['tunai', 'hutang', 'piutang'])->default('tunai');
             $table->double('total')->default(0);
             $table->double('ongkir')->default(0);

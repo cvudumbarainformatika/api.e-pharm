@@ -12,6 +12,11 @@ class Transaction extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'pasien' => 'array',
+    ];
+
+
     public function user()
     {
         return $this->belongsTo(User::class);
