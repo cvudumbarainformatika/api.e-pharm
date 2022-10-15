@@ -26,7 +26,7 @@ class TransactionController extends Controller
     public function withDetail()
     {
         // $data = Transaction::paginate();
-        $data = Transaction::where(['reff' => request()->reff])->with(['detail_transaction', 'detail_transaction.product'])->latest()->get();
+        $data = Transaction::where(['reff' => request()->reff])->with(['detail_transaction.product.satuanBesar', 'detail_transaction.product.satuan'])->latest()->get();
         // ->paginate(request('per_page'));
         // $data->load('product');
         return TransactionResource::collection($data);
