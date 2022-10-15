@@ -270,8 +270,8 @@ class DatabaseSeeder extends Seeder
                     'submenus' => [
                         ['name' => 'Pembelian', 'value' => 'pembelian', 'icon' => 'icon-mat-inventory_2', 'link' => '/pembelian/PBL-'],
                         ['name' => 'Penjualan', 'value' => 'penjualan', 'icon' => 'icon-mat-shopping_bag', 'link' => '/penjualan/PJL-'],
-                        ['name' => 'Transaksi Pendapatan', 'value' => 'transaksi.penerimaan', 'icon' => 'icon-mat-account_balance_wallet', 'link' => '/transaksi/penerimaan'],
-                        ['name' => 'Transaksi Pengeluaran', 'value' => 'biaya', 'icon' => 'icon-mat-payment', 'link' => '/biaya'],
+                        ['name' => 'Pendapatan', 'value' => 'transaksi.penerimaan', 'icon' => 'icon-mat-account_balance_wallet', 'link' => '/transaksi/penerimaan'],
+                        ['name' => 'Pengeluaran', 'value' => 'biaya', 'icon' => 'icon-mat-payment', 'link' => '/biaya'],
                         ['name' => 'Retur', 'value' => 'retur', 'icon' => 'icon-mat-assignment_return', 'link' => '/retur']
 
                     ]
