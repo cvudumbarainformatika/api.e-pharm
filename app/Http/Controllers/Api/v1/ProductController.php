@@ -32,7 +32,7 @@ class ProductController extends Controller
     }
     public function allProduk()
     {
-        $data = Product::latest()->paginate(request('per_page'));
+        $data = Product::latest()->get();
         return ProductResource::collection($data);
     }
 

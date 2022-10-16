@@ -59,7 +59,7 @@ class TransactionController extends Controller
             $query->where(['nama' => request(['nama'])]);
         } else if (request('nama') === 'draft') {
 
-            $query->where(['status' => 0]);
+            $query->where(['status' => 1]);
         } else {
 
             $query;
@@ -137,10 +137,10 @@ class TransactionController extends Controller
         $query = Transaction::query();
         // ->selectRaw('product_id, harga, sum(qty) as jml');
         // $query->whereHas('transaction', function ($gg) {
-        //     $gg->where(['nama' => request('nama'), 'status' => 1]);
+        //     $gg->where(['nama' => request('nama'), 'status' => 2]);
 
         // });
-        $query->where(['nama' => request('nama'), 'status' => 1]);
+        $query->where(['nama' => request('nama'), 'status' => 2]);
         $this->periode($query, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
 
 
@@ -283,10 +283,10 @@ class TransactionController extends Controller
         $data = [];
         if (request('nama') === 'all' || request('nama') === 'draft' || request('nama') === '') {
 
-            $data = Transaction::where(['status' => 0])->get();
+            $data = Transaction::where(['status' => 1])->get();
         } else {
 
-            $data = Transaction::where(['nama' => request('nama'), 'status' => 0])->get();
+            $data = Transaction::where(['nama' => request('nama'), 'status' => 1])->get();
         }
         // return response()->json(['data' => $data]);
         $del = [];

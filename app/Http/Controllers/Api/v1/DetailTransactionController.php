@@ -80,7 +80,7 @@ class DetailTransactionController extends Controller
         $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');
         $query->whereHas('transaction', function ($gg) {
             $gg->where('nama', '=', request('nama'))
-                ->where('status', '=', 1)
+                ->where('status', '=', 2)
                 ->when(request('supplier_id'), function ($sp, $q) {
                     return $sp->where('supplier_id', '=', $q);
                 })

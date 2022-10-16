@@ -11,7 +11,7 @@ class ReturController extends Controller
 {
     public function index()
     {
-        $data = Transaction::where(['status' => 1])
+        $data = Transaction::where(['status' => 2])
             ->orderBy(request()->order_by, request()->sort)
             ->filter(request(['q']))->get();
 
@@ -19,7 +19,7 @@ class ReturController extends Controller
     }
     public function returPembelianDanPejualan()
     {
-        $data = Transaction::where('status', 1)
+        $data = Transaction::where('status', 2)
             ->whereIn('nama', ['PEMBELIAN', 'PENJUALAN'])
             // ->orWhere('nama', request('nama2'))
             ->with(['kasir', 'supplier.perusahaan', 'customer', 'dokter'])
