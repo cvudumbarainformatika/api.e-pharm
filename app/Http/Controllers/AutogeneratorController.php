@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\v1\SettingController;
 use App\Models\DetailTransaction;
+use App\Models\Product;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -65,10 +66,77 @@ class AutogeneratorController extends Controller
         // return $data;
     }
 
+    public function getSingleDetails($header, $nama)
+    {
+        $before = DetailTransaction::where('product_id', $header->product_id)
+            ->whereHas('transaction', function ($f) use ($header, $nama) {
+                $f->where('nama', '=', $nama)
+                    ->where('status', '=', 2)
+                    ->whereDate('tanggal', '<', $header->from);
+            })->get();
+        $period = DetailTransaction::where('product_id', $header->product_id)
+            ->whereHas('transaction', function ($f) use ($header, $nama) {
+                $f->where('nama', '=', $nama)
+                    ->where('status', '=', 2)
+                    ->whereDate('tanggal', '=', $header->from);
+            })->get();
+
+        $data = (object) array(
+            'before' => $before,
+            'period' => $period,
+        );
+        return $data;
+    }
     public function cari()
     {
-        $q = Transaction::filter(['product'])->with('detail_transaction.product');
-        $data = $q->get();
+        // $q = Transaction::filter(['product'])->with('detail_transaction.product');
+        // $data = $q->get();
+        // return new JsonResponse($data);
+        // $data = DetailTransaction::where('product_id', 1)
+        //     ->whereHas('transaction', function ($f) {
+        //         $f->where('nama', '=', 'PENJUALAN')
+        //             ->where('status', '=', 2)
+        //             ->whereDate('tanggal', '<', '2022-10-16');
+        //     })
+        //     ->get();
+        // $colle = collect($data)->sum('qty');
+        // return new JsonResponse($colle);
+
+        $header = (object) array(
+            'from' => date('Y-m-d'),
+            'product_id' => 2
+        );
+        $stokMasuk = $this->getSingleDetails($header, 'PEMBELIAN');
+        $returPembelian = $this->getSingleDetails($header, 'RETUR PEMBELIAN');
+        $stokKeluar = $this->getSingleDetails($header, 'PENJUALAN');
+        $returPenjualan = $this->getSingleDetails($header, 'RETUR PENJUALAN');
+        $penyesuaian = $this->getSingleDetails($header, 'FORM PENYESUAIAN');
+
+        $produk = Product::where('id', $header->product_id)->first();
+
+        $masukBefore = collect($stokMasuk->before)->sum('qty');
+        $masukPeriod = collect($stokMasuk->period)->sum('qty');
+        $keluarBefore = collect($stokKeluar->before)->sum('qty');
+        $keluarPeriod = collect($stokKeluar->period)->sum('qty');
+        $retBeliBefore = collect($returPembelian->before)->sum('qty');
+        $retBeliPeriod = collect($returPembelian->period)->sum('qty');
+        $retJualBefore = collect($returPenjualan->before)->sum('qty');
+        $retJualPeriod = collect($returPenjualan->period)->sum('qty');
+        $penyeBefore = collect($penyesuaian->before)->sum('qty');
+        $penyePeriod = collect($penyesuaian->period)->sum('qty');
+
+        $sebelum = $masukBefore - $keluarBefore + $retJualBefore - $retBeliBefore + $penyeBefore;
+        $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod;
+        $awal = $produk->stok_awal + $sebelum;
+        $sekarang = $awal + $berjalan;
+        $produk->stok_awal = $awal;
+        $produk->stokSekarang = $sekarang;
+        $produk->stokBerjalan = $berjalan;
+
+        $data = (object) array(
+            'produk' => $produk,
+        );
+
         return new JsonResponse($data);
     }
 }

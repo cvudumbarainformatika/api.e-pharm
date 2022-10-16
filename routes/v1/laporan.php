@@ -17,4 +17,6 @@ Route::group([
     Route::get('/more-stok', [LaporanController::class, 'moreStok']);
     Route::get('/cari', [LaporanController::class, 'cari']);
     Route::get('/stok-transaction', [LaporanController::class, 'stokTransaction']);
+    Route::get('/all-stok', [LaporanController::class, 'allStok']);
+    Route::get('/single-product', [LaporanController::class, 'singleProduct']);
 });
