@@ -74,7 +74,7 @@ class TransactionController extends Controller
             'detail_transaction.product'
         ])
             ->orderBy(request()->order_by, request()->sort)
-            ->filter(request(['q']))->latest()->paginate(request('per_page'));
+            ->filter(request(['q']))->paginate(request('per_page'));
 
         return TransactionResource::collection($data);
     }
@@ -191,7 +191,7 @@ class TransactionController extends Controller
 
             $simpan2 = $data;
 
-            if ($request->nama === 'BEBAN' && $request->has('beban_id')) {
+            if ($request->nama === 'BEBAN' && $request->has('beban_id') && $request->beban_id !== '') {
 
                 $data->beban_transaction()->updateOrCreate([
                     'beban_id' => $request->beban_id
@@ -201,7 +201,7 @@ class TransactionController extends Controller
 
                 ]);
             } else if (
-                $request->nama === 'PENERIMAAN' && $request->has('penerimaan_id')
+                $request->nama === 'PENERIMAAN' && $request->has('penerimaan_id' && $request->penerimaan_id !== '')
             ) {
 
                 $data->penerimaan_transaction()->updateOrCreate([
@@ -211,7 +211,7 @@ class TransactionController extends Controller
                     'keterangan' => $request->keterangan
 
                 ]);
-            } else if ($request->has('product_id')) {
+            } else if ($request->has('product_id') && $request->qty > 0) {
 
                 $data->detail_transaction()->updateOrCreate([
                     'product_id' => $request->product_id,

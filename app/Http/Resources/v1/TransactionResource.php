@@ -20,6 +20,7 @@ class TransactionResource extends JsonResource
             'reff' => $this->reff,
             'faktur' => $this->faktur,
             'tanggal' => $this->tanggal,
+            'pasien' => $this->pasien,
             'nama' => $this->nama,
             'jenis' => $this->jenis,
             'total' => $this->total,
