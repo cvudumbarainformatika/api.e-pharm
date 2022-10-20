@@ -143,7 +143,7 @@ class AutogeneratorController extends Controller
 
     public function retur()
     {
-        $today = date('Y-m-d');
+        $today = date('Y-m-d H:i:s');
         $before = date('Y-m-d', strtotime('-7 days'));
         $carbon = Carbon::now()->locale('id_ID');
         $nama = 'PENJUALAN';

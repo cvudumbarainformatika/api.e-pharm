@@ -55,10 +55,8 @@ class TransactionController extends Controller
         $query = Transaction::query();
 
         if (request('nama') !== 'all' && request('nama') !== 'draft') {
-
             $query->where(['nama' => request(['nama'])]);
         } else if (request('nama') === 'draft') {
-
             $query->where(['status' => 1]);
         } else {
 
@@ -167,8 +165,8 @@ class TransactionController extends Controller
         $simpan2 = '';
         $array2 = '';
         $harga_di_update = '';
-        // $secondArray = '';
         $secondArray = $request->all();
+        $secondArray['tanggal'] = date('Y-m-d H:i:s');
         unset($secondArray['reff']);
         try {
             $data = '';
