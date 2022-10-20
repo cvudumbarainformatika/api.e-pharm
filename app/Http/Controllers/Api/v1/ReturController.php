@@ -27,4 +27,26 @@ class ReturController extends Controller
 
         return TransactionResource::collection($data);
     }
+    public function returPejualan()
+    {
+        $today = date('Y-m-d');
+        $before = date('Y-m-d', strtotime('-7 days'));
+        $data = Transaction::where('status', 2)
+            ->where('nama', '=', 'PENJUALAN')
+            ->whereDate('tanggal', '>=', $before)
+            ->whereDate('tanggal', '<=', $today)
+            ->with(['kasir', 'supplier.perusahaan', 'customer', 'dokter'])
+            ->latest()->filter(request(['q']))->limit(20)->get();
+
+        return TransactionResource::collection($data);
+    }
+    public function returPembelian()
+    {
+        $data = Transaction::where('status', 2)
+            ->where('nama', '=', 'PEMBELIAN')
+            ->with(['kasir', 'supplier.perusahaan', 'customer', 'dokter'])
+            ->latest()->filter(request(['q']))->limit(20)->get();
+
+        return TransactionResource::collection($data);
+    }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\v1\SettingController;
 use App\Models\DetailTransaction;
 use App\Models\Product;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -138,5 +139,32 @@ class AutogeneratorController extends Controller
         );
 
         return new JsonResponse($data);
+    }
+
+    public function retur()
+    {
+        $today = date('Y-m-d');
+        $before = date('Y-m-d', strtotime('-7 days'));
+        $carbon = Carbon::now()->locale('id_ID');
+        $nama = 'PENJUALAN';
+        $data = Transaction::where('status', 2)->filter(request(['q']))
+            ->whereIn('nama', ['PEMBELIAN', 'PENJUALAN'])
+            // ->orWhere('nama', request('nama2'))
+            ->whereDate('tanggal', '>=', $before)
+            ->whereDate('tanggal', '<=', $today)
+            ->with(['kasir', 'supplier.perusahaan', 'customer', 'dokter'])
+            ->latest()->limit(20)->get();
+        $jumlah = collect($data)->count();
+        $nama = collect($data)->groupBy('nama')->count();
+        $tanggal = collect($data)->groupBy('nama');
+        return new JsonResponse([
+            'hari ini ' => $today,
+            'carbon ' => $carbon,
+            '7 hari yll' => $before,
+            'jumlah' => $jumlah,
+            'nama' => $nama,
+            'tanggal' => $tanggal,
+            'data' => $data
+        ]);
     }
 }
