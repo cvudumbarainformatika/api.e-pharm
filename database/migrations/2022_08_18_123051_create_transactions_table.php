@@ -18,7 +18,7 @@ class CreateTransactionsTable extends Migration
             $table->uuid('uuid')->unique();
             $table->string('reff')->unique()->default('l70k498vdb9m4');
             $table->string('faktur')->nullable();
-            $table->date('tanggal')->nullable();
+            $table->dateTime('tanggal')->nullable();
             $table->string('nama')->nullable();
             $table->json('pasien')->nullable();
             $table->enum('jenis', ['tunai', 'hutang', 'piutang'])->default('tunai');
