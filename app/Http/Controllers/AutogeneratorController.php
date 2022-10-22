@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\v1\SettingController;
 use App\Models\DetailTransaction;
 use App\Models\Product;
 use App\Models\Transaction;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,19 +39,19 @@ class AutogeneratorController extends Controller
     }
     public function coba()
     {
-        $menu =  [
-            ["name" => "dashboard", "icon" => "icon-mat-dashboard", "link" => "dashboard"],
-            ["name" => "master", "icon" => "icon-mat-dataset", "link" => "master"],
-            ["name" => "transaksi", "icon" => "icon-mat-sync_alt", "link" => "transaksi"],
-            ["name" => "history", "icon" => "icon-mat-history", "link" => "history"],
-            ["name" => "laporan", "icon" => "icon-mat-description", "link" => "laporan"],
-            ["name" => "setting", "icon" => "icon-mat-settings", "link" => "setting"]
-        ];
-        $nama = 'eAchy';
-        $masuk = ['nama' => $nama, 'menu' => $menu];
+        // $menu =  [
+        //     ["name" => "dashboard", "icon" => "icon-mat-dashboard", "link" => "dashboard"],
+        //     ["name" => "master", "icon" => "icon-mat-dataset", "link" => "master"],
+        //     ["name" => "transaksi", "icon" => "icon-mat-sync_alt", "link" => "transaksi"],
+        //     ["name" => "history", "icon" => "icon-mat-history", "link" => "history"],
+        //     ["name" => "laporan", "icon" => "icon-mat-description", "link" => "laporan"],
+        //     ["name" => "setting", "icon" => "icon-mat-settings", "link" => "setting"]
+        // ];
+        // $nama = 'eAchy';
+        // $masuk = ['nama' => $nama, 'menu' => $menu];
         // return new JsonResponse($masuk['nama']);
-        $data = SettingController::simpanMenu($masuk);
-        return new JsonResponse($data);
+        // $data = SettingController::simpanMenu($masuk);
+        // return new JsonResponse($data);
 
         // $q = Transaction::query()->where('status', '=', 1);
         // $this->until($q, 'range', '2022-09-22', '2022-09-24');
@@ -65,6 +66,14 @@ class AutogeneratorController extends Controller
         // $grup = $data->only(['created_at', 'updated_at', 'uuid', 'id']);
         // return $grup->all();
         // return $data;
+
+        // ganti password berhasil ini...
+        // $user = User::where('name', 'root')->first();
+        // $user->password = bcrypt('sekarep12345');
+        // $user->save();
+
+
+        // return new JsonResponse($user);
     }
 
     public function getSingleDetails($header, $nama)

@@ -18,7 +18,7 @@ class TransactionController extends Controller
     {
         // $data = Transaction::paginate();
         $data = Transaction::orderBy(request()->order_by, request()->sort)
-            ->filter(request(['q']))->get();
+            ->filter(request(['q']))->limit(5)->get();
         // ->paginate(request('per_page'));
         // $data->load('product');
         return TransactionResource::collection($data);
@@ -35,7 +35,7 @@ class TransactionController extends Controller
     public function withBeban()
     {
         // $data = Transaction::paginate();
-        $data = Transaction::where(['nama' => 'BEBAN'])->whereMonth('created_at', '=', date('m'))->with(['beban_transaction.beban', 'kasir', 'supplier'])->latest()->get();
+        $data = Transaction::where(['nama' => 'PENGELUARAN'])->whereMonth('created_at', '=', date('m'))->with(['beban_transaction.beban', 'kasir', 'supplier'])->latest()->get();
         // ->paginate(request('per_page'));
         // $data->load('product');
         return TransactionResource::collection($data);
@@ -44,7 +44,7 @@ class TransactionController extends Controller
     public function withPenerimaan()
     {
         // $data = Transaction::paginate();
-        $data = Transaction::where(['nama' => 'PENERIMAAN'])->whereMonth('created_at', '=', date('m'))->with(['penerimaan_transaction.penerimaan', 'kasir', 'customer', 'dokter'])->latest()->get();
+        $data = Transaction::where(['nama' => 'PENDAPATAN'])->whereMonth('created_at', '=', date('m'))->with(['penerimaan_transaction.penerimaan', 'kasir', 'customer', 'dokter'])->latest()->get();
         // ->paginate(request('per_page'));
         // $data->load('product');
         return TransactionResource::collection($data);
@@ -74,6 +74,17 @@ class TransactionController extends Controller
             ->orderBy(request()->order_by, request()->sort)
             ->filter(request(['q']))->paginate(request('per_page'));
 
+        return TransactionResource::collection($data);
+    }
+
+    public function pengeluaran()
+    {
+        $data = Transaction::where('nama', 'PENGELUARAN')
+            ->where('supplier_id', null)
+            ->whereMonth('tanggal', date('m'))
+            ->with('beban_transaction.beban', 'kasir')
+            ->latest('tanggal')
+            ->get();
         return TransactionResource::collection($data);
     }
 
@@ -189,7 +200,7 @@ class TransactionController extends Controller
 
             $simpan2 = $data;
 
-            if ($request->nama === 'BEBAN' && $request->has('beban_id') && $request->beban_id !== '') {
+            if ($request->nama === 'PENGELUARAN' && $request->has('beban_id') && $request->sub_total !== '') {
 
                 $data->beban_transaction()->updateOrCreate([
                     'beban_id' => $request->beban_id
@@ -199,7 +210,7 @@ class TransactionController extends Controller
 
                 ]);
             } else if (
-                $request->nama === 'PENERIMAAN' && $request->has('penerimaan_id' && $request->penerimaan_id !== '')
+                $request->nama === 'PENDAPATAN' && $request->has('penerimaan_id' && $request->sub_total !== '')
             ) {
 
                 $data->penerimaan_transaction()->updateOrCreate([

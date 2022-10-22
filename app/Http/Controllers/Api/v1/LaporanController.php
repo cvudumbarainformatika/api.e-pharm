@@ -230,7 +230,7 @@ class LaporanController extends Controller
             ->get();
         $dibayar = BebanTransaction::selectRaw('beban_id, sum(sub_total) as total')
             ->whereHas('transaction', function ($apem) {
-                $apem->where('nama', '=', 'BEBAN')
+                $apem->where('nama', '=', 'PENGELUARAN')
                     ->where('status', '=', 2)
                     ->where('supplier_id', '=', request('supplier_id'))
                     ->whereDate('tanggal', '<=', date('Y-m-d'));
@@ -256,7 +256,7 @@ class LaporanController extends Controller
             // ->with(['product'])
             ->get();
         $dibayar = DetailPenerimaan::selectRaw('penerimaan_id, sum(sub_total) as total')->whereHas('transaction', function ($apem) {
-            $apem->where('nama', '=', 'PENERIMAAN')
+            $apem->where('nama', '=', 'PENDAPATAN')
                 ->where('status', '=', 2)
                 ->where('customer_id', '=', request('customer_id'))
                 ->whereDate('tanggal', '<=', date('Y-m-d'));
@@ -546,8 +546,8 @@ class LaporanController extends Controller
         $returPembelian = $this->getDetailsPeriodUang($header, 'RETUR PEMBELIAN');
         $penjualan = $this->getDetailsPeriodUang($header, 'PENJUALAN');
         $returPenjualan = $this->getDetailsPeriodUang($header, 'RETUR PENJUALAN');
-        $beban = $this->getBebansPeriod($header, 'BEBAN');
-        $penerimaan = $this->getPenerimaansPeriod($header, 'PENERIMAAN');
+        $beban = $this->getBebansPeriod($header, 'PENGELUARAN');
+        $penerimaan = $this->getPenerimaansPeriod($header, 'PENDAPATAN');
 
         $product = Product::orderBy(request('order_by'), request('sort'))
             ->filter(request(['q']))->with('rak')->paginate(request('per_page'));

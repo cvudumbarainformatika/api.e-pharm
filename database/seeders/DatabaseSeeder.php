@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'root@app.com',
             'role' => 'root',
             'level' => 1,
-            'password' => bcrypt('sekarep123456789')
+            'password' => bcrypt('sekarep12345')
         ]);
         User::create([
             'name' => 'owner',
