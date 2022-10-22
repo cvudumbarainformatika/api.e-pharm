@@ -248,6 +248,9 @@ class TransactionController extends Controller
 
                 $simpan = $data;
             }
+            if ($request->has('pbreff')) {
+                HutangController::statusPembelian($request);
+            }
 
             DB::commit();
             return response()->json(['message' => 'success', 'update harga' => $harga_di_update, 'data' => $data], 201);

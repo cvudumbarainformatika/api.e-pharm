@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\v1\HutangController;
 use App\Http\Controllers\Api\v1\LaporanController;
 use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\PrintController;
@@ -26,6 +27,7 @@ Route::get('/coba', [AutogeneratorController::class, 'coba']);
 Route::get('/cari', [AutogeneratorController::class, 'cari']);
 Route::get('/retur', [AutogeneratorController::class, 'retur']);
 Route::get('/print', [PrintController::class, 'print']);
+Route::get('/hutang', [HutangController::class, 'bayar']);
 Route::get('/time', function () {
     echo time();
 });
