@@ -30,6 +30,7 @@ Route::get('/retur', [AutogeneratorController::class, 'retur']);
 Route::get('/print', [PrintController::class, 'print']);
 Route::get('/hutang', [HutangController::class, 'bayar']);
 Route::get('/piutang', [TagihanController::class, 'piutang']);
+Route::get('/terbayar', [TagihanController::class, 'transaksiTerbayar']);
 Route::get('/time', function () {
     echo time();
 });

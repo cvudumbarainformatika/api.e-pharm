@@ -15,7 +15,7 @@ class HutangController extends Controller
             ->where('jenis', 'hutang')
             ->where('status', '=', 2)
             ->with('supplier', 'detail_transaction')
-            ->oldest('tanggal')
+            ->oldest('tempo')
             ->get();
 
         return new JsonResponse($data);

@@ -665,7 +665,8 @@ class LaporanController extends Controller
 
         $sebelum = $masukBefore - $keluarBefore + $retJualBefore - $retBeliBefore + $penyeBefore;
         $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod;
-        $awal = $produk->stok_awal + $sebelum;
+        // $awal = $produk->stok_awal + $sebelum;
+        $awal = $produk['stok_awal'] + $sebelum;
         $sekarang = $awal + $berjalan;
         $produk->stok_awal = $awal;
         $produk->stokSekarang = $sekarang;

@@ -17,7 +17,7 @@ class TagihanController extends Controller
         $data = Transaction::where('nama', 'PENJUALAN')
             ->where('jenis', 'piutang')
             ->where('status', '=', 2)
-            ->oldest('tanggal')
+            ->oldest('tempo')
             ->with('customer', 'dokter', 'detail_transaction.product')
             ->get();
 
@@ -31,8 +31,9 @@ class TagihanController extends Controller
             ->oldest('tanggal')
             ->with('customer', 'dokter', 'detail_transaction.product')
             ->get();
+        $terbayar = collect($data)->sum('total');
 
-        return new JsonResponse($data);
+        return new JsonResponse($terbayar);
     }
     public function tagihanTerbayar()
     {
