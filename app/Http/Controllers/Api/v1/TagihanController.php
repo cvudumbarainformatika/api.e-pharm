@@ -23,13 +23,23 @@ class TagihanController extends Controller
 
         return new JsonResponse($data);
     }
-    public function transaksiTertagih()
+    public function transaksiTerbayar()
     {
         $data = Transaction::where('nama', 'PENJUALAN')
             ->where('jenis', 'piutang')
-            ->where('status', '=', 4)
+            ->where('status', '=', 5)
             ->oldest('tanggal')
             ->with('customer', 'dokter', 'detail_transaction.product')
+            ->get();
+
+        return new JsonResponse($data);
+    }
+    public function tagihanTerbayar()
+    {
+        $data = Tagihan::where('nama', 'TAGIHAN')
+            ->where('status', '=', 3)
+            ->latest('tanggal')
+            ->with('kasir', 'details.penerimaan', 'details.dokter', 'details.customer')
             ->get();
 
         return new JsonResponse($data);
@@ -71,6 +81,25 @@ class TagihanController extends Controller
             ], 500);
         }
     }
+    public function dibayar(Request $request)
+    {
+        $data = Tagihan::where('reff', $request->reff)->first();
+        $semua = $request->all();
+        $detail = $semua['details'];
+        $data->status = 3;
+        if (!$data->save()) {
+            return new JsonResponse(['message' => 'gagal'], 500);
+        }
+        foreach ($detail as &$key) {
+            $this->terbayar($key);
+        }
+        return new JsonResponse(['message' => 'success'], 200);
+        // return new JsonResponse([
+        //     'semua' => $semua,
+        //     'detail' => $detail,
+        //     'data' => $data,
+        // ]);
+    }
     public function tertagih($header)
     {
         $data = Transaction::where('reff', $header->pjreff)->first();
@@ -82,7 +111,7 @@ class TagihanController extends Controller
     }
     public function terbayar($header)
     {
-        $data = Transaction::where('reff', $header->pjreff)->first();
+        $data = Transaction::where('reff', $header['nota'])->first();
         $data->status = 5;
         if (!$data->save()) {
             return new JsonResponse(['message' => 'gagal'], 500);
