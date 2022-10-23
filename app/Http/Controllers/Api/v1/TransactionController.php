@@ -160,7 +160,8 @@ class TransactionController extends Controller
         //     $gg->where(['nama' => request('nama'), 'status' => 2]);
 
         // });
-        $query->where(['nama' => request('nama'), 'status' => 2]);
+        $query->where('nama', '=', request('nama'));
+        $query->where('status', '>=', 2);
         $this->periode($query, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
 
 

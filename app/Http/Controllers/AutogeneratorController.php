@@ -81,13 +81,13 @@ class AutogeneratorController extends Controller
         $before = DetailTransaction::where('product_id', $header->product_id)
             ->whereHas('transaction', function ($f) use ($header, $nama) {
                 $f->where('nama', '=', $nama)
-                    ->where('status', '=', 2)
+                    ->where('status', '>=', 2)
                     ->whereDate('tanggal', '<', $header->from);
             })->get();
         $period = DetailTransaction::where('product_id', $header->product_id)
             ->whereHas('transaction', function ($f) use ($header, $nama) {
                 $f->where('nama', '=', $nama)
-                    ->where('status', '=', 2)
+                    ->where('status', '>=', 2)
                     ->whereDate('tanggal', '=', $header->from);
             })->get();
 
@@ -114,7 +114,7 @@ class AutogeneratorController extends Controller
 
         $header = (object) array(
             'from' => date('Y-m-d'),
-            'product_id' => 2
+            'product_id' => 1
         );
         $stokMasuk = $this->getSingleDetails($header, 'PEMBELIAN');
         $returPembelian = $this->getSingleDetails($header, 'RETUR PEMBELIAN');
