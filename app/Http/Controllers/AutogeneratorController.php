@@ -68,9 +68,9 @@ class AutogeneratorController extends Controller
         // return $data;
 
         // ganti password berhasil ini...
-        // $user = User::where('name', 'root')->first();
-        // $user->password = bcrypt('sekarep12345');
-        // $user->save();
+        $user = User::where('name', 'root')->first();
+        $user->password = bcrypt('sekarep12345');
+        $user->save();
 
 
         // return new JsonResponse($user);
