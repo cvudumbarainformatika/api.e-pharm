@@ -87,6 +87,17 @@ class TransactionController extends Controller
             ->get();
         return TransactionResource::collection($data);
     }
+    public function penerimaan()
+    {
+        $data = Transaction::where('nama', 'PENDAPATAN')
+            ->where('customer_id', null)
+            ->where('dokter_id', null)
+            ->whereMonth('tanggal', date('m'))
+            ->with('penerimaan_transaction.penerimaan', 'kasir')
+            ->latest('tanggal')
+            ->get();
+        return TransactionResource::collection($data);
+    }
 
     public function getExpired()
     {
@@ -210,7 +221,7 @@ class TransactionController extends Controller
 
                 ]);
             } else if (
-                $request->nama === 'PENDAPATAN' && $request->has('penerimaan_id' && $request->sub_total !== '')
+                $request->nama === 'PENDAPATAN' && $request->has('penerimaan_id') && $request->sub_total !== ''
             ) {
 
                 $data->penerimaan_transaction()->updateOrCreate([
@@ -220,6 +231,7 @@ class TransactionController extends Controller
                     'keterangan' => $request->keterangan
 
                 ]);
+                $simpan = $data;
             } else if ($request->has('product_id') && $request->qty > 0) {
 
                 $data->detail_transaction()->updateOrCreate([
@@ -245,8 +257,6 @@ class TransactionController extends Controller
                         'harga_beli' => $request->harga
                     ]);
                 }
-
-                $simpan = $data;
             }
             if ($request->has('pbreff')) {
                 HutangController::statusPembelian($request);

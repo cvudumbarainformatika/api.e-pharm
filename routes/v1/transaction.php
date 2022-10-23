@@ -14,6 +14,7 @@ Route::group([
     Route::get('/with-penerimaan', [TransactionController::class, 'withPenerimaan']);
     Route::get('/history', [TransactionController::class, 'history']);
     Route::get('/pengeluaran', [TransactionController::class, 'pengeluaran']);
+    Route::get('/penerimaan', [TransactionController::class, 'penerimaan']);
     Route::get('/expired', [TransactionController::class, 'getExpired']);
     Route::get('/get-by-date', [TransactionController::class, 'getByDate']);
     Route::get('/destroy-draft', [TransactionController::class, 'destroyDraft']);
