@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\v1\HutangController;
 use App\Http\Controllers\Api\v1\LaporanController;
+use App\Http\Controllers\Api\v1\TagihanController;
 use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\PrintController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,7 @@ Route::get('/cari', [AutogeneratorController::class, 'cari']);
 Route::get('/retur', [AutogeneratorController::class, 'retur']);
 Route::get('/print', [PrintController::class, 'print']);
 Route::get('/hutang', [HutangController::class, 'bayar']);
+Route::get('/piutang', [TagihanController::class, 'piutang']);
 Route::get('/time', function () {
     echo time();
 });
