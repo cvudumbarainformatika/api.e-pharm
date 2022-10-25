@@ -18,6 +18,11 @@ class SettingController extends Controller
         $data = Info::get();
         return new JsonResponse($data, 200);
     }
+    public function publicInfo()
+    {
+        $data = Info::first();
+        return new JsonResponse($data, 200);
+    }
 
     public function storeInfo(Request $request)
     {
