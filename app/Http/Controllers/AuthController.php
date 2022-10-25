@@ -135,6 +135,22 @@ class AuthController extends Controller
             // 'valid' => array_merge($validator->validated(), ['password' => bcrypt($request->password)])
         ], 200);
     }
+    public function delete(Request $request)
+    {
+        $user = User::find($request->id);
+        $del = $user->delete();
+
+        if (!$del) {
+            return response()->json([
+                'message' => 'Error on Delete'
+            ], 500);
+        }
+
+        // $user->log("Menghapus Data Transaction {$data->nama}");
+        return response()->json([
+            'message' => 'Data sukses terhapus'
+        ], 200);
+    }
     /**
      * Log the user out (Invalidate the token).
      *
