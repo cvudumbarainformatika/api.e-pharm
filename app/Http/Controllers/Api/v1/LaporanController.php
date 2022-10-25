@@ -652,6 +652,10 @@ class LaporanController extends Controller
 
         $produk = Product::where('id', $header->product_id)->first();
 
+        $data = Transaction::where('status', 1)->with('detail_transaction')->get();
+        $apem = collect($data[0]->detail_transaction)->groupBy('product_id');
+        $qty = $apem[$header->product_id][0]->qty;
+
         $masukBefore = collect($stokMasuk->before)->sum('qty');
         $masukPeriod = collect($stokMasuk->period)->sum('qty');
         $keluarBefore = collect($stokKeluar->before)->sum('qty');
@@ -664,13 +668,15 @@ class LaporanController extends Controller
         $penyePeriod = collect($penyesuaian->period)->sum('qty');
 
         $sebelum = $masukBefore - $keluarBefore + $retJualBefore - $retBeliBefore + $penyeBefore;
-        $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod;
+        $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod - $qty;
         // $awal = $produk->stok_awal + $sebelum;
         $awal = $produk['stok_awal'] + $sebelum;
         $sekarang = $awal + $berjalan;
         $produk->stok_awal = $awal;
         $produk->stokSekarang = $sekarang;
         $produk->stokBerjalan = $berjalan;
+        // $produk->transaksi = $qty;
+
 
         // $data = (object) array(
         //     'produk' => $produk,

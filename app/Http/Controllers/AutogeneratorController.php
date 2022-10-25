@@ -72,8 +72,14 @@ class AutogeneratorController extends Controller
         // $user->password = bcrypt('sekarep12345');
         // $user->save();
 
+        $data = Transaction::where('status', 1)->with('detail_transaction')->get();
+        $apem = collect($data[0]->detail_transaction)->groupBy('product_id');
+        $qty = $apem[1][0]->qty;
 
-        // return new JsonResponse($user);
+        return new JsonResponse([
+            'qty' => $qty,
+            'apem' => $apem,
+        ]);
     }
 
     public function getSingleDetails($header, $nama)
