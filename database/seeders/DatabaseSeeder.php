@@ -227,20 +227,60 @@ class DatabaseSeeder extends Seeder
                 'kasir' => 5,
                 'gudang' => 5,
             ],
+
             'themes' => [
-                'primary'   => '#30268f',
-                'secondary' => '#06b8b8',
-                'accent'    => '#9C27B0',
-                'primary-light'   => '#cac5f0',
-                'dark'      => '#0d101a',
-                'dark-page' => '#0d101a',
-                'dark-light' => '#262e47',
-                'positive'  => '#198754',
-                'negative'  => '#dc3545',
-                'info'      => '#0d6efd',
-                'warning'   => '#d6a100',
-                'danger'   => '#990000',
-                'white'   => '#ffffff',
+                [
+                    "name" => "primary",
+                    "value" => "#1976d2"
+                ],
+                [
+                    "name" => "secondary",
+                    "value" => "#06b8b8"
+                ],
+                [
+                    "name" => "accent",
+                    "value" => "#d511f7"
+                ],
+                [
+                    "name" => "primary-light",
+                    "value" => "#c7c1f7"
+                ],
+                [
+                    "name" => "dark",
+                    "value" => "#0d101a"
+                ],
+                [
+                    "name" => "dark-page",
+                    "value" => "#090c14"
+                ],
+                [
+                    "name" => "dark-light",
+                    "value" => "#262e47"
+                ],
+                [
+                    "name" => "positive",
+                    "value" => "#198754"
+                ],
+                [
+                    "name" => "negative",
+                    "value" => "#c10015"
+                ],
+                [
+                    "name" => "info",
+                    "value" => "#0a6afa"
+                ],
+                [
+                    "name" => "warning",
+                    "value" => "#d6a100"
+                ],
+                [
+                    "name" => "danger",
+                    "value" => "#eb0909"
+                ],
+                [
+                    "name" => "white",
+                    "value" => "#ffffff"
+                ]
             ],
             'menus' => [
                 ['name' => 'dashboard', 'icon' => 'icon-mat-dashboard', 'link' => 'dashboard', 'submenus' => []],
