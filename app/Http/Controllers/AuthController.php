@@ -135,6 +135,22 @@ class AuthController extends Controller
             // 'valid' => array_merge($validator->validated(), ['password' => bcrypt($request->password)])
         ], 200);
     }
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password_confirmation' => 'required',
+            'password' => 'required|string|confirmed|min:6'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 422);
+        }
+        $user = User::find($request->id);
+        $user->password = bcrypt($request->password);
+        if (!$user->save()) {
+            return new JsonResponse(['message' => 'gagal reset Password'], 500);
+        }
+        return new JsonResponse(['message' => 'Berhasil ganti Password'], 200);
+    }
     public function delete(Request $request)
     {
         $user = User::find($request->id);

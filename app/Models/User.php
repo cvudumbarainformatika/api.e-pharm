@@ -24,7 +24,8 @@ class User extends Authenticatable implements JWTSubject
         'level',
         'role',
         'password',
-        'uuid'
+        'uuid',
+        'profile'
     ];
 
     /**
@@ -44,6 +45,7 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'profile' => 'array',
     ];
 
     public function transaction()
