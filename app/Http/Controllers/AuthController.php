@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -137,14 +138,19 @@ class AuthController extends Controller
     }
     public function resetPassword(Request $request)
     {
+        // return new JsonResponse($request->all());
         $validator = Validator::make($request->all(), [
+            'password' => 'required|string|confirmed|min:6',
             'password_confirmation' => 'required',
-            'password' => 'required|string|confirmed|min:6'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 422);
         }
+        // $user = Auth::user();
         $user = User::find($request->id);
+        if (!Hash::check($request->current, $user->password)) {
+            return new JsonResponse(['message' => 'Password yang anda masukkan salah'], 422);
+        }
         $user->password = bcrypt($request->password);
         if (!$user->save()) {
             return new JsonResponse(['message' => 'gagal reset Password'], 500);
