@@ -136,6 +136,30 @@ class AuthController extends Controller
             // 'valid' => array_merge($validator->validated(), ['password' => bcrypt($request->password)])
         ], 200);
     }
+
+    public function upload(Request $request)
+    {
+
+        // $validator = Validator::make($request->all(), [
+        //     'image' => 'required|image|mimes:jpeg,png,jpg'
+        // ]);
+
+        // if ($validator->fails()) {
+        //     return response()->json($validator->errors()->toJson(), 422);
+        // }
+        $path = $request->file('image')->store('image', 'public');
+        if (!$path) {
+            return new JsonResponse(['message' => 'Gambar Gagal Disimpan'], 500);
+        }
+        $user = User::find($request->id);
+        $user->image = $path;
+        if (!$user->save()) {
+            return new JsonResponse(['message' => 'Database Gagal Disimpan'], 500);
+        }
+        return new JsonResponse(['message' => 'Gambar Berhasil Disimpan'], 200);
+    }
+
+
     public function resetPassword(Request $request)
     {
         // return new JsonResponse($request->all());

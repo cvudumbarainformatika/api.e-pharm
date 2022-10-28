@@ -20,6 +20,8 @@ class CreateUsersTable extends Migration
             $table->string('role')->default('kasir');
             $table->string('email')->unique();
             $table->integer('level')->nullable();
+            $table->json('profile')->nullable();
+            $table->string('image')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

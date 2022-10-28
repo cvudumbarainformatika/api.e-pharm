@@ -14,6 +14,7 @@ Route::group([
     Route::get('/all', [AuthController::class, 'userAll']);
     Route::get('/kasir', [AuthController::class, 'userKasir']);
     Route::post('/update', [AuthController::class, 'update']);
+    Route::post('/upload', [AuthController::class, 'upload']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     Route::post('/delete', [AuthController::class, 'delete']);
 });
