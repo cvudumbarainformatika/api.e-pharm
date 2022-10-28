@@ -46,28 +46,28 @@ class DatabaseSeeder extends Seeder
             'email' => 'owner@app.com',
             'role' => 'owner',
             'level' => 2,
-            'password' => bcrypt('12345')
+            'password' => bcrypt('123456')
         ]);
         User::create([
             'name' => 'kasir',
             'email' => 'kasir@app.com',
             'role' => 'kasir',
             'level' => 5,
-            'password' => bcrypt('12345')
+            'password' => bcrypt('123456')
         ]);
         User::create([
             'name' => 'kasir2',
             'email' => 'kasir2@app.com',
             'role' => 'kasir',
             'level' => 5,
-            'password' => bcrypt('12345')
+            'password' => bcrypt('123456')
         ]);
         User::create([
             'name' => 'Gudang',
             'email' => 'gudang@app.com',
             'role' => 'gudang',
             'level' => 5,
-            'password' => bcrypt('12345')
+            'password' => bcrypt('123456')
         ]);
         Satuan::create([
             'nama' => 'PCS'
@@ -289,17 +289,17 @@ class DatabaseSeeder extends Seeder
                     'icon' => 'icon-mat-dataset',
                     'link' => 'master',
                     'submenus' => [
-                        ['name' => 'Satuan', 'icon' => 'icon-mat-gas_meter', 'link' => 'satuan'],
-                        ['name' => 'Rak', 'icon' => 'icon-mat-table_rows', 'link' => 'rak'],
-                        ['name' => 'Kategori', 'icon' => 'icon-mat-category', 'link' => 'kategori'],
-                        ['name' => 'Distributor', 'icon' => 'icon-mat-rv_hookup', 'link' => 'supplier'],
-                        ['name' => 'Dokter', 'icon' => 'icon-mat-medication', 'link' => 'dokter'],
-                        ['name' => 'Produk', 'icon' => 'icon-mat-workspaces', 'link' => 'produk'],
-                        ['name' => 'Pengeluaran', 'icon' => 'icon-mat-assessment', 'link' => 'beban'],
-                        ['name' => 'Pendapatan', 'icon' => 'icon-mat-attach_money', 'link' => 'penerimaan'],
-                        ['name' => 'Customer', 'icon' => 'icon-mat-local_shipping', 'link' => 'customer'],
-                        ['name' => 'Merk', 'icon' => 'icon-mat-auto_awesome_mosaic', 'link' => 'merk'],
-                        ['name' => 'Perusahaan', 'icon' => 'icon-mat-business', 'link' => 'perusahaan']
+                        ['name' => 'Satuan', 'icon' => 'icon-mat-gas_meter', 'link' => 'satuan', 'value' => 'satuan'],
+                        ['name' => 'Rak', 'icon' => 'icon-mat-table_rows', 'link' => 'rak', 'value' => 'rak'],
+                        ['name' => 'Kategori', 'icon' => 'icon-mat-category', 'link' => 'kategori', 'value' => 'kategori'],
+                        ['name' => 'Distributor', 'icon' => 'icon-mat-rv_hookup', 'link' => 'supplier', 'value' => 'supplier'],
+                        ['name' => 'Dokter', 'icon' => 'icon-mat-medication', 'link' => 'dokter', 'value' => 'dokter'],
+                        ['name' => 'Produk', 'icon' => 'icon-mat-workspaces', 'link' => 'produk', 'value' => 'produk'],
+                        ['name' => 'Pengeluaran', 'icon' => 'icon-mat-assessment', 'link' => 'beban', 'value' => 'beban'],
+                        ['name' => 'Pendapatan', 'icon' => 'icon-mat-attach_money', 'link' => 'penerimaan', 'value' => 'penerimaan'],
+                        ['name' => 'Customer', 'icon' => 'icon-mat-local_shipping', 'link' => 'customer', 'value' => 'customer'],
+                        ['name' => 'Merk', 'icon' => 'icon-mat-auto_awesome_mosaic', 'link' => 'merk', 'value' => 'merk'],
+                        ['name' => 'Perusahaan', 'icon' => 'icon-mat-business', 'link' => 'perusahaan', 'value' => 'perusahaan']
 
                     ]
                 ],
