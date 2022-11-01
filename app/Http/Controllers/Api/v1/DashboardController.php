@@ -76,7 +76,7 @@ class DashboardController extends Controller
         $data = Transaction::where('nama', 'PENJUALAN')
             ->where('status', '>=', 2)
             ->whereMonth('tanggal', date('m'))
-            ->latest('tanggal')
+            ->oldest('tanggal')
             ->with('details')->get();
         return $this->dataProses($data);
     }
@@ -88,7 +88,7 @@ class DashboardController extends Controller
             ->where('status', '>=', 2)
             ->where('jenis', 'tunai')
             ->whereMonth('tanggal', date('m'))
-            ->latest('tanggal')
+            ->oldest('tanggal')
             ->with('details')->get();
         return $this->dataProses($data);
     }
@@ -119,7 +119,6 @@ class DashboardController extends Controller
         $data = Transaction::where('nama', 'PENJUALAN')
             ->whereDate('tanggal', '>=', date('Y-m-d', strtotime('monday this week')))
             ->whereDate('tanggal', '<', date('Y-m-d', strtotime('monday next week')))
-            ->latest('tanggal')
             ->with('details')->get();
         return $this->dataProses($data);
     }
@@ -131,7 +130,6 @@ class DashboardController extends Controller
             ->where('jenis', 'tunai')
             ->whereDate('tanggal', '>=', date('Y-m-d', strtotime('this week')))
             ->whereDate('tanggal', '<', date('Y-m-d', strtotime('monday next week')))
-            ->latest('tanggal')
             ->with('details')->get();
         return $this->dataProses($data);
     }
