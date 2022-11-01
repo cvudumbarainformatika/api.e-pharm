@@ -68,7 +68,7 @@ class DashboardController extends Controller
             'prod' => $prod,
             'chart' => $chart,
             'series_qty' => [['data' => $series_qty]],
-            'series_sub_total' => [['data' => $series_sub_total]],
+            'series_sub_total' => [['data' => $series_sub_total, 'name' => 'Penjulan']],
         ];
     }
     public function monthlyProductRank()
