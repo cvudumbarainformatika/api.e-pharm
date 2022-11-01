@@ -281,21 +281,24 @@ class AutogeneratorController extends Controller
         $a = collect($series_qty);
         $b = ['data' => $a];
         $c = (object) $b;
-
+        $week = date('Y-m-d', strtotime('monday this week'));
+        $week2 = date('Y-m-d', strtotime('monday next week'));
         return new JsonResponse([
-            'series_qty' => $c,
-            'data' => $data,
-            'mimaqty' => $mimaqty,
-            'mimasub_total' => $mimasub_total,
-            // 'apem' => $apem,
-            // 'col2' => $col2,
-            'chart' => $chart,
-            'series_sub_total' => $series_sub_total,
-            'prod' => $prod,
-            // 'tgl' => $tgl,
-            'col' => $col,
-            'cl' => $cl,
-            'data' => $data,
+            'week' => $week,
+            'week 2' => $week2,
+            // 'series_qty' => $c,
+            // 'data' => $data,
+            // 'mimaqty' => $mimaqty,
+            // 'mimasub_total' => $mimasub_total,
+            // // 'apem' => $apem,
+            // // 'col2' => $col2,
+            // 'chart' => $chart,
+            // 'series_sub_total' => $series_sub_total,
+            // 'prod' => $prod,
+            // // 'tgl' => $tgl,
+            // 'col' => $col,
+            // 'cl' => $cl,
+            // 'data' => $data,
             // 'tg' => $tg,
         ]);
     }

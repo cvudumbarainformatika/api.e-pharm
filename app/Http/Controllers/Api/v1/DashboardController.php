@@ -115,7 +115,8 @@ class DashboardController extends Controller
     public function lastSevenDays()
     {
         $data = Transaction::where('nama', 'PENJUALAN')
-            ->whereDate('tanggal', '=', date('Y-m-d', strtotime('this week')))
+            ->whereDate('tanggal', '>=', date('Y-m-d', strtotime('monday this week')))
+            ->whereDate('tanggal', '<', date('Y-m-d', strtotime('monday next week')))
             ->with('details')->get();
         return $this->dataProses($data);
     }
@@ -125,7 +126,8 @@ class DashboardController extends Controller
     {
         $data = Transaction::where('nama', 'PENJUALAN')
             ->where('jenis', 'tunai')
-            ->whereDate('tanggal', '=', date('Y-m-d', strtotime('this week')))
+            ->whereDate('tanggal', '>=', date('Y-m-d', strtotime('this week')))
+            ->whereDate('tanggal', '<', date('Y-m-d', strtotime('monday next week')))
             ->with('details')->get();
         return $this->dataProses($data);
     }
