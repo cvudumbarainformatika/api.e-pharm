@@ -23,16 +23,16 @@ Route::get('/', function () {
 });
 Route::view("login", "login");
 Route::view("print.penjualan", "print");
-Route::get('/autogen', [AutogeneratorController::class, 'index']);
-Route::get('/coba', [AutogeneratorController::class, 'coba']);
-Route::get('/cari', [AutogeneratorController::class, 'cari']);
-Route::get('/retur', [AutogeneratorController::class, 'retur']);
-Route::get('/print', [PrintController::class, 'print']);
-Route::get('/hutang', [HutangController::class, 'bayar']);
-Route::get('/piutang', [TagihanController::class, 'piutang']);
-Route::get('/terbayar', [TagihanController::class, 'transaksiTerbayar']);
-Route::get('/dash', [AutogeneratorController::class, 'dashboard']);
-Route::get('/time', function () {
-    echo time();
-});
-Route::get('/get-stok', [LaporanController::class, 'ambilStok']);
+// Route::get('/autogen', [AutogeneratorController::class, 'index']);
+// Route::get('/coba', [AutogeneratorController::class, 'coba']);
+// Route::get('/cari', [AutogeneratorController::class, 'cari']);
+// Route::get('/retur', [AutogeneratorController::class, 'retur']);
+// Route::get('/print', [PrintController::class, 'print']);
+// Route::get('/hutang', [HutangController::class, 'bayar']);
+// Route::get('/piutang', [TagihanController::class, 'piutang']);
+// Route::get('/terbayar', [TagihanController::class, 'transaksiTerbayar']);
+// Route::get('/dash', [AutogeneratorController::class, 'dashboard']);
+// Route::get('/time', function () {
+//     echo time();
+// });
+// Route::get('/get-stok', [LaporanController::class, 'ambilStok']);
