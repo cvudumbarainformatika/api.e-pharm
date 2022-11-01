@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -180,6 +181,122 @@ class AutogeneratorController extends Controller
             'nama' => $nama,
             'tanggal' => $tanggal,
             'data' => $data
+        ]);
+    }
+    public function dashboard()
+    {
+        // penjualan last 7 days
+        // $data = Transaction::where('nama', 'PENJUALAN')
+        //     ->where('jenis', 'tunai')
+        //     ->whereDate('tanggal', '<=', date('Y-m-d'))
+        //     ->whereDate('tanggal', '>=', date('Y-m-d', strtotime('-7 days')))
+        //     ->with('details')->get();
+        // $apem = collect($data)->groupBy('tanggal');
+        // $cl = [];
+        // $tg = [];
+        // foreach ($apem as $a => $value) {
+        //     foreach ($value as $b) {
+        //         foreach ($b->details as $c) {
+        //             $t = new DateTime($a);
+        //             array_push($tg, [
+        //                 'tgl' => $a,
+        //                 'product_id' => $c->product_id,
+        //                 'qty' => $c->qty,
+        //                 'sub_total' => $c->sub_total,
+        //             ]);
+        //         }
+        //     }
+        // }
+        // $col = collect($tg)->groupBy('product_id');
+        // $tgl = collect($tg);
+        // $prod = [];
+        // $sum = [];
+        // foreach ($col as $key => $value) {
+
+        //     array_push($prod, [
+        //         'id' => $key,
+        //         'appear' => $value->count(),
+        //         'sum_qty' => $value->sum('qty'),
+        //         'total' => $value->sum('sub_total'),
+        //     ]);
+        //     array_push($sum, ['id' => $key, 'value' => $value->sum('sub_total')]);
+        // $prod[$key] = $value->count();
+        // $sum[$key] = $value->sum('sub_total');
+        // }
+        // usort($prod, function ($a, $b) {
+        //     if ($a['value'] == $b['value']) return (0);
+        //     return (($a['value'] > $b['value']) ? -1 : 1);
+        // });
+        // usort($sum, function ($a, $b) {
+        //     if ($a['value'] == $b['value']) return (0);
+        //     return (($a['value'] > $b['value']) ? -1 : 1);
+        // });
+
+        $data = Transaction::where('nama', 'PENJUALAN')
+            ->where('status', '>=', 2)
+            ->whereMonth('tanggal', date('m'))
+            ->with('details')->get();
+        $cl = [];
+        foreach ($data as &$key) {
+            foreach ($key->details as $value) {
+                $value->tanggal = date('d-m-Y', strtotime($key->tanggal));
+                array_push($cl, $value);
+            }
+        }
+        $col = collect($cl)->groupBy('tanggal');
+        $col2 = collect($cl)->groupBy('product_id');
+        $chart = [];
+        $series_qty = [];
+        $series_sub_total = [];
+        $chart = [];
+        $prod = [];
+        $miqty = [];
+        $maxqty = [];
+        $misub = [];
+        $maxsub = [];
+        foreach ($col as $key => $value) {
+            $chart[$key]['min_qty'] = $value->min('qty');
+            $chart[$key]['max_qty'] = $value->max('qty');
+            $chart[$key]['min_sub_total'] = $value->min('sub_total');
+            $chart[$key]['max_sub_total'] = $value->max('sub_total');
+
+            // array_push($tgl, $key);
+            array_push($series_qty, [$key, $value->sum('qty')]);
+            array_push($series_sub_total, [$key, $value->sum('sub_total')]);
+        }
+        foreach ($col2 as $key => $value) {
+
+            array_push($miqty, $value->min('qty'));
+            array_push($maxqty, $value->max('qty'));
+            array_push($misub, $value->min('sub_total'));
+            array_push($maxsub, $value->max('sub_total'));
+            array_push($prod, ['id' => $key, 'appear' => $value->count(), 'sum_qty' => $value->sum('qty')]);
+        }
+        $mimaqty = ['min_qty' => $data[0]->details->min('qty'), 'max_qty' => $data[0]->details->max('qty')];
+        $mimasub_total = ['min_sub_total' => $data[0]->details->min('sub_total'), 'max_sub_total' => $data[0]->details->max('sub_total')];
+        usort($prod, function ($a, $b) {
+            if ($a['sum_qty'] == $b['sum_qty']) return (0);
+            return (($a['sum_qty'] > $b['sum_qty']) ? -1 : 1);
+        });
+        $a = collect($series_qty);
+        $b = ['data' => $a];
+        $c = (object) $b;
+
+        return new JsonResponse([
+            'series_qty' => $c,
+            'data' => $data,
+            'mimaqty' => $mimaqty,
+            'mimasub_total' => $mimasub_total,
+            // 'apem' => $apem,
+            // 'col2' => $col2,
+            'chart' => $chart,
+            'series_sub_total' => $series_sub_total,
+            'prod' => $prod,
+            // 'tgl' => $tgl,
+            'col' => $col,
+            'cl' => $cl,
+            'data' => $data,
+            // 'tg' => $tg,
         ]);
     }
 }

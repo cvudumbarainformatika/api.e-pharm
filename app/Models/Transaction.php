@@ -50,6 +50,10 @@ class Transaction extends Model
     {
         return $this->hasMany(DetailTransaction::class);
     }
+    public function details()
+    {
+        return $this->hasMany(DetailTransaction::class);
+    }
 
     // public function
     public function scopeFilter($search, array $reqs)
