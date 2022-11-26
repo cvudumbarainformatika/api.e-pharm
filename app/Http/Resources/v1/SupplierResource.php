@@ -22,7 +22,7 @@ class SupplierResource extends JsonResource
             'perusahaan_id' => $this->perusahaan_id,
             'perusahaan' => $this->whenLoaded('perusahaan'),
             'kontak' => $this->kontak,
-            'saldo_awal_hutang' => $this->saldo_awal_hutang,
+            // 'saldo_awal_hutang' => $this->saldo_awal_hutang,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
