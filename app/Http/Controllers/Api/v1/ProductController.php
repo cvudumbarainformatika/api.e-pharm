@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\ProductResource;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -43,72 +44,84 @@ class ProductController extends Controller
 
             DB::beginTransaction();
 
-            if (!$request->has('id')) {
-
-                $validatedData = Validator::make($request->all(), [
-                    'barcode' => 'required',
-                    'nama' => 'required',
-                    'merk_id' => 'required',
-                    'satuan_id' => 'required',
-                    'pengali' => 'required',
-                    'satuan_id' => 'required',
-                    'harga_beli' => 'required',
-                    'harga_jual_umum' => 'required',
-                    'harga_jual_resep' => 'required',
-                    'harga_jual_cust' => 'required',
-                    'limit_stok' => 'required',
-                    'rak_id' => 'required',
-                    'kategori_id' => 'required',
-                ]);
-                if ($validatedData->fails()) {
-                    return response()->json($validatedData->errors(), 422);
-                }
-
-                Product::create($request->only([
-                    'nama',
-                    'barcode',
-                    'merk_id',
-                    'satuan_id',
-                    'pengali',
-                    'satuan_besar_id',
-                    'harga_beli',
-                    'harga_jual_umum',
-                    'harga_jual_resep',
-                    'harga_jual_cust',
-                    'stok_awal',
-                    'limit_stok',
-                    'rak_id',
-                    'kategori_id'
-                ]));
-                // Product::create([
-                //     'nama' => $request->name
-                // ]);
-
-                // $auth->log("Memasukkan data Product {$user->name}");
-            } else {
-                $kategori = Product::find($request->id);
-                $kategori->update($request->only(
-                    'barcode',
-                    'nama',
-                    'merk_id',
-                    'satuan_id',
-                    'pengali',
-                    'satuan_besar_id',
-                    'harga_beli',
-                    'harga_jual_umum',
-                    'harga_jual_resep',
-                    'harga_jual_cust',
-                    'stok_awal',
-                    'limit_stok',
-                    'rak_id',
-                    'kategori_id',
-                ));
-
-                // $auth->log("Merubah data Product {$user->name}");
+            $validatedData = Validator::make($request->all(), [
+                'barcode' => 'required',
+                'nama' => 'required',
+                'merk_id' => 'required',
+                'satuan_id' => 'required',
+                'pengali' => 'required',
+                'satuan_id' => 'required',
+                'harga_beli' => 'required',
+                'harga_jual_umum' => 'required',
+                'harga_jual_resep' => 'required',
+                'harga_jual_cust' => 'required',
+                'limit_stok' => 'required',
+                'rak_id' => 'required',
+                'kategori_id' => 'required',
+            ]);
+            if ($validatedData->fails()) {
+                return response()->json($validatedData->errors(), 422);
             }
 
+            $data = Product::updateOrCreate([
+                'id' => $request->id
+            ], $request->all());
+            // if (!$request->has('id')) {
+
+
+            //     // Product::create($request->only([
+            //     //     'nama',
+            //     //     'barcode',
+            //     //     'merk_id',
+            //     //     'satuan_id',
+            //     //     'pengali',
+            //     //     'satuan_besar_id',
+            //     //     'harga_beli',
+            //     //     'harga_jual_umum',
+            //     //     'harga_jual_resep',
+            //     //     'harga_jual_cust',
+            //     //     'stok_awal',
+            //     //     'limit_stok',
+            //     //     'rak_id',
+            //     //     'kategori_id'
+            //     // ]));
+            //     // Product::create([
+            //     //     'nama' => $request->name
+            //     // ]);
+            //     Product::create($request->all());
+
+            //     // $auth->log("Memasukkan data Product {$user->name}");
+            // } else {
+            //     $kategori = Product::find($request->id);
+            //     $kategori->update($request->only(
+            //         'barcode',
+            //         'nama',
+            //         'merk_id',
+            //         'satuan_id',
+            //         'pengali',
+            //         'satuan_besar_id',
+            //         'harga_beli',
+            //         'harga_jual_umum',
+            //         'harga_jual_resep',
+            //         'harga_jual_cust',
+            //         'stok_awal',
+            //         'limit_stok',
+            //         'rak_id',
+            //         'kategori_id',
+            //     ));
+
+            //     // $auth->log("Merubah data Product {$user->name}");
+            // }
+
             DB::commit();
-            return response()->json(['message' => 'success'], 201);
+            if (!$data->wasRecentlyCreated) {
+                $status = 200;
+                $pesan = 'Data telah di perbarui';
+            } else {
+                $status = 201;
+                $pesan = 'Data telah di tambakan';
+            }
+            return new JsonResponse(['message' => $pesan], $status);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'ada kesalahan', 'error' => $e], 500);

@@ -32,16 +32,17 @@ class SupplierController extends Controller
 
                 $validatedData = Validator::make($request->all(), [
                     'nama' => 'required',
-                    'alamat' => 'required',
+                    // 'alamat' => 'required',
                     'perusahaan_id' => 'required',
                     'kontak' => 'required',
-                    'saldo_awal_hutang' => 'required',
+                    // 'saldo_awal_hutang' => 'required',
                 ]);
                 if ($validatedData->fails()) {
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Supplier::create($request->only(['nama', 'alamat', 'perusahaan_id', 'kontak', 'saldo_awal_hutang']));
+                // Supplier::create($request->only(['nama', 'alamat', 'perusahaan_id', 'kontak', 'saldo_awal_hutang']));
+                Supplier::create($request->all());
                 // Supplierlier::create([
                 //     'Supplierma' => $request->name
                 // ]);
