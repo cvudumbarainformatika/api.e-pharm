@@ -34,7 +34,7 @@ class SupplierController extends Controller
                     'nama' => 'required',
                     // 'alamat' => 'required',
                     'perusahaan_id' => 'required',
-                    'kontak' => 'required',
+                    // 'kontak' => 'required',
                     // 'saldo_awal_hutang' => 'required',
                 ]);
                 if ($validatedData->fails()) {
