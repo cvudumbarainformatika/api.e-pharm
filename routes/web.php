@@ -31,7 +31,8 @@ Route::view("print.penjualan", "print");
 // Route::get('/hutang', [HutangController::class, 'bayar']);
 // Route::get('/piutang', [TagihanController::class, 'piutang']);
 // Route::get('/terbayar', [TagihanController::class, 'transaksiTerbayar']);
-Route::get('/dash', [AutogeneratorController::class, 'dashboard']);
+// Route::get('/dash', [AutogeneratorController::class, 'dashboard']);
+Route::get('/wawan', [AutogeneratorController::class, 'wawan']);
 // Route::get('/time', function () {
 //     echo time();
 // });

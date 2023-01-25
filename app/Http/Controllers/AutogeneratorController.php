@@ -302,4 +302,10 @@ class AutogeneratorController extends Controller
             // 'tg' => $tg,
         ]);
     }
+
+    public function wawan(){
+
+        $data= 'test';
+        return new JsonResponse($data);
+    }
 }

@@ -53,6 +53,13 @@ class TagihanController extends Controller
             ->with('kasir', 'details.penerimaan', 'details.dokter', 'details.customer')
             ->get();
 
+        foreach ($data as $tagihan) {
+            foreach ($tagihan->details as $detail) {
+                $penjualan = Transaction::where('reff', $detail->nota)->first();
+                $detail->penjualan = $penjualan;
+            }
+        }
+
         return new JsonResponse($data);
     }
 

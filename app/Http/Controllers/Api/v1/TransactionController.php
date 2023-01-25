@@ -184,6 +184,21 @@ class TransactionController extends Controller
 
         // return response()->json(['message' => 'success', 'data' => $data, 'request' => $request->all()], 201);
         // $auth = $request->user();
+        /** percobaan hitung PPN */
+        // if ($request->ongkir > 0 && $request->nama === 'PEMBELIAN') {
+        //     $transaksi = Transaction::where('reff', $request->reff)->with('detail_transaction')->first();
+
+        //     foreach ($transaksi->detail_transaction as $detail) {
+        //         $produk = Product::find($detail->product_id);
+        //         // kalo ada ongkir berarti harga beli tidak di ubah diawal
+        //         // jadi harga baru langsung di naikkan dari harga beli
+        //         $ppn = $produk->harga_beli * $transaksi->ongkir / 100;
+        //         $produk->ppn = $ppn;
+        //         $detail->product = $produk;
+        //     }
+        //     return new JsonResponse($transaksi, 500);
+        // }
+
         $simpan = '';
         $simpan2 = '';
         $array2 = '';
@@ -259,6 +274,30 @@ class TransactionController extends Controller
                     ]);
                 }
             }
+            /*
+            * koding ongkir / PPN  disini
+            * PPN  dalam %
+            */
+            if ($request->ongkir > 0 && $request->nama === 'PEMBELIAN') {
+                $transaksi = Transaction::where('reff', $request->reff)->with('detail_transaction')->first();
+
+                foreach ($transaksi->detail_transaction as $detail) {
+                    $produk = Product::find($detail->product_id);
+                    // kalo ada ongkir berarti harga beli tidak di ubah diawal
+                    // jadi harga baru langsung di naikkan dari harga beli
+                    $ppn = $produk->harga_beli * $transaksi->ongkir / 100;
+                    // $produk->ppn = $ppn;
+                    $produk->update([
+                        'harga_jual_umum' => $produk->harga_jual_umum + $ppn,
+                        'harga_jual_resep' => $produk->harga_jual_resep + $ppn,
+                        'harga_jual_cust' => $produk->harga_jual_cust + $ppn,
+                        'harga_beli' => $produk->harga_beli + $ppn
+                    ]);
+                    // $detail->product = $produk;
+                }
+                // return new JsonResponse($transaksi, 500);
+            }
+
             if ($request->has('pbreff')) {
                 HutangController::statusPembelian($request);
             }
