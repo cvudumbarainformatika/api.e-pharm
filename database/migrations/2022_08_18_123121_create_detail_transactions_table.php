@@ -25,6 +25,7 @@ class CreateDetailTransactionsTable extends Migration
             $table->double('harga')->default(0);
             $table->date('expired')->nullable();
             $table->double('sub_total')->default(0);
+            $table->double('diskon')->default(0);
             $table->timestamps();
         });
     }

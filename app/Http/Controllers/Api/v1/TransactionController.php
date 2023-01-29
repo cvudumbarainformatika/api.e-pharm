@@ -256,6 +256,7 @@ class TransactionController extends Controller
                     'harga' => $request->harga,
                     'qty' => $request->qty,
                     'expired' => $request->expired,
+                    'diskon' => $request->diskon,
                     'sub_total' => $request->sub_total
                 ]);
 
@@ -278,25 +279,27 @@ class TransactionController extends Controller
             * koding ongkir / PPN  disini
             * PPN  dalam %
             */
-            if ($request->ongkir > 0 && $request->nama === 'PEMBELIAN') {
-                $transaksi = Transaction::where('reff', $request->reff)->with('detail_transaction')->first();
+            // if ($request->ongkir > 0 && $request->nama === 'PEMBELIAN') {
+            //     $transaksi = Transaction::where('reff', $request->reff)->with('detail_transaction')->first();
 
-                foreach ($transaksi->detail_transaction as $detail) {
-                    $produk = Product::find($detail->product_id);
-                    // kalo ada ongkir berarti harga beli tidak di ubah diawal
-                    // jadi harga baru langsung di naikkan dari harga beli
-                    $ppn = $produk->harga_beli * $transaksi->ongkir / 100;
-                    // $produk->ppn = $ppn;
-                    $produk->update([
-                        'harga_jual_umum' => $produk->harga_jual_umum + $ppn,
-                        'harga_jual_resep' => $produk->harga_jual_resep + $ppn,
-                        'harga_jual_cust' => $produk->harga_jual_cust + $ppn,
-                        'harga_beli' => $produk->harga_beli + $ppn
-                    ]);
-                    // $detail->product = $produk;
-                }
-                // return new JsonResponse($transaksi, 500);
-            }
+            //     foreach ($transaksi->detail_transaction as $detail) {
+            //         $produk = Product::find($detail->product_id);
+            //         // kalo ada ongkir berarti harga beli tidak di ubah diawal
+            //         // jadi harga baru langsung di naikkan dari harga beli
+            //         // cara hitung => hitung diskon per item dulu, kemudian hitung diskon global, setelah itu di hitung ppn nya
+            //         $ppn = $produk->harga_beli * $transaksi->ongkir / 100;
+            //         $jadiPPN = $ppn <= 0 ? 0 : $ppn;
+            //         // $produk->ppn = $ppn;
+            //         $produk->update([
+            //             'harga_jual_umum' => $produk->harga_jual_umum + $jadiPPN,
+            //             'harga_jual_resep' => $produk->harga_jual_resep + $jadiPPN,
+            //             'harga_jual_cust' => $produk->harga_jual_cust + $jadiPPN,
+            //             'harga_beli' => $produk->harga_beli + $jadiPPN
+            //         ]);
+            //         // $detail->product = $produk;
+            //     }
+            //     // return new JsonResponse($transaksi, 500);
+            // }
 
             if ($request->has('pbreff')) {
                 HutangController::statusPembelian($request);
