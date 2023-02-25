@@ -273,7 +273,14 @@ class LaporanController extends Controller
     public function getTotalByDate()
     {
         $query = Transaction::query();
-        $query->selectRaw('sum(total) as jml,sum(totalSemua) as jlmSmw, sum(potongan) as diskon, sum(ongkir) as ongkos')
+        $query->selectRaw(
+            'sum(total) as jml,
+        sum(totalSemua) as jmlSmw,
+        sum(potongan) as diskon,
+        sum(ongkir) as ongkos'
+            // count(potongan) as cDiskon,
+            // count(ongkir) as cOngkos'
+        )
             ->where('nama', '=', request('nama'))
             ->where('status', '>=', 2)
             ->when(request('supplier_id'), function ($sp, $q) {

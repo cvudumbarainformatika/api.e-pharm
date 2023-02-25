@@ -37,10 +37,10 @@ class HutangController extends Controller
 
         $bayar = Transaction::where('nama', 'PENGELUARAN')
             ->where('supplier_id', '<>', null)
-            ->whereBetween('tanggal', [request('from') . ' 00:00:00', request('to') . ' 23:59:59'])
+            ->whereBetween('tanggal_bayar', [request('from') . ' 00:00:00', request('to') . ' 23:59:59'])
             ->where('status', '=', 2)
             ->with('supplier', 'kasir', 'beban_transaction.beban')
-            ->latest('tanggal')
+            ->latest('tanggal_bayar')
             ->get();
         return new JsonResponse($bayar);
     }
@@ -48,6 +48,7 @@ class HutangController extends Controller
     {
         $data = Transaction::where('reff', $header->pbreff)->first();
         $data->status = 3;
+        $data->tanggal_bayar = $header->tanggal_bayar;
         if (!$data->save()) {
             return new JsonResponse(['message' => 'gagal'], 500);
         }
