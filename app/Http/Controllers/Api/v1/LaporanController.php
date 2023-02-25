@@ -56,14 +56,16 @@ class LaporanController extends Controller
         } else if ($header->selection === 'spesifik') {
             $query->whereDate('tanggal', '=', $header->from);
         } else if ($header->selection === 'range') {
-            $query->whereDate('tanggal', '>=', $header->from)->whereDate('tanggal', '<=', $header->to);
+            // $query->whereDate('tanggal', '>=', $header->from)->whereDate('tanggal', '<=', $header->to);
+            $query->whereBetween('tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59']);
         }
     }
     // sepertinya ga ada yang pake, ga bisa masuk query
     public function getPeriod($query, $header)
     {
         $beforePeriod = $query->whereDate('tanggal', '<', $header->from);
-        $Period = $query->whereDate('tanggal', '>=', $header->from)->whereDate('tanggal', '<=', $header->to);
+        // $Period = $query->whereDate('tanggal', '>=', $header->from)->whereDate('tanggal', '<=', $header->to);
+        $Period = $query->whereBetween('tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59']);
         $data = (object) array(
             'beforePeriod' => $beforePeriod,
             'period' => $Period
@@ -88,8 +90,9 @@ class LaporanController extends Controller
                 ->whereHas('transaction', function ($f) use ($header, $nama) {
                     $f->where('nama', '=', $nama)
                         ->where('status', '>=', 2)
-                        ->whereDate('tanggal', '>=', $header->from)
-                        ->whereDate('tanggal', '<=', $header->to);
+                        ->whereBetween('tanggal',  [$header->from . ' 00:00:00', $header->to . ' 23:59:59']);
+                    // ->whereDate('tanggal', '>=', $header->from)
+                    // ->whereDate('tanggal', '<=', $header->to);
                 })->groupBy('product_id')->get();
         } else if ($header->selection === 'tillToday') {
             $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
