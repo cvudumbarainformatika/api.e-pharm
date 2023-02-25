@@ -38,6 +38,7 @@ class TagihanController extends Controller
     public function tagihanTerbayar()
     {
         $data = Tagihan::where('nama', 'TAGIHAN')
+            ->whereBetween('tanggal', [request('from') . ' 00:00:00', request('to') . ' 23:59:59'])
             ->where('status', '=', 3)
             ->latest('tanggal')
             ->with('kasir', 'details.penerimaan', 'details.dokter', 'details.customer')

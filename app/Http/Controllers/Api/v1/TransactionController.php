@@ -304,12 +304,12 @@ class TransactionController extends Controller
                         // selisih harga = harga / totalHaga * selisihTotal
                         // $selisihHarga = round($detail->harga / $subDetail * $selisihtotal, 2);
                         $selisihHarga = ceil($detail->harga / $subDetail * $selisihtotal);
-
+                        $gap = $selisihHarga <= 0 ? 0 : $selisihHarga;
                         $produk->update([
-                            'harga_jual_umum' => $produk->harga_jual_umum + $selisihHarga,
-                            'harga_jual_resep' => $produk->harga_jual_resep + $selisihHarga,
-                            'harga_jual_cust' => $produk->harga_jual_cust + $selisihHarga,
-                            'harga_beli' => $produk->harga_beli + $selisihHarga
+                            'harga_jual_umum' => $produk->harga_jual_umum + $gap,
+                            'harga_jual_resep' => $produk->harga_jual_resep + $gap,
+                            'harga_jual_cust' => $produk->harga_jual_cust + $gap,
+                            'harga_beli' => $produk->harga_beli + $gap
                         ]);
                     }
                 }
