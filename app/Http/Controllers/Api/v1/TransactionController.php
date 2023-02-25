@@ -148,7 +148,7 @@ class TransactionController extends Controller
         } else if ($date === 'spesifik') {
             $query->whereDate('tanggal', '=', $from);
         } else {
-            $query->whereBetween('tanggal', [$from, $to]);
+            $query->whereBetween('tanggal', [$from . ' 00:00:00', $to . ' 23:59:59']);
         }
     }
 
@@ -258,14 +258,14 @@ class TransactionController extends Controller
                 ]);
                 $simpan = $data;
             } else if ($request->has('product_id') && $request->qty > 0) {
-
+                $diskon = $request->has('diskon') && $request->diskon !== null ? $request->diskon : 0;
                 $data->detail_transaction()->updateOrCreate([
                     'product_id' => $request->product_id,
                 ], [
                     'harga' => $request->harga,
                     'qty' => $request->qty,
                     'expired' => $request->expired,
-                    'diskon' => $request->diskon,
+                    'diskon' => $diskon,
                     'sub_total' => $request->sub_total
                 ]);
 
@@ -280,7 +280,8 @@ class TransactionController extends Controller
                         'harga_jual_umum' => $produk->harga_jual_umum + $selisih,
                         'harga_jual_resep' => $produk->harga_jual_resep + $selisih,
                         'harga_jual_cust' => $produk->harga_jual_cust + $selisih,
-                        'harga_beli' => $request->harga
+                        // 'harga_beli' => $request->harga
+                        'harga_beli' => $request->harga_beli + $selisih
                     ]);
                 }
             }
@@ -304,7 +305,9 @@ class TransactionController extends Controller
                         // selisih harga = harga / totalHaga * selisihTotal
                         // $selisihHarga = round($detail->harga / $subDetail * $selisihtotal, 2);
                         $selisihHarga = ceil($detail->harga / $subDetail * $selisihtotal);
-                        $gap = $selisihHarga <= 0 ? 0 : $selisihHarga;
+                        $hargaBaru = $detail->harga + $selisihHarga;
+                        $selishiBaru = $hargaBaru - $produk->harga_beli;
+                        $gap = $selishiBaru <= 0 ? 0 : $selishiBaru;
                         $produk->update([
                             'harga_jual_umum' => $produk->harga_jual_umum + $gap,
                             'harga_jual_resep' => $produk->harga_jual_resep + $gap,
@@ -314,17 +317,17 @@ class TransactionController extends Controller
                     }
                 }
 
-                foreach ($transaksi->detail_transaction as $detail) {
-                    $produk = Product::find($detail->product_id);
-                    // kalo ada ongkir berarti harga beli tidak di ubah diawal
-                    // jadi harga baru langsung di naikkan dari harga beli
-                    // cara hitung => hitung diskon per item dulu, kemudian hitung diskon global, setelah itu di hitung ppn nya
-                    $ppn = $produk->harga_beli * $transaksi->ongkir / 100;
-                    $jadiPPN = $ppn <= 0 ? 0 : $ppn;
-                    // $produk->ppn = $ppn;
+                // foreach ($transaksi->detail_transaction as $detail) {
+                //     $produk = Product::find($detail->product_id);
+                //     // kalo ada ongkir berarti harga beli tidak di ubah diawal
+                //     // jadi harga baru langsung di naikkan dari harga beli
+                //     // cara hitung => hitung diskon per item dulu, kemudian hitung diskon global, setelah itu di hitung ppn nya
+                //     $ppn = $produk->harga_beli * $transaksi->ongkir / 100;
+                //     $jadiPPN = $ppn <= 0 ? 0 : $ppn;
+                //     // $produk->ppn = $ppn;
 
-                    // $detail->product = $produk;
-                }
+                //     // $detail->product = $produk;
+                // }
                 // return new JsonResponse($transaksi, 500);
             }
 

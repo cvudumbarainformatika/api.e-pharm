@@ -24,6 +24,7 @@ class HutangController extends Controller
     {
         $data = Transaction::where('nama', 'PEMBELIAN')
             ->where('jenis', 'hutang')
+            ->whereBetween('tanggal', [request('from') . ' 00:00:00', request('to') . ' 23:59:59'])
             ->where('status', '>', 2)
             ->with('supplier', 'detail_transaction.product')
             ->latest('updated_at')
@@ -36,6 +37,7 @@ class HutangController extends Controller
 
         $bayar = Transaction::where('nama', 'PENGELUARAN')
             ->where('supplier_id', '<>', null)
+            ->whereBetween('tanggal', [request('from') . ' 00:00:00', request('to') . ' 23:59:59'])
             ->where('status', '=', 2)
             ->with('supplier', 'kasir', 'beban_transaction.beban')
             ->latest('tanggal')

@@ -34,7 +34,7 @@ class LaporanController extends Controller
         } else if ($date === 'spesifik') {
             $query->whereDate('tanggal', '=', $from);
         } else {
-            $query->whereBetween('tanggal', [$from, $to]);
+            $query->whereBetween('tanggal', [$from . ' 00:00:00', $to . ' 23:59:59']);
         }
     }
 
@@ -273,7 +273,7 @@ class LaporanController extends Controller
     public function getTotalByDate()
     {
         $query = Transaction::query();
-        $query->selectRaw('sum(total) as jml, sum(potongan) as diskon, sum(ongkir) as ongkos')
+        $query->selectRaw('sum(total) as jml,sum(totalSemua) as jlmSmw, sum(potongan) as diskon, sum(ongkir) as ongkos')
             ->where('nama', '=', request('nama'))
             ->where('status', '>=', 2)
             ->when(request('supplier_id'), function ($sp, $q) {
@@ -292,6 +292,7 @@ class LaporanController extends Controller
         // ->with(['detail_transaction', 'penerimaan_transaction', 'beban_transaction', 'dokter', 'customer', 'supplier'])
         $this->periode($query, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
         $data = $query->get();
+
 
         return new JsonResponse($data);
     }
