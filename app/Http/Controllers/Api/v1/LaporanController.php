@@ -663,8 +663,9 @@ class LaporanController extends Controller
 
         $produk = Product::where('id', $header->product_id)->first();
 
-        $data = Transaction::where('status', 1)->with('detail_transaction')->get();
-        $apem = collect($data[0]->detail_transaction)->groupBy('product_id');
+        $data = Transaction::where('status', 1)->where('reff', request('reff'))->with('detail_transaction')->first();
+        $apem = collect($data->detail_transaction)->groupBy('product_id');
+        // $apem = collect($data['detail_transaction'])->groupBy('product_id');
         $qty = $apem[$header->product_id][0]->qty;
 
         $masukBefore = collect($stokMasuk->before)->sum('qty');
@@ -686,6 +687,9 @@ class LaporanController extends Controller
         $produk->stok_awal = $awal;
         $produk->stokSekarang = $sekarang;
         $produk->stokBerjalan = $berjalan;
+        // $produk->apem = $apem;
+        // $produk->data = $data;
+        // $produk->request = request()->all();
         // $produk->transaksi = $qty;
 
 

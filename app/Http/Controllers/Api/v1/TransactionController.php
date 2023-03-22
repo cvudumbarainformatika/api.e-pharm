@@ -280,8 +280,8 @@ class TransactionController extends Controller
                         'harga_jual_umum' => $produk->harga_jual_umum + $selisih,
                         'harga_jual_resep' => $produk->harga_jual_resep + $selisih,
                         'harga_jual_cust' => $produk->harga_jual_cust + $selisih,
-                        // 'harga_beli' => $request->harga
-                        'harga_beli' => $request->harga_beli + $selisih
+                        'harga_beli' => $request->harga
+                        // 'harga_beli' => $request->harga_beli + $selisih
                     ]);
                 }
             }
@@ -289,47 +289,47 @@ class TransactionController extends Controller
             * koding ongkir / PPN  disini
             * PPN  dalam %
             */
-            if ($request->ongkir > 0 && $request->nama === 'PEMBELIAN' && $request->status === 2) {
-                $transaksi = Transaction::where('reff', $request->reff)->with('detail_transaction')->first();
-                $subDetail = collect($transaksi->detail_transaction)->map(function ($item, $key) {
-                    return $item->qty * $item->harga;
-                })->sum();
-                $selisihtotal = $request->totalSemua - $subDetail;
-                if ($selisihtotal > 0) {
-                    $harga_di_update = 'Harga Di Update';
-                    foreach ($transaksi->detail_transaction as $detail) {
-                        $produk = Product::find($detail->product_id);
-                        // kalo ada ongkir berarti harga beli tidak di ubah diawal
-                        // jadi harga baru langsung di naikkan dari harga beli
+            // if ($request->ongkir > 0 && $request->nama === 'PEMBELIAN' && $request->status === 2) {
+            //     $transaksi = Transaction::where('reff', $request->reff)->with('detail_transaction')->first();
+            //     $subDetail = collect($transaksi->detail_transaction)->map(function ($item, $key) {
+            //         return $item->qty * $item->harga;
+            //     })->sum();
+            //     $selisihtotal = $request->totalSemua - $subDetail;
+            //     if ($selisihtotal > 0) {
+            //         $harga_di_update = 'Harga Di Update';
+            //         foreach ($transaksi->detail_transaction as $detail) {
+            //             $produk = Product::find($detail->product_id);
+            //             // kalo ada ongkir berarti harga beli tidak di ubah diawal
+            //             // jadi harga baru langsung di naikkan dari harga beli
 
-                        // selisih harga = harga / totalHaga * selisihTotal
-                        // $selisihHarga = round($detail->harga / $subDetail * $selisihtotal, 2);
-                        $selisihHarga = ceil($detail->harga / $subDetail * $selisihtotal);
-                        $hargaBaru = $detail->harga + $selisihHarga;
-                        $selishiBaru = $hargaBaru - $produk->harga_beli;
-                        $gap = $selishiBaru <= 0 ? 0 : $selishiBaru;
-                        $produk->update([
-                            'harga_jual_umum' => $produk->harga_jual_umum + $gap,
-                            'harga_jual_resep' => $produk->harga_jual_resep + $gap,
-                            'harga_jual_cust' => $produk->harga_jual_cust + $gap,
-                            'harga_beli' => $produk->harga_beli + $gap
-                        ]);
-                    }
-                }
+            //             // selisih harga = harga / totalHaga * selisihTotal
+            //             // $selisihHarga = round($detail->harga / $subDetail * $selisihtotal, 2);
+            //             $selisihHarga = ceil($detail->harga / $subDetail * $selisihtotal);
+            //             $hargaBaru = $detail->harga + $selisihHarga;
+            //             $selishiBaru = $hargaBaru - $produk->harga_beli;
+            //             $gap = $selishiBaru <= 0 ? 0 : $selishiBaru;
+            //             $produk->update([
+            //                 'harga_jual_umum' => $produk->harga_jual_umum + $gap,
+            //                 'harga_jual_resep' => $produk->harga_jual_resep + $gap,
+            //                 'harga_jual_cust' => $produk->harga_jual_cust + $gap,
+            //                 'harga_beli' => $produk->harga_beli + $gap
+            //             ]);
+            //         }
+            //     }
 
-                // foreach ($transaksi->detail_transaction as $detail) {
-                //     $produk = Product::find($detail->product_id);
-                //     // kalo ada ongkir berarti harga beli tidak di ubah diawal
-                //     // jadi harga baru langsung di naikkan dari harga beli
-                //     // cara hitung => hitung diskon per item dulu, kemudian hitung diskon global, setelah itu di hitung ppn nya
-                //     $ppn = $produk->harga_beli * $transaksi->ongkir / 100;
-                //     $jadiPPN = $ppn <= 0 ? 0 : $ppn;
-                //     // $produk->ppn = $ppn;
+            //     // foreach ($transaksi->detail_transaction as $detail) {
+            //     //     $produk = Product::find($detail->product_id);
+            //     //     // kalo ada ongkir berarti harga beli tidak di ubah diawal
+            //     //     // jadi harga baru langsung di naikkan dari harga beli
+            //     //     // cara hitung => hitung diskon per item dulu, kemudian hitung diskon global, setelah itu di hitung ppn nya
+            //     //     $ppn = $produk->harga_beli * $transaksi->ongkir / 100;
+            //     //     $jadiPPN = $ppn <= 0 ? 0 : $ppn;
+            //     //     // $produk->ppn = $ppn;
 
-                //     // $detail->product = $produk;
-                // }
-                // return new JsonResponse($transaksi, 500);
-            }
+            //     //     // $detail->product = $produk;
+            //     // }
+            //     // return new JsonResponse($transaksi, 500);
+            // }
 
             if ($request->has('pbreff')) {
                 HutangController::statusPembelian($request);
