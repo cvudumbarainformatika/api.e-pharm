@@ -112,10 +112,10 @@ class DatabaseSeeder extends Seeder
             'nama' => 'NON-GENERIK'
         ]);
         Rak::create([
-            'nama' => '1 A ATAS'
+            'nama' => 'KAPSUL'
         ]);
         Rak::create([
-            'nama' => '1 A BAWAH'
+            'nama' => 'SALEP'
         ]);
         Product::create([
             'barcode' => 214323231,
