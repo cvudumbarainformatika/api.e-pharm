@@ -24,7 +24,7 @@ class CreateDetailTagihansTable extends Migration
             $table->unsignedBigInteger('dokter_id')->nullable();
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->string('nota')->nullable();
-            $table->double('sub_total')->default(1);
+            $table->double('sub_total', 20, 2)->default(1);
             $table->string('keterangan')->nullable();
             $table->timestamps();
         });

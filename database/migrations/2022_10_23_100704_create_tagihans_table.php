@@ -20,7 +20,8 @@ class CreateTagihansTable extends Migration
             $table->string('nama')->nullable();
             $table->dateTime('tanggal')->nullable();
             $table->unsignedBigInteger('kasir_id')->nullable();
-            $table->double('total')->default(0);
+            $table->unsignedBigInteger('dokter_id')->nullable();
+            $table->double('total', 20, 2)->default(0);
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });

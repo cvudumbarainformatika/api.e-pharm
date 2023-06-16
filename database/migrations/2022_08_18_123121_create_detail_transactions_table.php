@@ -21,11 +21,11 @@ class CreateDetailTransactionsTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->unsignedBigInteger('product_id')->nullable();
-            $table->double('qty')->default(0);
-            $table->double('harga')->default(0);
+            $table->double('qty', 20, 2)->default(0);
+            $table->double('harga', 20, 2)->default(0);
             $table->date('expired')->nullable();
-            $table->double('sub_total')->default(0);
-            $table->double('diskon')->default(0);
+            $table->double('sub_total', 20, 3)->default(0);
+            $table->double('diskon', 20, 3)->default(0);
             $table->timestamps();
         });
     }

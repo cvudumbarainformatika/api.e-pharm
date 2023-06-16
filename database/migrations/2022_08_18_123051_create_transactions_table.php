@@ -21,13 +21,16 @@ class CreateTransactionsTable extends Migration
             $table->dateTime('tanggal')->nullable();
             $table->string('nama')->nullable();
             $table->json('pasien')->nullable();
-            $table->enum('jenis', ['tunai', 'hutang', 'piutang'])->default('tunai');
-            $table->double('total')->default(0);
-            $table->double('ongkir')->default(0);
-            $table->double('potongan')->default(0);
-            $table->double('bayar')->default(0);
-            $table->double('kembali')->default(0);
+            $table->enum('jenis', ['tunai', 'hutang', 'piutang', 'non-tunai'])->default('tunai');
+            $table->double('total', 20, 2)->default(0);
+            $table->double('totalSemua', 20, 2)->default(0);
+            $table->double('ongkir', 20, 2)->default(0);
+            $table->double('potongan', 10, 2)->default(0);
+            $table->double('bayar', 20, 2)->default(0);
+            $table->double('kembali', 20, 2)->default(0);
             $table->date('tempo')->nullable();
+            $table->date('tanggal_faktur')->nullable();
+            $table->date('tanggal_bayar')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('kasir_id')->nullable(); // kasir_id adalah user dengan role kasir
             $table->unsignedBigInteger('supplier_id')->nullable();

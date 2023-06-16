@@ -22,10 +22,10 @@ class CreateProductsTable extends Migration
             $table->unsignedBigInteger('satuan_id')->nunllable();
             $table->unsignedBigInteger('pengali')->nunllable();
             $table->unsignedBigInteger('satuan_besar_id')->nunllable();
-            $table->double('harga_beli')->default(0);
-            $table->double('harga_jual_umum')->default(0);
-            $table->double('harga_jual_resep')->default(0);
-            $table->double('harga_jual_cust')->default(0);
+            $table->double('harga_beli', 20, 2)->default(0);
+            $table->double('harga_jual_umum', 20, 2)->default(0);
+            $table->double('harga_jual_resep', 20, 2)->default(0);
+            $table->double('harga_jual_cust', 20, 2)->default(0);
             $table->double('stok_awal')->default(0);
             $table->double('limit_stok')->default(2);
             $table->unsignedBigInteger('rak_id')->nullable();
