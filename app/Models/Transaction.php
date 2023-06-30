@@ -60,7 +60,8 @@ class Transaction extends Model
     {
         $search->when($reqs['q'] ?? false, function ($search, $query) {
             return $search->where('faktur', 'LIKE', '%' . $query . '%')
-                ->orWhere('reff', 'LIKE', '%' . $query . '%');
+                ->orWhere('reff', 'LIKE', '%' . $query . '%')
+                ->orWhere('nota', 'LIKE', '%' . $query . '%');
             // ->orWhere('nama', 'LIKE', '%' . $query . '%')
         });
 

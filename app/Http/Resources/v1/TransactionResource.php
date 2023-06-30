@@ -32,6 +32,7 @@ class TransactionResource extends JsonResource
             'kembali' => $this->kembali,
             'tempo' => $this->tempo,
             'user_id' => $this->user_id,
+            'nota' => $this->nota,
             'user' => $this->whenLoaded('user'),
             'kasir_id' => $this->kasir_id,
             'kasir' => $this->whenLoaded('kasir'),

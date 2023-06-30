@@ -303,9 +303,11 @@ class AutogeneratorController extends Controller
         ]);
     }
 
-    public function wawan(){
+    public function wawan()
+    {
 
-        $data= 'test';
-        return new JsonResponse($data);
+        $data = 'PNSDA-apem';
+        $return = explode('-', $data);
+        return new JsonResponse($return[0]);
     }
 }
