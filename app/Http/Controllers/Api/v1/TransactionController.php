@@ -92,7 +92,8 @@ class TransactionController extends Controller
                         $det['qty'] = $jumlah;
                         $det['sub_total'] = $sub;
                         $key['total'] = $tot;
-                        $key['kembali'] = $tot;
+                        $kem = $key['kembali'];
+                        $key['kembali'] = $key['bayar'] - $tot - $kem;
                     }
                 }
             }
