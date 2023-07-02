@@ -211,35 +211,6 @@ class TransactionController extends Controller
     }
     public function store(Request $request)
     {
-        // $data = $request->all();
-
-        // unset($data['reff']);
-
-        // return response()->json(['message' => 'success', 'data' => $data, 'request' => $request->all()], 201);
-        // $auth = $request->user();
-        /** percobaan hitung PPN */
-        // if ($request->ongkir > 0 && $request->nama === 'PEMBELIAN') {
-        //     $transaksi = Transaction::where('reff', $request->reff)->with('detail_transaction')->first();
-        //     $subDetail = collect($transaksi->detail_transaction)->map(function ($item, $key) {
-        //         return $item->qty * $item->harga;
-        //     })->sum();
-        //     $selisihtotal = $request->totalSemua - $subDetail;
-        //     if ($selisihtotal > 0) {
-        //         foreach ($transaksi->detail_transaction as $detail) {
-        //             $produk = Product::find($detail->product_id);
-        //             // kalo ada ongkir berarti harga beli tidak di ubah diawal
-        //             // jadi harga baru langsung di naikkan dari harga beli
-        //             // $ppn = $produk->harga_beli * $transaksi->ongkir / 100;
-        //             // $produk->ppn = $ppn;
-        //             // $detail->product = $produk;
-        //             // selisih harga = harga / totalHaga * selisihTotal
-        //             $selisihHarga = $detail->harga / $subDetail * $selisihtotal;
-        //             $detail->selisih = round($selisihHarga, 2);
-        //             $detail->produk = $produk;
-        //         }
-        //     }
-        //     return new JsonResponse(['sub' => $subDetail, 're' => $request->all(), 'tr' => $transaksi], 410);
-        // }
 
         $simpan = '';
         $simpan2 = '';
@@ -249,7 +220,7 @@ class TransactionController extends Controller
         $secondArray['tanggal'] = date('Y-m-d H:i:s');
         $count = Transaction::where('nama', $request->nama)
             ->whereBetween('tanggal', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
-            ->where('status', '=', 2)
+            ->where('status', '>=', 2)
             ->count();
         $pre = explode('-', $request->reff);
         $secondArray['nota'] = $request->status === 2 ? $this->nomoring($count) : null;
