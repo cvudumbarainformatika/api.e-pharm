@@ -299,12 +299,45 @@ class LaporanController extends Controller
                 return $sp->where('dokter_id', '=', null)
                     ->where('customer_id', '=', null);
             });
-        // ->with(['detail_transaction', 'penerimaan_transaction', 'beban_transaction', 'dokter', 'customer', 'supplier'])
         $this->periode($query, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
         $data = $query->get();
 
 
         return new JsonResponse($data);
+    }
+    // hitung transaksi milik _id terkait
+    public function getTotalReturByDate()
+    {
+        $nama = request('nama') === 'PENJUALAN' ? 'RETUR PENJUALAN' : 'RETUR PEMBELIAN';
+        $query = Transaction::query();
+        $query->selectRaw(
+            'sum(total) as jml,
+        sum(totalSemua) as jmlSmw,
+        sum(potongan) as diskon,
+        sum(ongkir) as ongkos'
+            // count(potongan) as cDiskon,
+            // count(ongkir) as cOngkos'
+        )
+            ->where('nama', '=', $nama)
+            ->where('status', '>=', 2)
+            ->when(request('supplier_id'), function ($sp, $q) {
+                return $sp->where('supplier_id', '=', $q);
+            })
+            ->when(request('customer_id'), function ($sp) {
+                return $sp->where('customer_id', '=', request('customer_id'));
+            })
+            ->when(request('dokter_id'), function ($sp) {
+                return $sp->where('dokter_id', '=', request('dokter_id'));
+            })
+            ->when(request('umum'), function ($sp) {
+                return $sp->where('dokter_id', '=', null)
+                    ->where('customer_id', '=', null);
+            });
+        $this->periode($query, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
+        $data = $query->get();
+
+
+        return new JsonResponse(['data' => $data, 'nama' => $nama]);
     }
 
 

@@ -70,7 +70,7 @@ class DetailTransactionController extends Controller
         } else if ($date === 'spesifik') {
             $query->whereDate('tanggal', '=', $from);
         } else {
-            $query->whereBetween('tanggal', [$from, $to]);
+            $query->whereBetween('tanggal', [$from . ' 00:00:00', $to . ' 23:59:59']);
         }
     }
 
@@ -80,7 +80,7 @@ class DetailTransactionController extends Controller
         $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');
         $query->whereHas('transaction', function ($gg) {
             $gg->where('nama', '=', request('nama'))
-                ->where('status', '=', 2)
+                ->whereIn('status', [2, 3])
                 ->when(request('supplier_id'), function ($sp, $q) {
                     return $sp->where('supplier_id', '=', $q);
                 })
