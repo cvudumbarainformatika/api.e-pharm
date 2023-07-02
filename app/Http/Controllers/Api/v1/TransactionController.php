@@ -209,6 +209,21 @@ class TransactionController extends Controller
         }
         return date('dmY') . $has  . $a;
     }
+    public function gantiStatus(Request $request)
+    {
+
+        $validatedData = Validator::make($request->all(), [
+            'reff' => 'required',
+        ]);
+        if ($validatedData->fails()) {
+            return response()->json($validatedData->errors(), 422);
+        }
+        $data = Transaction::where('reff', $request->reff)->first();
+        $data->update([
+            'status' => $request->status
+        ]);
+        return new JsonResponse(['message' => 'Status sudah diganti']);
+    }
     public function store(Request $request)
     {
 

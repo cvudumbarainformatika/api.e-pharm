@@ -19,5 +19,6 @@ Route::group([
     Route::get('/get-by-date', [TransactionController::class, 'getByDate']);
     Route::get('/destroy-draft', [TransactionController::class, 'destroyDraft']);
     Route::post('/store', [TransactionController::class, 'store']);
+    Route::post('/ganti-status', [TransactionController::class, 'gantiStatus']);
     Route::post('/destroy', [TransactionController::class, 'destroy']);
 });
