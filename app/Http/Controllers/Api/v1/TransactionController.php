@@ -177,12 +177,13 @@ class TransactionController extends Controller
     }
     public static function nomoring($n)
     {
+        $a = $n + 1;
         $has = null;
-        $lbr = strlen($n);
+        $lbr = strlen($a);
         for ($i = 1; $i <= 5 - $lbr; $i++) {
             $has = $has . "0";
         }
-        return date('dmY') . $has  . $n;
+        return date('dmY') . $has  . $a;
     }
     public function store(Request $request)
     {
@@ -222,7 +223,10 @@ class TransactionController extends Controller
         $harga_di_update = '';
         $secondArray = $request->all();
         $secondArray['tanggal'] = date('Y-m-d H:i:s');
-        $count = Transaction::where('nama', $request->nama)->whereBetween('tanggal', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])->count();
+        $count = Transaction::where('nama', $request->nama)
+            ->whereBetween('tanggal', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
+            ->where('status', '=', 2)
+            ->count();
         $pre = explode('-', $request->reff);
         $secondArray['nota'] = $request->status === 2 ? $this->nomoring($count) : null;
         unset($secondArray['reff']);
