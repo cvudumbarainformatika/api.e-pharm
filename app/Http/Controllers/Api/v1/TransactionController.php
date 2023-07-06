@@ -296,20 +296,20 @@ class TransactionController extends Controller
                 ]);
 
                 // update harga_beli di produk dan harga jual juga
-                if ($request->update_harga) {
-                    $harga_di_update = 'Harga Di Update';
-                    $produk = Product::find($request->product_id);
-                    $selisi = $request->harga - $produk->harga_beli;
-                    $selisih = $selisi <= 0 ? 0 : $selisi;
+                // if ($request->update_harga) {
+                //     $harga_di_update = 'Harga Di Update';
+                //     $produk = Product::find($request->product_id);
+                //     $selisi = $request->harga - $produk->harga_beli;
+                //     $selisih = $selisi <= 0 ? 0 : $selisi;
 
-                    $produk->update([
-                        'harga_jual_umum' => $produk->harga_jual_umum + $selisih,
-                        'harga_jual_resep' => $produk->harga_jual_resep + $selisih,
-                        'harga_jual_cust' => $produk->harga_jual_cust + $selisih,
-                        'harga_beli' => $request->harga
-                        // 'harga_beli' => $request->harga_beli + $selisih
-                    ]);
-                }
+                //     $produk->update([
+                //         'harga_jual_umum' => $produk->harga_jual_umum + $selisih,
+                //         'harga_jual_resep' => $produk->harga_jual_resep + $selisih,
+                //         'harga_jual_cust' => $produk->harga_jual_cust + $selisih,
+                //         'harga_beli' => $request->harga
+                //         // 'harga_beli' => $request->harga_beli + $selisih
+                //     ]);
+                // }
             }
             /*
             * koding ongkir / PPN  disini
