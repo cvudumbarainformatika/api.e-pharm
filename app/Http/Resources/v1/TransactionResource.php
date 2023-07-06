@@ -30,6 +30,7 @@ class TransactionResource extends JsonResource
             'potongan' => $this->potongan,
             'bayar' => $this->bayar,
             'kembali' => $this->kembali,
+            'embalase' => $this->embalase,
             'tempo' => $this->tempo,
             'user_id' => $this->user_id,
             'nota' => $this->nota,
