@@ -233,7 +233,7 @@ class TransactionController extends Controller
         $array2 = '';
         $harga_di_update = '';
         $secondArray = $request->all();
-        $secondArray['tanggal'] = date('Y-m-d H:i:s');
+        $secondArray['tanggal'] = $request->tanggal ? $request->tanggal : date('Y-m-d H:i:s');
         $count = Transaction::where('nama', $request->nama)
             ->whereBetween('tanggal', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
             ->where('status', '>=', 2)
@@ -283,33 +283,72 @@ class TransactionController extends Controller
 
                 ]);
                 $simpan = $data;
-            } else if ($request->has('product_id') && $request->qty > 0) {
+            } else if ($request->has('product_id') && $request->nama === 'FORM PENYESUAIAN') {
                 $diskon = $request->has('diskon') && $request->diskon !== null ? $request->diskon : 0;
+                $harga = $request->has('harga') && $request->harga !== null ? $request->harga : 0;
+                $sub_total = $request->has('sub_total') && $request->sub_total !== null ? $request->sub_total : 0;
+                $expired = $request->has('expired') && $request->expired !== null ? $request->expired : null;
                 $data->detail_transaction()->updateOrCreate([
                     'product_id' => $request->product_id,
                 ], [
-                    'harga' => $request->harga,
+                    'harga' => $harga,
                     'qty' => $request->qty,
-                    'expired' => $request->expired,
+                    'expired' => $expired,
                     'diskon' => $diskon,
-                    'sub_total' => $request->sub_total
+                    'sub_total' => $sub_total
                 ]);
 
                 // update harga_beli di produk dan harga jual juga
                 // if ($request->update_harga) {
                 //     $harga_di_update = 'Harga Di Update';
                 //     $produk = Product::find($request->product_id);
-                //     $selisi = $request->harga - $produk->harga_beli;
-                //     $selisih = $selisi <= 0 ? 0 : $selisi;
+                //     $selisih = $request->harga - $produk->harga_beli;
+                //     // $selisi = $request->harga - $produk->harga_beli;
+                //     // $selisih = $selisi <= 0 ? 0 : $selisi;
 
                 //     $produk->update([
                 //         'harga_jual_umum' => $produk->harga_jual_umum + $selisih,
                 //         'harga_jual_resep' => $produk->harga_jual_resep + $selisih,
                 //         'harga_jual_cust' => $produk->harga_jual_cust + $selisih,
-                //         'harga_beli' => $request->harga
-                //         // 'harga_beli' => $request->harga_beli + $selisih
+                //         // 'harga_beli' => $request->harga
+                //         'harga_beli' => $request->harga_beli + $selisih
                 //     ]);
                 // }
+                if ($request->has('rak_id')) {
+                    $produk = Product::find($request->product_id);
+                    $produk->update(['rak_id' => $request->rak_id]);
+                }
+            } else if ($request->has('product_id') && $request->qty > 0) {
+                $diskon = $request->has('diskon') && $request->diskon !== null ? $request->diskon : 0;
+                $harga = $request->has('harga') && $request->harga !== null ? $request->harga : 0;
+                $sub_total = $request->has('sub_total') && $request->sub_total !== null ? $request->sub_total : 0;
+                $expired = $request->has('expired') && $request->expired !== null ? $request->expired : null;
+                $data->detail_transaction()->updateOrCreate([
+                    'product_id' => $request->product_id,
+                ], [
+                    'harga' => $harga,
+                    'qty' => $request->qty,
+                    'expired' => $expired,
+                    'diskon' => $diskon,
+                    'sub_total' => $sub_total
+                ]);
+
+                // update harga_beli di produk dan harga jual juga
+                if ($request->update_harga) {
+                    $harga_di_update = 'Harga Di Update';
+                    $produk = Product::find($request->product_id);
+                    $selisih = $request->harga - $produk->harga_beli;
+                    // $selisi = $request->harga - $produk->harga_beli;
+                    // $selisih = $selisi <= 0 ? 0 : $selisi;
+
+                    $produk->update([
+                        'harga_jual_umum' => $produk->harga_jual_umum + $selisih,
+                        'harga_jual_resep' => $produk->harga_jual_resep + $selisih,
+                        'harga_jual_cust' => $produk->harga_jual_cust + $selisih,
+                        // 'harga_beli' => $request->harga
+                        'harga_beli' => $produk->harga_beli + $selisih
+                    ]);
+                }
             }
             /*
             * koding ongkir / PPN  disini
