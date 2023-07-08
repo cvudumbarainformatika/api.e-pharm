@@ -58,6 +58,8 @@ class LaporanController extends Controller
         } else if ($header->selection === 'range') {
             // $query->whereDate('tanggal', '>=', $header->from)->whereDate('tanggal', '<=', $header->to);
             $query->whereBetween('tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59']);
+        } else {
+            $query->whereMonth('tanggal', '=', date('m'));
         }
     }
     // sepertinya ga ada yang pake, ga bisa masuk query
@@ -77,12 +79,12 @@ class LaporanController extends Controller
     // jumlah produk sebelum periode pilihan dan pada periode pilihan
     public function getDetailsPeriod($header, $nama)
     {
-
+        $sebelumBulanIni = date('Y-', strtotime($header->from)) . date('m-', strtotime($header->from)) . '01 00:00:00';
         $before = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
-            ->whereHas('transaction', function ($f) use ($header, $nama) {
+            ->whereHas('transaction', function ($f) use ($sebelumBulanIni, $nama) {
                 $f->where('nama', '=', $nama)
                     ->where('status', '>=', 2)
-                    ->whereDate('tanggal', '<', $header->from);
+                    ->whereDate('tanggal', '<', $sebelumBulanIni);
             })->groupBy('product_id')->get();
 
         if ($header->selection === 'range') {
@@ -200,12 +202,17 @@ class LaporanController extends Controller
             'to' => request('to'),
             'selection' => request('selection'),
         );
-        $q = Transaction::query()->where('status', '>=', 2);
+        // $q = Transaction::query()->where('status', '>=', 2);
+        $q = Transaction::select('id')->where('status', '>=', 2);
         $this->newUntil($q, $header);
-        $q->whereHas('detail_transaction', function ($m) {
-            $m->where('product_id', '=', request('id'));
-        });;
-        $data = $q->with('detail_transaction')->latest('tanggal')->paginate(request('per_page'));
+        // $q->whereHas('detail_transaction', function ($m) {
+        //     $m->where('product_id', '=', request('id'));
+        // });;
+        // $data = $q->with('detail_transaction')->latest('tanggal')->paginate(request('per_page'));
+        $anu = $q->get();
+        $data = DetailTransaction::where('product_id', '=', request('id'))
+            ->with('transaction:id,nama,tanggal')
+            ->whereIn('transaction_id', $anu)->get();
         return new JsonResponse($data);
     }
 
