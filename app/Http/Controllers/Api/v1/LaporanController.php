@@ -542,26 +542,26 @@ class LaporanController extends Controller
     //ambil diskon, ongkir, dan total pada periode dan sebelum periode tertentu
     public function getDiscOngkirPeriode($header, $nama)
     {
-        $before = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
+        $before = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos, sum(totalSemua) as totalSemua')
             ->where('nama', '=', $nama)
             ->where('status', '>=', 2)
             ->whereDate('tanggal', '<', $header->from)
             ->get();
         if ($header->selection === 'range') {
-            $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
+            $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos, sum(totalSemua) as totalSemua')
                 ->where('nama', '=', $nama)
                 ->where('status', '>=', 2)
                 ->whereDate('tanggal', '>=', $header->from)
                 ->whereDate('tanggal', '<=', $header->to)
                 ->get();
         } else if ($header->selection === 'tillToday') {
-            $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
+            $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos, sum(totalSemua) as totalSemua')
                 ->where('nama', '=', $nama)
                 ->where('status', '>=', 2)
                 ->whereMonth('tanggal', '=', date('m'))
                 ->get();
         } else {
-            $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos')
+            $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos, sum(totalSemua) as totalSemua')
                 ->where('nama', '=', $nama)
                 ->where('status', '>=', 2)
                 ->whereDate('tanggal', '=', $header->from)
@@ -625,7 +625,7 @@ class LaporanController extends Controller
     public function total($header, $nama)
     {
         $query = Transaction::query();
-        $query->selectRaw('sum(total) as jml, sum(potongan) as diskon, sum(ongkir) as ongkos')
+        $query->selectRaw('sum(total) as jml, sum(potongan) as diskon, sum(ongkir) as ongkos, sum(totalSemua) as totalSemua')
             ->where('nama', '=', $nama)
             ->where('status', '>=', 2);
         $this->newUntil($query, $header);
