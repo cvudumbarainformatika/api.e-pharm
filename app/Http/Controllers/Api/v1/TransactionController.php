@@ -227,7 +227,12 @@ class TransactionController extends Controller
     }
     public function store(Request $request)
     {
-
+        if ($request->nama === 'PENJUALAN') {
+            $data = LaporanController::singleStok($request->product_id, $request->reff);
+            if ($data->stokSekarang <= 0) {
+                return new JsonResponse(['message' => 'Data Stok ' . $data->nama . ' ' . $data->stokSekarang . ' tidak mencukupi untuk melakukan transaksi', 'produk' => $data], 410);
+            }
+        }
         $simpan = '';
         $simpan2 = '';
         $array2 = '';

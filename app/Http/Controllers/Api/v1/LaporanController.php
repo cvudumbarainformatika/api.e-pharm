@@ -682,6 +682,51 @@ class LaporanController extends Controller
         return $data;
     }
 
+    public static function singleStok($product_id, $reff)
+    {
+        $header = (object) array(
+            'from' => date('Y-m-d'),
+            'product_id' => $product_id
+        );
+        $singleDet = new LaporanController;
+        $stokMasuk = $singleDet->getSingleDetails($header, 'PEMBELIAN');
+        $returPembelian = $singleDet->getSingleDetails($header, 'RETUR PEMBELIAN');
+        $stokKeluar = $singleDet->getSingleDetails($header, 'PENJUALAN');
+        $returPenjualan = $singleDet->getSingleDetails($header, 'RETUR PENJUALAN');
+        $penyesuaian = $singleDet->getSingleDetails($header, 'FORM PENYESUAIAN');
+
+        $produk = Product::where('id', $header->product_id)->first();
+
+        $data = Transaction::where('status', 1)->where('reff', $reff)->with('detail_transaction')->first();
+        $qty = 0;
+        if ($data) {
+            $apem = collect($data->detail_transaction)->groupBy('product_id');
+            // $apem = collect($data['detail_transaction'])->groupBy('product_id');
+            $qty = $apem[$header->product_id][0]->qty;
+        }
+
+        $masukBefore = collect($stokMasuk->before)->sum('qty');
+        $masukPeriod = collect($stokMasuk->period)->sum('qty');
+        $keluarBefore = collect($stokKeluar->before)->sum('qty');
+        $keluarPeriod = collect($stokKeluar->period)->sum('qty');
+        $retBeliBefore = collect($returPembelian->before)->sum('qty');
+        $retBeliPeriod = collect($returPembelian->period)->sum('qty');
+        $retJualBefore = collect($returPenjualan->before)->sum('qty');
+        $retJualPeriod = collect($returPenjualan->period)->sum('qty');
+        $penyeBefore = collect($penyesuaian->before)->sum('qty');
+        $penyePeriod = collect($penyesuaian->period)->sum('qty');
+
+        $sebelum = $masukBefore - $keluarBefore + $retJualBefore - $retBeliBefore + $penyeBefore;
+        $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod - $qty;
+        $awal = $produk['stok_awal'] + $sebelum;
+        $sekarang = $awal + $berjalan;
+        $produk->stok_awal = $awal;
+        $produk->stokSekarang = $sekarang;
+        $produk->stokBerjalan = $berjalan;
+
+
+        return $produk;
+    }
     public function singleProduct()
     {
         $header = (object) array(
@@ -697,9 +742,12 @@ class LaporanController extends Controller
         $produk = Product::where('id', $header->product_id)->first();
 
         $data = Transaction::where('status', 1)->where('reff', request('reff'))->with('detail_transaction')->first();
-        $apem = collect($data->detail_transaction)->groupBy('product_id');
-        // $apem = collect($data['detail_transaction'])->groupBy('product_id');
-        $qty = $apem[$header->product_id][0]->qty;
+        $qty = 0;
+        if ($data) {
+            $apem = collect($data->detail_transaction)->groupBy('product_id');
+            // $apem = collect($data['detail_transaction'])->groupBy('product_id');
+            $qty = $apem[$header->product_id][0]->qty;
+        }
 
         $masukBefore = collect($stokMasuk->before)->sum('qty');
         $masukPeriod = collect($stokMasuk->period)->sum('qty');
