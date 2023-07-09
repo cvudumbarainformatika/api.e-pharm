@@ -240,7 +240,7 @@ class TransactionController extends Controller
         $array2 = '';
         $harga_di_update = '';
         $secondArray = $request->all();
-        $secondArray['tanggal'] = $request->tanggal ? $request->tanggal : date('Y-m-d H:i:s');
+        $secondArray['tanggal'] = $request->tanggal && $request->nama === 'PEMBELIAN' ? $request->tanggal : date('Y-m-d H:i:s');
         $count = Transaction::where('nama', $request->nama)
             ->whereBetween('tanggal', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
             ->where('status', '>=', 2)
