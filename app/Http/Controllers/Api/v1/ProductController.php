@@ -18,12 +18,23 @@ class ProductController extends Controller
         $data = Product::orderBy(request('order_by'), request('sort'))
             ->with('rak:id,nama', 'merk:id,nama', 'satuan:id,nama', 'satuanBesar:id,nama', 'kategori:id,nama')
             ->filter(request(['q']))
+            ->stok(request('reff'))
             ->paginate(request('per_page'));
         // $data->load('kategori:id,nama');
         // $data->load('satuan:id,nama');
         // $data->load('rak:id,nama');
         // $data->load('merk:id,nama');
         return ProductResource::collection($data);
+    }
+    public function getForPembelian()
+    {
+        // $data = Product::paginate();
+        $data = Product::orderBy(request('order_by'), request('sort'))
+            ->with('rak:id,nama', 'merk:id,nama', 'satuan:id,nama', 'satuanBesar:id,nama', 'kategori:id,nama')
+            ->filter(request(['q']))
+            ->paginate(request('per_page'));
+
+        return new JsonResponse($data);
     }
 
     public function produk()
