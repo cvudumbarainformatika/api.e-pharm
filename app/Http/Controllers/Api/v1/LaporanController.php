@@ -501,12 +501,12 @@ class LaporanController extends Controller
     //ambil detail transaksi pada periode dan sebelum periode tertentu
     public function getDetailsPeriodUang($header, $nama)
     {
-
+        $sebelumBulanIni = date('Y-', strtotime($header->from)) . date('m-', strtotime($header->from)) . '01 00:00:00';
         $before = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
-            ->whereHas('transaction', function ($f) use ($header, $nama) {
+            ->whereHas('transaction', function ($f) use ($header, $nama, $sebelumBulanIni) {
                 $f->where('nama', '=', $nama)
                     ->where('status', '>=', 2)
-                    ->where('jenis', '=', 'tunai')
+                    // ->where('jenis', '=', 'tunai')
                     ->whereDate('tanggal', '<', $header->from);
             })->groupBy('product_id', 'harga')->get();
 
@@ -515,7 +515,7 @@ class LaporanController extends Controller
                 ->whereHas('transaction', function ($f) use ($header, $nama) {
                     $f->where('nama', '=', $nama)
                         ->where('status', '>=', 2)
-                        ->where('jenis', '=', 'tunai')
+                        // ->where('jenis', '=', 'tunai')
                         ->whereDate('tanggal', '>=', $header->from)
                         ->whereDate('tanggal', '<=', $header->to);
                 })->groupBy('product_id', 'harga')->get();
@@ -524,7 +524,7 @@ class LaporanController extends Controller
                 ->whereHas('transaction', function ($f) use ($header, $nama) {
                     $f->where('nama', '=', $nama)
                         ->where('status', '>=', 2)
-                        ->where('jenis', '=', 'tunai')
+                        // ->where('jenis', '=', 'tunai')
                         ->whereMonth('tanggal', '=', date('m'));
                 })->groupBy('product_id', 'harga')->get();
         } else {
@@ -532,7 +532,7 @@ class LaporanController extends Controller
                 ->whereHas('transaction', function ($f) use ($header, $nama) {
                     $f->where('nama', '=', $nama)
                         ->where('status', '>=', 2)
-                        ->where('jenis', '=', 'tunai')
+                        // ->where('jenis', '=', 'tunai')
                         ->whereDate('tanggal', '=', $header->from);
                 })->groupBy('product_id', 'harga')->get();
         }
