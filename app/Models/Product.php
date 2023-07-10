@@ -29,16 +29,16 @@ class Product extends Model
 
         // $produk = Product::where('id', $header->product_id)->first();
 
-        $data = Transaction::select('id', 'nama')->where('status', 1)->where('reff', $reff)->first();
-        $qty = 0;
-        if ($data) {
-            // $apem = collect($data->detail_transaction)->groupBy('product_id');
-            // $apem = collect($data['detail_transaction'])->groupBy('product_id');
-            // $qty = $apem[$header->product_id][0]->qty;
-            $apem = DetailTransaction::select('id', 'qty', 'product_id')->where('transaction_id', $data->id)
-                ->where('product_id', $header->product_id)->first();
-            $qty = $data->nama === 'PENJUALAN' ? $apem->qty : -$apem->qty;
-        }
+        // $data = Transaction::select('id', 'nama')->where('status', 1)->where('reff', $reff)->first();
+        // $qty = 0;
+        // if ($data) {
+        //     // $apem = collect($data->detail_transaction)->groupBy('product_id');
+        //     // $apem = collect($data['detail_transaction'])->groupBy('product_id');
+        //     // $qty = $apem[$header->product_id][0]->qty;
+        //     $apem = DetailTransaction::select('id', 'qty', 'product_id')->where('transaction_id', $data->id)
+        //         ->where('product_id', $header->product_id)->first();
+        //     $qty = $data->nama === 'PENJUALAN' ? $apem->qty : -$apem->qty;
+        // }
 
         $masukBefore = collect($stokMasuk->before)->sum('qty');
         $masukPeriod = collect($stokMasuk->period)->sum('qty');
@@ -52,7 +52,7 @@ class Product extends Model
         $penyePeriod = collect($penyesuaian->period)->sum('qty');
 
         $sebelum = $masukBefore - $keluarBefore + $retJualBefore - $retBeliBefore + $penyeBefore;
-        $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod - $qty;
+        $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod;
         $awal = $this->stok_awal + $sebelum;
         $sekarang = $awal + $berjalan;
         // $produk->stok_awal = $awal;

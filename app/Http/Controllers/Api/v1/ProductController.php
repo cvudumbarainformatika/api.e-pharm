@@ -44,7 +44,8 @@ class ProductController extends Controller
     public function allProduk()
     {
         $data = Product::latest()->get();
-        return ProductResource::collection($data);
+        return new JsonResponse($data);
+        // return ProductResource::collection($data);
     }
 
     public function store(Request $request)

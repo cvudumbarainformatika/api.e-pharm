@@ -290,7 +290,7 @@ class TransactionController extends Controller
 
                 ]);
                 $simpan = $data;
-            } else if ($request->has('product_id') && $request->nama === 'FORM PENYESUAIAN') {
+            } else if ($request->has('product_id') && $request->nama === 'FORM PENYESUAIAN' && $request->qty < 0) {
                 $diskon = $request->has('diskon') && $request->diskon !== null ? $request->diskon : 0;
                 $harga = $request->has('harga') && $request->harga !== null ? $request->harga : 0;
                 $sub_total = $request->has('sub_total') && $request->sub_total !== null ? $request->sub_total : 0;
@@ -344,16 +344,16 @@ class TransactionController extends Controller
                 if ($request->update_harga) {
                     $harga_di_update = 'Harga Di Update';
                     $produk = Product::find($request->product_id);
-                    $selisih = $request->harga - $produk->harga_beli;
-                    // $selisi = $request->harga - $produk->harga_beli;
-                    // $selisih = $selisi <= 0 ? 0 : $selisi;
+                    // $selisih = $request->harga - $produk->harga_beli;
+                    $selisi = $request->harga - $produk->harga_beli;
+                    $selisih = $selisi <= 0 ? 0 : $selisi;
 
                     $produk->update([
                         'harga_jual_umum' => $produk->harga_jual_umum + $selisih,
                         'harga_jual_resep' => $produk->harga_jual_resep + $selisih,
                         'harga_jual_cust' => $produk->harga_jual_cust + $selisih,
-                        // 'harga_beli' => $request->harga
-                        'harga_beli' => $produk->harga_beli + $selisih
+                        'harga_beli' => $request->harga
+                        // 'harga_beli' => $produk->harga_beli + $selisih
                     ]);
                 }
             }

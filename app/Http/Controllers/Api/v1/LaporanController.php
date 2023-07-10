@@ -781,6 +781,7 @@ class LaporanController extends Controller
         $produk->stok_awal = $awal;
         $produk->stokSekarang = $sekarang;
         $produk->stokBerjalan = $berjalan;
+        $produk->stok = $sekarang;
         // $produk->apem = $apem;
         // $produk->data = $data;
         // $produk->request = request()->all();
