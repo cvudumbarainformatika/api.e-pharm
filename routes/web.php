@@ -24,7 +24,7 @@ Route::get('/', function () {
 Route::view("login", "login");
 Route::view("print.penjualan", "print");
 // Route::get('/autogen', [AutogeneratorController::class, 'index']);
-// Route::get('/coba', [AutogeneratorController::class, 'coba']);
+Route::get('/coba', [AutogeneratorController::class, 'coba']);
 // Route::get('/cari', [AutogeneratorController::class, 'cari']);
 // Route::get('/retur', [AutogeneratorController::class, 'retur']);
 // Route::get('/print', [PrintController::class, 'print']);

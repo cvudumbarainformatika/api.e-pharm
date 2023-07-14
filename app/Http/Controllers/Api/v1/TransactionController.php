@@ -295,6 +295,7 @@ class TransactionController extends Controller
                 $harga = $request->has('harga') && $request->harga !== null ? $request->harga : 0;
                 $sub_total = $request->has('sub_total') && $request->sub_total !== null ? $request->sub_total : 0;
                 $expired = $request->has('expired') && $request->expired !== null ? $request->expired : null;
+
                 $data->detail_transaction()->updateOrCreate([
                     'product_id' => $request->product_id,
                 ], [
@@ -326,6 +327,7 @@ class TransactionController extends Controller
                     $produk->update(['rak_id' => $request->rak_id]);
                 }
             } else if ($request->has('product_id') && $request->qty > 0) {
+
                 $diskon = $request->has('diskon') && $request->diskon !== null ? $request->diskon : 0;
                 $harga = $request->has('harga') && $request->harga !== null ? $request->harga : 0;
                 $sub_total = $request->has('sub_total') && $request->sub_total !== null ? $request->sub_total : 0;
@@ -344,17 +346,70 @@ class TransactionController extends Controller
                 if ($request->update_harga) {
                     $harga_di_update = 'Harga Di Update';
                     $produk = Product::find($request->product_id);
+                    $disperitem = 0;
+                    if ($request->diskon > 0) {
+                        $disperitem = $request->harga * ($request->diskon / 100);
+                    }
                     // $selisih = $request->harga - $produk->harga_beli;
-                    $selisi = $request->harga - $produk->harga_beli;
+                    $selisi = ($request->harga - $produk->harga_beli) - $disperitem;
                     $selisih = $selisi <= 0 ? 0 : $selisi;
 
                     $produk->update([
                         'harga_jual_umum' => $produk->harga_jual_umum + $selisih,
                         'harga_jual_resep' => $produk->harga_jual_resep + $selisih,
                         'harga_jual_cust' => $produk->harga_jual_cust + $selisih,
-                        'harga_beli' => $request->harga
+                        'harga_beli' => $request->harga - $disperitem
                         // 'harga_beli' => $produk->harga_beli + $selisih
                     ]);
+                }
+            }
+            /*
+            * new
+            * koding ongkir / PPN  disini
+            * PPN  dalam %
+            */
+            $tr = null;
+            $deta = null;
+            $produ = [];
+            if ($request->nama === 'PEMBELIAN' && $request->status === 2) {
+                if ($request->ongkir > 0 || $request->potongan > 0) {
+                    $transaksi = Transaction::where('reff', $request->reff)->first();
+                    $tr = $transaksi;
+                    $det = DetailTransaction::where('transaction_id', $transaksi->id)->get();
+                    $deta = $det;
+                    foreach ($det as $key) {
+                        $prod = Product::find($key['product_id']);
+                        $harga = 0;
+                        $hargaPpn = 0;
+
+                        if ($request->potongan > 0) {
+                            $discPerItem = $prod->harga_beli  * ($request->potongan / 100);
+                            $harga =  $prod->harga_beli - $discPerItem;
+                            array_push($produ, $harga);
+                        }
+                        if ($request->ongkir > 0) {
+                            if ($harga > 0) {
+                                $ppnPerItem = $harga  * ($request->ongkir / 100);
+                                $hargaPpn = $harga + $ppnPerItem;
+                                array_push($produ, $hargaPpn);
+                            } else {
+                                $ppnPerItem = $prod->harga_beli  * ($request->ongkir / 100);
+                                $hargaPpn = $prod->harga_beli + $ppnPerItem;
+                                array_push($produ, $hargaPpn);
+                            }
+                        }
+
+                        $harg = ceil($hargaPpn);
+                        $selisi = ceil($harg - $prod->harga_beli);
+                        $selisih = $selisi <= 0 ? 0 : $selisi;
+                        $prod->update([
+                            'harga_jual_umum' => $prod->harga_jual_umum + $selisih,
+                            'harga_jual_resep' => $prod->harga_jual_resep + $selisih,
+                            'harga_jual_cust' => $prod->harga_jual_cust + $selisih,
+                            'harga_beli' => $harg
+                            // 'harga_beli' => $produk->harga_beli + $selisih
+                        ]);
+                    }
                 }
             }
             /*
@@ -409,11 +464,14 @@ class TransactionController extends Controller
 
             DB::commit();
             return response()->json(['message' => 'success', 'update_harga' => $harga_di_update, 'data' => $data], 201);
-        } catch (\Exception $e) {
+        } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
                 'message' => 'ada kesalahan',
-                'error' => $e,
+                'error' => $th,
+                'tr' => $tr,
+                'produ' => $produ,
+                'deta' => $deta,
                 'simpan' => $simpan,
                 'simpan 2' => $simpan2,
                 'second array' => $array2,

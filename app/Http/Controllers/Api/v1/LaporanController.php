@@ -669,18 +669,32 @@ class LaporanController extends Controller
 
     public function getSingleDetails($header, $nama)
     {
+        $bb = Transaction::select('id')->where('nama', '=', $nama)
+            ->where('status', '>=', 2)
+            ->whereDate('tanggal', '<', $header->from)->get();
+        $pp = Transaction::select('id')->where('nama', '=', $nama)
+            ->where('status', '>=', 2)
+            ->whereDate('tanggal', '=', $header->from)->get();
+
         $before = DetailTransaction::where('product_id', $header->product_id)
-            ->whereHas('transaction', function ($f) use ($header, $nama) {
-                $f->where('nama', '=', $nama)
-                    ->where('status', '>=', 2)
-                    ->whereDate('tanggal', '<', $header->from);
-            })->get();
+            ->whereIn('transaction_id', $bb)
+            ->get();
         $period = DetailTransaction::where('product_id', $header->product_id)
-            ->whereHas('transaction', function ($f) use ($header, $nama) {
-                $f->where('nama', '=', $nama)
-                    ->where('status', '>=', 2)
-                    ->whereDate('tanggal', '=', $header->from);
-            })->get();
+            ->whereIn('transaction_id', $pp)
+            ->get();
+
+        // $before = DetailTransaction::where('product_id', $header->product_id)
+        //     ->whereHas('transaction', function ($f) use ($header, $nama) {
+        //         $f->where('nama', '=', $nama)
+        //             ->where('status', '>=', 2)
+        //             ->whereDate('tanggal', '<', $header->from);
+        //     })->get();
+        // $period = DetailTransaction::where('product_id', $header->product_id)
+        //     ->whereHas('transaction', function ($f) use ($header, $nama) {
+        //         $f->where('nama', '=', $nama)
+        //             ->where('status', '>=', 2)
+        //             ->whereDate('tanggal', '=', $header->from);
+        //     })->get();
 
         $data = (object) array(
             'before' => $before,
