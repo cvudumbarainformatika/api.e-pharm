@@ -55,6 +55,7 @@ class DashboardController extends Controller
         foreach ($col2 as $key => $value) {
             array_push($prod, [
                 'id' => $key,
+                'nama' => $value[0]->product->nama,
                 'appear' => $value->count(),
                 'sum_qty' => $value->sum('qty'),
                 'sum_sub_total' => $value->sum('sub_total')
@@ -77,7 +78,7 @@ class DashboardController extends Controller
             ->where('status', '>=', 2)
             ->whereMonth('tanggal', date('m'))
             ->oldest('tanggal')
-            ->with('details')->get();
+            ->with('details.product:id,nama')->get();
         return $this->dataProses($data);
     }
 
@@ -89,7 +90,7 @@ class DashboardController extends Controller
             ->where('jenis', 'tunai')
             ->whereMonth('tanggal', date('m'))
             ->oldest('tanggal')
-            ->with('details')->get();
+            ->with('details.product:id,nama')->get();
         return $this->dataProses($data);
     }
     //peringkat penjualan hari ini
@@ -98,7 +99,7 @@ class DashboardController extends Controller
         $data = Transaction::where('nama', 'PENJUALAN')
             ->where('status', '>=', 2)
             ->whereDate('tanggal', date('Y-m-d'))
-            ->with('details')->get();
+            ->with('details.product:id,nama')->get();
         return $this->dataProses($data);
     }
 
@@ -109,7 +110,7 @@ class DashboardController extends Controller
             ->where('status', '>=', 2)
             ->where('jenis', 'tunai')
             ->whereDate('tanggal', date('Y-m-d'))
-            ->with('details')->get();
+            ->with('details.product:id,nama')->get();
         return $this->dataProses($data);
     }
 
@@ -119,7 +120,7 @@ class DashboardController extends Controller
         $data = Transaction::where('nama', 'PENJUALAN')
             ->whereDate('tanggal', '>=', date('Y-m-d', strtotime('monday this week')))
             ->whereDate('tanggal', '<', date('Y-m-d', strtotime('monday next week')))
-            ->with('details')->get();
+            ->with('details.product:id,nama')->get();
         return $this->dataProses($data);
     }
 
@@ -130,7 +131,7 @@ class DashboardController extends Controller
             ->where('jenis', 'tunai')
             ->whereDate('tanggal', '>=', date('Y-m-d', strtotime('this week')))
             ->whereDate('tanggal', '<', date('Y-m-d', strtotime('monday next week')))
-            ->with('details')->get();
+            ->with('details.product:id,nama')->get();
         return $this->dataProses($data);
     }
 }
