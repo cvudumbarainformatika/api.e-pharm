@@ -16,7 +16,7 @@ class TransactionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'uuid' => $this->uuid,
+            // 'uuid' => $this->uuid,
             'reff' => $this->reff,
             'faktur' => $this->faktur,
             'tanggal_faktur' => $this->tanggal_faktur,
@@ -47,8 +47,8 @@ class TransactionResource extends JsonResource
             'beban_transaction' => $this->whenLoaded('beban_transaction'),
             'penerimaan_transaction' => $this->whenLoaded('penerimaan_transaction'),
             'status' => $this->status,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            // 'created_at' => $this->created_at,
+            // 'updated_at' => $this->updated_at,
         ];
     }
 }
