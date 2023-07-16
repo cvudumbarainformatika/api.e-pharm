@@ -53,9 +53,15 @@ class DashboardController extends Controller
             array_push($series_sub_total, ['x' => $key, 'y' => $value->sum('sub_total')]);
         }
         foreach ($col2 as $key => $value) {
+            $nama = '';
+            if (count($value)) {
+                if ($value[0]->product) {
+                    $nama = $value[0]->product->nama;
+                }
+            }
             array_push($prod, [
                 'id' => $key,
-                'nama' => $value[0]->product->nama,
+                'nama' => $nama,
                 'appear' => $value->count(),
                 'sum_qty' => $value->sum('qty'),
                 'sum_sub_total' => $value->sum('sub_total')
