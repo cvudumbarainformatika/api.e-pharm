@@ -77,27 +77,49 @@ class DetailTransactionController extends Controller
     public function getByDate()
     {
         // ambil detail transaction
-        $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');
-        $query->whereHas('transaction', function ($gg) {
-            $gg->where('nama', '=', request('nama'))
-                ->whereIn('status', [2, 3])
-                ->when(request('supplier_id'), function ($sp, $q) {
-                    return $sp->where('supplier_id', '=', $q);
-                })
-                ->when(request('customer_id'), function ($sp) {
-                    return $sp->where('customer_id', '=', request('customer_id'));
-                })
-                ->when(request('dokter_id'), function ($sp) {
+        $tr = Transaction::query()->select('id')->where('nama', '=', request('nama'))
+            ->whereIn('status', [2, 3])
+            ->when(request('supplier_id'), function ($sp, $q) {
+                return $sp->where('supplier_id', '=', $q);
+            })
+            ->when(request('customer_id'), function ($sp) {
+                return $sp->where('customer_id', '=', request('customer_id'));
+            })
+            ->when(
+                request('dokter_id'),
+                function ($sp) {
                     return $sp->where('dokter_id', '=', request('dokter_id'));
-                })
-                ->when(request('umum'), function ($sp) {
-                    return $sp->where('dokter_id', '=', null)
-                        ->where('customer_id', '=', null);
-                });
-            $this->periode($gg, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
-        });
-        $data = $query->groupBy('product_id', 'harga')
-            ->with(['product'])
+                }
+            )
+            ->when(request('umum'), function ($sp) {
+                return $sp->where('dokter_id', '=', null)
+                    ->where('customer_id', '=', null);
+            })
+            ->whereBetween('tanggal', [request('from') . ' 00:00:00', request('to') . ' 23:59:59'])
+            ->get();
+
+        $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');
+        // $query->whereHas('transaction', function ($gg) {
+        //     $gg->where('nama', '=', request('nama'))
+        //         ->whereIn('status', [2, 3])
+        //         ->when(request('supplier_id'), function ($sp, $q) {
+        //             return $sp->where('supplier_id', '=', $q);
+        //         })
+        //         ->when(request('customer_id'), function ($sp) {
+        //             return $sp->where('customer_id', '=', request('customer_id'));
+        //         })
+        //         ->when(request('dokter_id'), function ($sp) {
+        //             return $sp->where('dokter_id', '=', request('dokter_id'));
+        //         })
+        //         ->when(request('umum'), function ($sp) {
+        //             return $sp->where('dokter_id', '=', null)
+        //                 ->where('customer_id', '=', null);
+        //         });
+        //     $this->periode($gg, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
+        // });
+        $data = $query->whereIn('transaction_id', $tr)
+            ->groupBy('product_id', 'harga')
+            ->with(['product:id,nama'])
             ->get();
 
         return new JsonResponse($data);

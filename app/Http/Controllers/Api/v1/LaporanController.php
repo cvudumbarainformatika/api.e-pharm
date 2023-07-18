@@ -52,14 +52,15 @@ class LaporanController extends Controller
     public function newUntil($query, $header)
     {
         if ($header->selection === 'tillToday') {
-            $query->whereMonth('tanggal', '=', date('m')); // bedanya disini
+            // $query->whereMonth('tanggal', '=', date('m')); // bedanya disini
+            $query->whereBetween('tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59']); // bedanya disini
         } else if ($header->selection === 'spesifik') {
             $query->whereDate('tanggal', '=', $header->from);
         } else if ($header->selection === 'range') {
             // $query->whereDate('tanggal', '>=', $header->from)->whereDate('tanggal', '<=', $header->to);
             $query->whereBetween('tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59']);
         } else {
-            $query->whereMonth('tanggal', '=', date('m'));
+            $query->whereBetween('tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59']);
         }
     }
     // sepertinya ga ada yang pake, ga bisa masuk query
@@ -80,36 +81,59 @@ class LaporanController extends Controller
     public function getDetailsPeriod($header, $nama)
     {
         $sebelumBulanIni = date('Y-', strtotime($header->from)) . date('m-', strtotime($header->from)) . '01 00:00:00';
+        $trxSeb = Transaction::select('id')->where('nama', '=', $nama)
+            ->where('status', '>=', 2)
+            ->whereDate('tanggal', '<', $sebelumBulanIni)->get();
         $before = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
-            ->whereHas('transaction', function ($f) use ($sebelumBulanIni, $nama) {
-                $f->where('nama', '=', $nama)
-                    ->where('status', '>=', 2)
-                    ->whereDate('tanggal', '<', $sebelumBulanIni);
-            })->groupBy('product_id')->get();
+            // ->whereHas('transaction', function ($f) use ($sebelumBulanIni, $nama) {
+            //     $f->where('nama', '=', $nama)
+            //         ->where('status', '>=', 2)
+            //         ->whereDate('tanggal', '<', $sebelumBulanIni);
+            // })
+            ->whereIn('transaction_id', $trxSeb)
+            ->groupBy('product_id')->get();
 
         if ($header->selection === 'range') {
+            $trxRa = Transaction::select('id')->where('nama', '=', $nama)
+                ->where('status', '>=', 2)
+                ->whereBetween('tanggal',  [$header->from . ' 00:00:00', $header->to . ' 23:59:59'])
+                ->get();
             $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
-                ->whereHas('transaction', function ($f) use ($header, $nama) {
-                    $f->where('nama', '=', $nama)
-                        ->where('status', '>=', 2)
-                        ->whereBetween('tanggal',  [$header->from . ' 00:00:00', $header->to . ' 23:59:59']);
-                    // ->whereDate('tanggal', '>=', $header->from)
-                    // ->whereDate('tanggal', '<=', $header->to);
-                })->groupBy('product_id')->get();
+                // ->whereHas('transaction', function ($f) use ($header, $nama) {
+                //     $f->where('nama', '=', $nama)
+                //         ->where('status', '>=', 2)
+                //         ->whereBetween('tanggal',  [$header->from . ' 00:00:00', $header->to . ' 23:59:59']);
+                //     // ->whereDate('tanggal', '>=', $header->from)
+                //     // ->whereDate('tanggal', '<=', $header->to);
+                // })
+                ->whereIn('transaction_id', $trxRa)
+                ->groupBy('product_id')->get();
         } else if ($header->selection === 'tillToday') {
+            $trxM = Transaction::select('id')->where('nama', '=', $nama)
+                ->where('status', '>=', 2)
+                ->whereMonth('tanggal', '=', date('m'))
+                ->get();
             $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
-                ->whereHas('transaction', function ($f) use ($header, $nama) {
-                    $f->where('nama', '=', $nama)
-                        ->where('status', '>=', 2)
-                        ->whereMonth('tanggal', '=', date('m'));
-                })->groupBy('product_id')->get();
+                // ->whereHas('transaction', function ($f) use ($header, $nama) {
+                //     $f->where('nama', '=', $nama)
+                //         ->where('status', '>=', 2)
+                //         ->whereMonth('tanggal', '=', date('m'));
+                // })
+                ->whereIn('transaction_id', $trxM)
+                ->groupBy('product_id')->get();
         } else {
+            $trxS = Transaction::select('id')->where('nama', '=', $nama)
+                ->where('status', '>=', 2)
+                ->whereDate('tanggal', '=', $header->from)
+                ->get();
             $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
-                ->whereHas('transaction', function ($f) use ($header, $nama) {
-                    $f->where('nama', '=', $nama)
-                        ->where('status', '>=', 2)
-                        ->whereDate('tanggal', '=', $header->from);
-                })->groupBy('product_id')->get();
+                // ->whereHas('transaction', function ($f) use ($header, $nama) {
+                //     $f->where('nama', '=', $nama)
+                //         ->where('status', '>=', 2)
+                //         ->whereDate('tanggal', '=', $header->from);
+                // })
+                ->whereIn('transaction_id', $trxS)
+                ->groupBy('product_id')->get();
         }
 
         $data = (object) array(
@@ -393,40 +417,67 @@ class LaporanController extends Controller
     //ambil beban pada periode dan sebelum periode tertentu
     public function getBebansPeriod($header, $nama)
     {
-
+        $trxB = Transaction::select('id')->where('nama', '=', $nama)
+            ->where('status', '>=', 2)
+            ->where('jenis', '=', 'tunai')
+            ->whereDate('tanggal', '<', $header->from)
+            ->get();
         $before = BebanTransaction::selectRaw('beban_id, sum(sub_total) as total')
-            ->whereHas('transaction', function ($f) use ($header, $nama) {
-                $f->where('nama', '=', $nama)
-                    ->where('status', '>=', 2)
-                    ->where('jenis', '=', 'tunai')
-                    ->whereDate('tanggal', '<', $header->from);
-            })->groupBy('beban_id')->get();
+            // ->whereHas('transaction', function ($f) use ($header, $nama) {
+            //     $f->where('nama', '=', $nama)
+            //         ->where('status', '>=', 2)
+            //         ->where('jenis', '=', 'tunai')
+            //         ->whereDate('tanggal', '<', $header->from);
+            // })
+            ->whereIn('transaction_id', $trxB)
+            ->groupBy('beban_id')->get();
 
         if ($header->selection === 'range') {
+            $trxR = Transaction::select('id')->where('nama', '=', $nama)
+                ->where('status', '>=', 2)
+                ->where('jenis', '=', 'tunai')
+                ->whereBetween('tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59'])
+                ->get();
             $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
-                ->whereHas('transaction', function ($f) use ($header, $nama) {
-                    $f->where('nama', '=', $nama)
-                        ->where('status', '>=', 2)
-                        ->where('jenis', '=', 'tunai')
-                        ->whereDate('tanggal', '>=', $header->from)
-                        ->whereDate('tanggal', '<=', $header->to);
-                })->groupBy('beban_id')->get();
+                // ->whereHas('transaction', function ($f) use ($header, $nama) {
+                //     $f->where('nama', '=', $nama)
+                //         ->where('status', '>=', 2)
+                //         ->where('jenis', '=', 'tunai')
+                //         ->whereDate('tanggal', '>=', $header->from)
+                //         ->whereDate('tanggal', '<=', $header->to);
+                // })
+                ->whereIn('transaction_id', $trxR)
+                ->groupBy('beban_id')->get();
         } else if ($header->selection === 'tillToday') {
+            $trxM = Transaction::select('id')->where('nama', '=', $nama)
+                ->where('status', '>=', 2)
+                ->where('jenis', '=', 'tunai')
+                ->whereBetween('tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59'])
+                ->get();
             $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
-                ->whereHas('transaction', function ($f) use ($header, $nama) {
-                    $f->where('nama', '=', $nama)
-                        ->where('status', '>=', 2)
-                        ->where('jenis', '=', 'tunai')
-                        ->whereMonth('tanggal', '=', date('m'));
-                })->groupBy('beban_id')->get();
+                // ->whereHas('transaction', function ($f) use ($header, $nama) {
+                //     $f->where('nama', '=', $nama)
+                //         ->where('status', '>=', 2)
+                //         ->where('jenis', '=', 'tunai')
+                //         ->whereMonth('tanggal', '=', date('m'));
+                // })
+                ->whereIn('transaction_id', $trxM)
+                ->groupBy('beban_id')->get();
         } else {
+            $trxE = Transaction::select('id')->where('nama', '=', $nama)
+                ->where('status', '>=', 2)
+                ->where('jenis', '=', 'tunai')
+                ->whereDate('tanggal', '=', $header->from)
+                ->get();
             $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
-                ->whereHas('transaction', function ($f) use ($header, $nama) {
-                    $f->where('nama', '=', $nama)
-                        ->where('status', '>=', 2)
-                        ->where('jenis', '=', 'tunai')
-                        ->whereDate('tanggal', '=', $header->from);
-                })->groupBy('beban_id')->get();
+                // ->whereHas('transaction', function ($f) use ($header, $nama) {
+                //     $f->where('nama', '=', $nama)
+                //         ->where('status', '>=', 2)
+                //         ->where('jenis', '=', 'tunai')
+                //         ->whereDate('tanggal', '=', $header->from);
+                // })
+                ->whereIn('transaction_id', $trxE)
+                ->groupBy('beban_id')->get();
         }
 
         $data = (object) array(
@@ -487,14 +538,21 @@ class LaporanController extends Controller
     //ambil pembelian TUNAI dan NON TUNAI  pada periode  tertentu
     public function getDetailsWithCredit($header, $nama)
     {
-        $masuk = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
-        $masuk->whereHas('transaction', function ($f) use ($header, $nama) {
-            $f->where('nama', '=', $nama)
-                ->where('status', '>=', 2);
-            $this->newUntil($f, $header);
-        });
+        $trx = Transaction::query();
+        $trx->where('nama', '=', $nama)
+            ->where('status', '>=', 2);
+        $this->newUntil($trx, $header);
+        $jadi = $trx->get();
 
-        $data = $masuk->groupBy('product_id')->get();
+        $masuk = DetailTransaction::query()->selectRaw('product_id, sum(qty) as jml');
+        // $masuk->whereHas('transaction', function ($f) use ($header, $nama) {
+        //     $f->where('nama', '=', $nama)
+        //         ->where('status', '>=', 2);
+        //     $this->newUntil($f, $header);
+        // });
+
+        $data = $masuk->whereIn('transaction_id', $jadi)
+            ->groupBy('product_id')->get();
         return $data;
     }
 
@@ -502,39 +560,67 @@ class LaporanController extends Controller
     public function getDetailsPeriodUang($header, $nama)
     {
         $sebelumBulanIni = date('Y-', strtotime($header->from)) . date('m-', strtotime($header->from)) . '01 00:00:00';
+        $trxB = Transaction::select('id')->where('nama', '=', $nama)
+            ->where('status', '>=', 2)
+            // ->where('jenis', '=', 'tunai')
+            ->whereDate('tanggal', '<', $header->from)
+            ->get();
         $before = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
-            ->whereHas('transaction', function ($f) use ($header, $nama, $sebelumBulanIni) {
-                $f->where('nama', '=', $nama)
-                    ->where('status', '>=', 2)
-                    // ->where('jenis', '=', 'tunai')
-                    ->whereDate('tanggal', '<', $header->from);
-            })->groupBy('product_id', 'harga')->get();
+            // ->whereHas('transaction', function ($f) use ($header, $nama, $sebelumBulanIni) {
+            //     $f->where('nama', '=', $nama)
+            //         ->where('status', '>=', 2)
+            //         // ->where('jenis', '=', 'tunai')
+            //         ->whereDate('tanggal', '<', $header->from);
+            // })
+            ->whereIn('transaction_id', $trxB)
+            ->groupBy('product_id', 'harga')->get();
 
         if ($header->selection === 'range') {
+            $trxR = Transaction::select('id')->where('nama', '=', $nama)
+                ->where('status', '>=', 2)
+                // ->where('jenis', '=', 'tunai')
+                ->whereBetween('tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59'])
+                ->get();
             $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
-                ->whereHas('transaction', function ($f) use ($header, $nama) {
-                    $f->where('nama', '=', $nama)
-                        ->where('status', '>=', 2)
-                        // ->where('jenis', '=', 'tunai')
-                        ->whereDate('tanggal', '>=', $header->from)
-                        ->whereDate('tanggal', '<=', $header->to);
-                })->groupBy('product_id', 'harga')->get();
+                // ->whereHas('transaction', function ($f) use ($header, $nama) {
+                //     $f->where('nama', '=', $nama)
+                //         ->where('status', '>=', 2)
+                //         // ->where('jenis', '=', 'tunai')
+                //         ->whereDate('tanggal', '>=', $header->from)
+                //         ->whereDate('tanggal', '<=', $header->to);
+                // })
+                ->whereIn('transaction_id', $trxR)
+                ->groupBy('product_id', 'harga')->get();
         } else if ($header->selection === 'tillToday') {
+            $trxM = Transaction::select('id')->where('nama', '=', $nama)
+                ->where('status', '>=', 2)
+                // ->where('jenis', '=', 'tunai')
+                ->whereBetween('tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59'])
+                ->get();
             $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
-                ->whereHas('transaction', function ($f) use ($header, $nama) {
-                    $f->where('nama', '=', $nama)
-                        ->where('status', '>=', 2)
-                        // ->where('jenis', '=', 'tunai')
-                        ->whereMonth('tanggal', '=', date('m'));
-                })->groupBy('product_id', 'harga')->get();
+                // ->whereHas('transaction', function ($f) use ($header, $nama) {
+                //     $f->where('nama', '=', $nama)
+                //         ->where('status', '>=', 2)
+                //         // ->where('jenis', '=', 'tunai')
+                //         ->whereMonth('tanggal', '=', date('m'));
+                // })
+                ->whereIn('transaction_id', $trxM)
+                ->groupBy('product_id', 'harga')->get();
         } else {
+            $trxE = Transaction::select('id')->where('nama', '=', $nama)
+                ->where('status', '>=', 2)
+                // ->where('jenis', '=', 'tunai')
+                ->whereDate('tanggal', '=', $header->from)
+                ->get();
             $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
-                ->whereHas('transaction', function ($f) use ($header, $nama) {
-                    $f->where('nama', '=', $nama)
-                        ->where('status', '>=', 2)
-                        // ->where('jenis', '=', 'tunai')
-                        ->whereDate('tanggal', '=', $header->from);
-                })->groupBy('product_id', 'harga')->get();
+                // ->whereHas('transaction', function ($f) use ($header, $nama) {
+                //     $f->where('nama', '=', $nama)
+                //         ->where('status', '>=', 2)
+                //         // ->where('jenis', '=', 'tunai')
+                //         ->whereDate('tanggal', '=', $header->from);
+                // })
+                ->whereIn('transaction_id', $trxE)
+                ->groupBy('product_id', 'harga')->get();
         }
 
         $data = (object) array(
@@ -600,8 +686,8 @@ class LaporanController extends Controller
         $beban = $this->getBebansPeriod($header, 'PENGELUARAN');
         $penerimaan = $this->getPenerimaansPeriod($header, 'PENDAPATAN');
 
-        $product = Product::orderBy(request('order_by'), request('sort'))
-            ->filter(request(['q']))->with('rak')->paginate(request('per_page'));
+        // $product = Product::orderBy(request('order_by'), request('sort'))
+        //     ->filter(request(['q']))->with('rak')->paginate(request('per_page'));
 
         // hpp = pemelian bersih + persediaan awal - persediaan akhir
         // pembelian bersih = pembelian tunai dan kredit + biaya (mis: ongkir) - potongan pembelian - retur pembelian
@@ -614,7 +700,7 @@ class LaporanController extends Controller
         $stok = $this->ambilAllStok();
 
         return new JsonResponse([
-            'product' => $product,
+            // 'product' => $product,
             'pembelian' => $pembelian,
             'penjualan' => $penjualan,
             'returPembelian' => $returPembelian,

@@ -73,38 +73,42 @@ class AutogeneratorController extends Controller
         // $user->password = bcrypt('sekarep12345');
         // $user->save();
 
-        $data = Transaction::where('reff', 'PBL-lk2tmn2womq6o')->first();
-        $apem = DetailTransaction::where('transaction_id', $data->id)->get();
-        // $qty = $apem[1][0]->qty;
-        foreach ($apem as $key) {
-            $prod = Product::find($key['product_id']);
-            $harga = 0;
-            $hargaPpn = 0;
+        // $data = Transaction::where('reff', 'PBL-lk2tmn2womq6o')->first();
+        // $apem = DetailTransaction::where('transaction_id', $data->id)->get();
+        // // $qty = $apem[1][0]->qty;
+        // foreach ($apem as $key) {
+        //     $prod = Product::find($key['product_id']);
+        //     $harga = 0;
+        //     $hargaPpn = 0;
 
-            $discPerItem = $prod->harga_beli  * (5 / 100);
-            $harga =  $prod->harga_beli - $discPerItem;
+        //     $discPerItem = $prod->harga_beli  * (5 / 100);
+        //     $harga =  $prod->harga_beli - $discPerItem;
 
-            $ppnPerItem = $harga  * (11 / 100);
-            $hargaPpn = $harga + $ppnPerItem;
+        //     $ppnPerItem = $harga  * (11 / 100);
+        //     $hargaPpn = $harga + $ppnPerItem;
 
-            $harg = ceil($hargaPpn);
-            $selisi = ceil($harg - $prod->harga_beli);
-            $selisih = $selisi <= 0 ? 0 : $selisi; //ceil($selisi);
-            return new JsonResponse([
-                'harg' => $harg,
-                'hargaPpn' => $hargaPpn,
-                'harga' => $harga,
-                'selisi' => $selisi,
-                'selisih' => $selisih,
-                'prod' => $prod,
-                'data' => $data,
-                'apem' => $apem,
-            ]);
-        }
+        //     $harg = ceil($hargaPpn);
+        //     $selisi = ceil($harg - $prod->harga_beli);
+        //     $selisih = $selisi <= 0 ? 0 : $selisi; //ceil($selisi);
+        //     return new JsonResponse([
+        //         'harg' => $harg,
+        //         'hargaPpn' => $hargaPpn,
+        //         'harga' => $harga,
+        //         'selisi' => $selisi,
+        //         'selisih' => $selisih,
+        //         'prod' => $prod,
+        //         'data' => $data,
+        //         'apem' => $apem,
+        //     ]);
+        // }
 
+        // return new JsonResponse([
+        //     'data' => $data,
+        //     'apem' => $apem,
+        // ]);
         return new JsonResponse([
-            'data' => $data,
-            'apem' => $apem,
+            'date' => date('Y-m-t'),
+            'date2' => date('Y-m-01')
         ]);
     }
 
