@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Http\Controllers\Api\v1\LaporanController;
 use App\Models\Traits\HasUuid;
+use Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,9 +12,13 @@ class Product extends Model
 {
     use HasFactory, HasUuid;
     protected $guarded = ['id'];
-    protected $appends = ['stok'];
+    // protected $appends = ['stok'];
 
-
+    // protected function stok(): Attribute
+    // {
+    // return new Attribute(
+    //     get:
+    // )}
     public function getStokAttribute($reff)
     {
         $header = (object) array(
@@ -60,7 +65,7 @@ class Product extends Model
         // $produk->stokBerjalan = $berjalan;
 
 
-        return $sekarang;;
+        return $this->attributes['stok'] = $sekarang;;
     }
     public function kategori()
     {

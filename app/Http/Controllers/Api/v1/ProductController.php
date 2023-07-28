@@ -18,7 +18,10 @@ class ProductController extends Controller
         $data = Product::orderBy(request('order_by'), request('sort'))
             ->with('rak:id,nama', 'merk:id,nama', 'satuan:id,nama', 'satuanBesar:id,nama', 'kategori:id,nama')
             ->filter(request(['q']))
+            // ->attributes('stok')
             ->paginate(request('per_page'));
+        // $data->append('stok')->toArray();
+        $data->append('stok');
         // $data->load('kategori:id,nama');
         // $data->load('satuan:id,nama');
         // $data->load('rak:id,nama');
@@ -32,6 +35,7 @@ class ProductController extends Controller
             ->with('rak:id,nama', 'merk:id,nama', 'satuan:id,nama', 'satuanBesar:id,nama', 'kategori:id,nama')
             ->filter(request(['q']))
             ->paginate(request('per_page'));
+        $data->append('stok');
 
         return new JsonResponse($data);
     }
