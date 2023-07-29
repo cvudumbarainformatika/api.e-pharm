@@ -27,7 +27,7 @@ Route::view("print.penjualan", "print");
 Route::get('/coba', [AutogeneratorController::class, 'coba']);
 // Route::get('/cari', [AutogeneratorController::class, 'cari']);
 // Route::get('/retur', [AutogeneratorController::class, 'retur']);
-// Route::get('/print', [PrintController::class, 'print']);
+Route::get('/print', [PrintController::class, 'print']);
 // Route::get('/hutang', [HutangController::class, 'bayar']);
 // Route::get('/piutang', [TagihanController::class, 'piutang']);
 // Route::get('/terbayar', [TagihanController::class, 'transaksiTerbayar']);

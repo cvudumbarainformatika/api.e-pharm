@@ -136,7 +136,7 @@
 <body id="layoutx">
     <div class="sheet">
         <div class="headJudulLaporan">
-            <h2><b>TOKO YAUMI</b></h2>
+            <h2><b>{{$info}}</b></h2>
             <p class="text-center" style="margin-top: 2px;">Alamat</p>
             <p class="text-center" style="margin-top: 2px;">Kota Pobolinggo, Telp: telp </p>
             <p class="text-center" style="margin-top: 0px;">-------------------------------------</p>
@@ -212,12 +212,13 @@
 
     function afterPrint() {
 
-        let r = confirm("Press a button!");
-        if (r == true) {
-            window.close();
-        } else {
-            window.close();
-        }
+        // let r = confirm("Press a button!");
+        // if (r == true) {
+        //     window.close();
+        // } else {
+        //     window.close();
+        // }
+        window.close();
     }
 
 

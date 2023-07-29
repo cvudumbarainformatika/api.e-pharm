@@ -76,24 +76,25 @@ class TransactionController extends Controller
         ])
             ->orderBy(request()->order_by, request()->sort)
             ->filter(request(['q']))->paginate(request('per_page'));
-
-        foreach ($data as $key) {
-            if ($key['status'] === 3) {
-                $rr = 'R' . $key['reff'];
-                $ret = Transaction::where('reff', $rr)->with('detail_transaction')->first();
-                $key['retur'] = $ret->detail_transaction;
-                $retur = collect($ret->detail_transaction);
-                foreach ($key['detail_transaction'] as $det) {
-                    $temp = $retur->where('product_id', $det['product_id'])->first();
-                    if ($temp) {
-                        $jumlah = $det['qty'] - $temp->qty;
-                        $sub = $det['sub_total'] - $temp->sub_total;
-                        $tot = $key['total'] - $temp->sub_total;
-                        $det['qty'] = $jumlah;
-                        $det['sub_total'] = $sub;
-                        $key['total'] = $tot;
-                        $kem = $key['kembali'];
-                        $key['kembali'] = $key['bayar'] - $tot - $kem;
+        if ($data) {
+            foreach ($data as $key) {
+                if ($key['status'] === 3) {
+                    $rr = 'R' . $key['reff'];
+                    $ret = Transaction::where('reff', $rr)->with('detail_transaction')->first();
+                    $key['retur'] = $ret->detail_transaction;
+                    $retur = collect($ret->detail_transaction);
+                    foreach ($key['detail_transaction'] as $det) {
+                        $temp = $retur->where('product_id', $det['product_id'])->first();
+                        if ($temp) {
+                            $jumlah = $det['qty'] - $temp->qty;
+                            $sub = $det['sub_total'] - $temp->sub_total;
+                            $tot = $key['total'] - $temp->sub_total;
+                            $det['qty'] = $jumlah;
+                            $det['sub_total'] = $sub;
+                            $key['total'] = $tot;
+                            $kem = $key['kembali'];
+                            $key['kembali'] = $key['bayar'] - $tot - $kem;
+                        }
                     }
                 }
             }
