@@ -226,8 +226,16 @@ class TransactionController extends Controller
         ]);
         return new JsonResponse(['message' => 'Status sudah diganti']);
     }
+
     public function store(Request $request)
     {
+        $validatedData = Validator::make($request->all(), [
+            'reff' => 'required|min:5',
+        ]);
+
+        if ($validatedData->fails()) {
+            return response()->json($validatedData->errors(), 422);
+        }
         // if ($request->nama === 'PENJUALAN' && $request->status === 1) {
         //     $data = LaporanController::singleStok($request->product_id, $request->reff);
         //     if ($data) {
