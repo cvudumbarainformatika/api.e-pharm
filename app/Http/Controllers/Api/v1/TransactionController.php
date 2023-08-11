@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\TransactionResource;
+use App\Models\BebanTransaction;
 use App\Models\DetailTransaction;
 use App\Models\Product;
 use App\Models\Transaction;
@@ -108,6 +109,7 @@ class TransactionController extends Controller
         $data = Transaction::where('nama', 'PENGELUARAN')
             ->where('supplier_id', null)
             ->whereMonth('tanggal', date('m'))
+            // ->whereBetween('tanggal', [date('Y-m-01 00:00:00'), date('Y-m-31 23:59:59')])
             ->with('beban_transaction.beban', 'kasir')
             ->latest('tanggal')
             ->get();
@@ -546,5 +548,24 @@ class TransactionController extends Controller
                 'message' => 'Tidak ada draft yang perlu di hapus'
             ], 200);
         }
+    }
+    public function deleteBebanTransaction(Request $request)
+    {
+        // $auth = auth()->user()->id;
+        $id = $request->id;
+
+        $data = BebanTransaction::find($id);
+        $del = $data->delete();
+
+        if (!$del) {
+            return response()->json([
+                'message' => 'Error on Delete'
+            ], 500);
+        }
+
+        // $user->log("Menghapus Data Transaction {$data->nama}");
+        return response()->json([
+            'message' => 'Data sukses terhapus'
+        ], 200);
     }
 }

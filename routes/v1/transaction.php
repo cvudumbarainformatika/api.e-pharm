@@ -21,4 +21,5 @@ Route::group([
     Route::post('/store', [TransactionController::class, 'store']);
     Route::post('/ganti-status', [TransactionController::class, 'gantiStatus']);
     Route::post('/destroy', [TransactionController::class, 'destroy']);
+    Route::post('/delete-beban-tr', [TransactionController::class, 'deleteBebanTransaction']);
 });
