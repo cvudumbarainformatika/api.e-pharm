@@ -417,6 +417,7 @@ class TransactionController extends Controller
                             'harga_jual_umum' => $prod->harga_jual_umum + $selisih,
                             'harga_jual_resep' => $prod->harga_jual_resep + $selisih,
                             'harga_jual_cust' => $prod->harga_jual_cust + $selisih,
+                            'harga_jual_prem' => $prod->harga_jual_prem + $selisih,
                             'harga_beli' => $harg
                             // 'harga_beli' => $produk->harga_beli + $selisih
                         ]);
