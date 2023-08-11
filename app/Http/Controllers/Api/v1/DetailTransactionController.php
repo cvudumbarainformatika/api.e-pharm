@@ -99,24 +99,6 @@ class DetailTransactionController extends Controller
             ->get();
 
         $query = DetailTransaction::query()->selectRaw('product_id, harga, sum(qty) as jml');
-        // $query->whereHas('transaction', function ($gg) {
-        //     $gg->where('nama', '=', request('nama'))
-        //         ->whereIn('status', [2, 3])
-        //         ->when(request('supplier_id'), function ($sp, $q) {
-        //             return $sp->where('supplier_id', '=', $q);
-        //         })
-        //         ->when(request('customer_id'), function ($sp) {
-        //             return $sp->where('customer_id', '=', request('customer_id'));
-        //         })
-        //         ->when(request('dokter_id'), function ($sp) {
-        //             return $sp->where('dokter_id', '=', request('dokter_id'));
-        //         })
-        //         ->when(request('umum'), function ($sp) {
-        //             return $sp->where('dokter_id', '=', null)
-        //                 ->where('customer_id', '=', null);
-        //         });
-        //     $this->periode($gg, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
-        // });
 
         $data = $query->whereIn('transaction_id', $tr)
             ->when(
