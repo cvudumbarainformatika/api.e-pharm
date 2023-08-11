@@ -117,7 +117,15 @@ class DetailTransactionController extends Controller
         //         });
         //     $this->periode($gg, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
         // });
+
         $data = $query->whereIn('transaction_id', $tr)
+            ->when(
+                request('q'),
+                function ($sp) {
+                    $br = Product::select('id')->where('nama', 'LIKE', '%' . request('q') . '%')->get();
+                    return $sp->whereIn('product_id', $br);
+                }
+            )
             ->groupBy('product_id', 'harga')
             ->with(['product:id,nama'])
             ->get();
