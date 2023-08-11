@@ -23,6 +23,7 @@ class ProductResource extends JsonResource
             'harga_jual_umum' => $this->harga_jual_umum,
             'harga_jual_resep' => $this->harga_jual_resep,
             'harga_jual_cust' => $this->harga_jual_cust,
+            'harga_jual_prem' => $this->harga_jual_prem,
             'merk_id' => $this->merk_id,
             'merk' => $this->whenLoaded('merk'),
             'satuan_besar_id' => $this->satuan_besar_id,
