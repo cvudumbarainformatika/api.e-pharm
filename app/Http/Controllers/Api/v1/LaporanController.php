@@ -420,6 +420,7 @@ class LaporanController extends Controller
         $trxB = Transaction::select('id')->where('nama', '=', $nama)
             ->where('status', '>=', 2)
             ->where('jenis', '=', 'tunai')
+            ->where('supplier_id', null)
             ->whereDate('tanggal', '<', $header->from)
             ->get();
         $before = BebanTransaction::selectRaw('beban_id, sum(sub_total) as total')
@@ -436,6 +437,7 @@ class LaporanController extends Controller
             $trxR = Transaction::select('id')->where('nama', '=', $nama)
                 ->where('status', '>=', 2)
                 ->where('jenis', '=', 'tunai')
+                ->where('supplier_id', null)
                 ->whereBetween('tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59'])
                 ->get();
             $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
@@ -452,6 +454,7 @@ class LaporanController extends Controller
             $trxM = Transaction::select('id')->where('nama', '=', $nama)
                 ->where('status', '>=', 2)
                 ->where('jenis', '=', 'tunai')
+                ->where('supplier_id', null)
                 ->whereBetween('tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59'])
                 ->get();
             $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
@@ -467,6 +470,7 @@ class LaporanController extends Controller
             $trxE = Transaction::select('id')->where('nama', '=', $nama)
                 ->where('status', '>=', 2)
                 ->where('jenis', '=', 'tunai')
+                ->where('supplier_id', null)
                 ->whereDate('tanggal', '=', $header->from)
                 ->get();
             $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
