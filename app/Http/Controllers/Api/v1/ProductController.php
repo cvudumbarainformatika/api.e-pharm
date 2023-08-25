@@ -17,7 +17,7 @@ class ProductController extends Controller
         // $data = Product::paginate();
         $data = Product::orderBy(request('order_by'), request('sort'))
             ->with('rak:id,nama', 'merk:id,nama', 'satuan:id,nama', 'satuanBesar:id,nama', 'kategori:id,nama')
-            ->filter(request(['q']))
+            ->filter(request(['q', 'rak_id']))
             // ->attributes('stok')
             ->paginate(request('per_page'));
         // $data->append('stok')->toArray();
