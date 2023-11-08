@@ -843,49 +843,50 @@ class LaporanController extends Controller
     }
     public function singleProduct()
     {
-        $header = (object) array(
-            'from' => date('Y-m-d'),
-            'product_id' => request('product_id')
-        );
-        $stokMasuk = $this->getSingleDetails($header, 'PEMBELIAN');
-        $returPembelian = $this->getSingleDetails($header, 'RETUR PEMBELIAN');
-        $stokKeluar = $this->getSingleDetails($header, 'PENJUALAN');
-        $returPenjualan = $this->getSingleDetails($header, 'RETUR PENJUALAN');
-        $penyesuaian = $this->getSingleDetails($header, 'FORM PENYESUAIAN');
+        // $header = (object) array(
+        //     'from' => date('Y-m-d'),
+        //     'product_id' => request('product_id')
+        // );
+        // $stokMasuk = $this->getSingleDetails($header, 'PEMBELIAN');
+        // $returPembelian = $this->getSingleDetails($header, 'RETUR PEMBELIAN');
+        // $stokKeluar = $this->getSingleDetails($header, 'PENJUALAN');
+        // $returPenjualan = $this->getSingleDetails($header, 'RETUR PENJUALAN');
+        // $penyesuaian = $this->getSingleDetails($header, 'FORM PENYESUAIAN');
 
-        $produk = Product::where('id', $header->product_id)->first();
+        // $produk = Product::where('id', $header->product_id)->first();
 
-        $data = Transaction::select('id', 'nama')->where('status', 1)->where('reff', request('reff'))->first();
-        $qty = 0;
-        if ($data) {
-            // $apem = collect($data->detail_transaction)->groupBy('product_id');
-            // $apem = collect($data['detail_transaction'])->groupBy('product_id');
-            // $qty = $apem[$header->product_id][0]->qty;
-            $apem = DetailTransaction::select('id', 'qty', 'product_id')->where('transaction_id', $data->id)
-                ->where('product_id', $header->product_id)->first();
-            $qty = $data->nama === 'PENJUALAN' ? $apem->qty : -$apem->qty;
-        }
+        // $data = Transaction::select('id', 'nama')->where('status', 1)->where('reff', request('reff'))->first();
+        // $qty = 0;
+        // if ($data) {
+        //     // $apem = collect($data->detail_transaction)->groupBy('product_id');
+        //     // $apem = collect($data['detail_transaction'])->groupBy('product_id');
+        //     // $qty = $apem[$header->product_id][0]->qty;
+        //     $apem = DetailTransaction::select('id', 'qty', 'product_id')->where('transaction_id', $data->id)
+        //         ->where('product_id', $header->product_id)->first();
+        //     $qty = $data->nama === 'PENJUALAN' ? $apem->qty : -$apem->qty;
+        // }
 
-        $masukBefore = collect($stokMasuk->before)->sum('qty');
-        $masukPeriod = collect($stokMasuk->period)->sum('qty');
-        $keluarBefore = collect($stokKeluar->before)->sum('qty');
-        $keluarPeriod = collect($stokKeluar->period)->sum('qty');
-        $retBeliBefore = collect($returPembelian->before)->sum('qty');
-        $retBeliPeriod = collect($returPembelian->period)->sum('qty');
-        $retJualBefore = collect($returPenjualan->before)->sum('qty');
-        $retJualPeriod = collect($returPenjualan->period)->sum('qty');
-        $penyeBefore = collect($penyesuaian->before)->sum('qty');
-        $penyePeriod = collect($penyesuaian->period)->sum('qty');
+        // $masukBefore = collect($stokMasuk->before)->sum('qty');
+        // $masukPeriod = collect($stokMasuk->period)->sum('qty');
+        // $keluarBefore = collect($stokKeluar->before)->sum('qty');
+        // $keluarPeriod = collect($stokKeluar->period)->sum('qty');
+        // $retBeliBefore = collect($returPembelian->before)->sum('qty');
+        // $retBeliPeriod = collect($returPembelian->period)->sum('qty');
+        // $retJualBefore = collect($returPenjualan->before)->sum('qty');
+        // $retJualPeriod = collect($returPenjualan->period)->sum('qty');
+        // $penyeBefore = collect($penyesuaian->before)->sum('qty');
+        // $penyePeriod = collect($penyesuaian->period)->sum('qty');
 
-        $sebelum = $masukBefore - $keluarBefore + $retJualBefore - $retBeliBefore + $penyeBefore;
-        $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod - $qty;
-        // $awal = $produk->stok_awal + $sebelum;
-        $awal = $produk['stok_awal'] + $sebelum;
-        $sekarang = $awal + $berjalan;
-        $produk->stok_awal = $awal;
-        $produk->stokSekarang = $sekarang;
-        $produk->stokBerjalan = $berjalan;
-        $produk->stok = $sekarang;
+        // $sebelum = $masukBefore - $keluarBefore + $retJualBefore - $retBeliBefore + $penyeBefore;
+        // $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod - $qty;
+        // // $awal = $produk->stok_awal + $sebelum;
+        // $awal = $produk['stok_awal'] + $sebelum;
+        // $sekarang = $awal + $berjalan;
+        // $produk->stok_awal = $awal;
+        // $produk->stokSekarang = $sekarang;
+        // $produk->stokBerjalan = $berjalan;
+        // $produk->stok = $sekarang;
+        $produk->stok = 0;
         // $produk->apem = $apem;
         // $produk->data = $data;
         // $produk->request = request()->all();
