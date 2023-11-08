@@ -690,8 +690,6 @@ class LaporanController extends Controller
         $beban = $this->getBebansPeriod($header, 'PENGELUARAN');
         $penerimaan = $this->getPenerimaansPeriod($header, 'PENDAPATAN');
 
-        // $product = Product::orderBy(request('order_by'), request('sort'))
-        //     ->filter(request(['q']))->with('rak')->paginate(request('per_page'));
 
         // hpp = pemelian bersih + persediaan awal - persediaan akhir
         // pembelian bersih = pembelian tunai dan kredit + biaya (mis: ongkir) - potongan pembelian - retur pembelian
