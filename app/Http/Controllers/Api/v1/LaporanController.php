@@ -843,17 +843,17 @@ class LaporanController extends Controller
     }
     public function singleProduct()
     {
-        // $header = (object) array(
-        //     'from' => date('Y-m-d'),
-        //     'product_id' => request('product_id')
-        // );
+        $header = (object) array(
+            'from' => date('Y-m-d'),
+            'product_id' => request('product_id')
+        );
         // $stokMasuk = $this->getSingleDetails($header, 'PEMBELIAN');
         // $returPembelian = $this->getSingleDetails($header, 'RETUR PEMBELIAN');
         // $stokKeluar = $this->getSingleDetails($header, 'PENJUALAN');
         // $returPenjualan = $this->getSingleDetails($header, 'RETUR PENJUALAN');
         // $penyesuaian = $this->getSingleDetails($header, 'FORM PENYESUAIAN');
 
-        // $produk = Product::where('id', $header->product_id)->first();
+        $produk = Product::where('id', $header->product_id)->first();
 
         // $data = Transaction::select('id', 'nama')->where('status', 1)->where('reff', request('reff'))->first();
         // $qty = 0;
@@ -882,11 +882,19 @@ class LaporanController extends Controller
         // // $awal = $produk->stok_awal + $sebelum;
         // $awal = $produk['stok_awal'] + $sebelum;
         // $sekarang = $awal + $berjalan;
+
         // $produk->stok_awal = $awal;
         // $produk->stokSekarang = $sekarang;
         // $produk->stokBerjalan = $berjalan;
         // $produk->stok = $sekarang;
+
+        $produk->stok_awal = 0;
+        $produk->stokSekarang = 0;
+        $produk->stokBerjalan = 0;
         $produk->stok = 0;
+
+
+
         // $produk->apem = $apem;
         // $produk->data = $data;
         // $produk->request = request()->all();
