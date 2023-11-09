@@ -77,7 +77,8 @@ class LaporanBaruController extends Controller
 
             'detail_transactions.qty'
         )->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
-            ->where('detail_transactions.product_id', $header->product_id)->where('nama', '=', $nama)
+            ->where('detail_transactions.product_id', $header->product_id)
+            ->where('transactions.nama', '=', $nama)
             ->where('transactions.status', '>=', 2)
             ->whereDate('transactions.tanggal', '=', $header->from)->get();
 
@@ -175,7 +176,7 @@ class LaporanBaruController extends Controller
             ->selectRaw('sum(detail_transactions.qty) as jml')
             ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
             ->where('transactions.nama', '=', $nama)
-            ->where('status', '>=', 2);
+            ->where('transactions.status', '>=', 2);
         $this->newUntil($trx, $header);
         $jadi = $trx->groupBy('detail_transactions.product_id')->get();
         return $jadi;
@@ -232,9 +233,6 @@ class LaporanBaruController extends Controller
             ->where('transactions.nama', '=', $nama)
             ->where('transactions.status', '>=', 2)
             ->whereDate('transactions.tanggal', '<', $sebelumBulanIni)
-            // $before = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
-
-            // ->whereIn('transaction_id', $trxSeb)
             ->groupBy('detail_transactions.product_id')->get();
 
         if ($header->selection === 'range') {
@@ -247,10 +245,6 @@ class LaporanBaruController extends Controller
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->whereBetween('transactions.tanggal',  [$header->from . ' 00:00:00', $header->to . ' 23:59:59'])
-                // ->get();
-                // $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
-
-                // ->whereIn('transaction_id', $trxRa)
                 ->groupBy('detail_transactions.product_id')->get();
         } else if ($header->selection === 'tillToday') {
             $period = Transaction::select(
@@ -262,10 +256,6 @@ class LaporanBaruController extends Controller
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->whereMonth('transactions.tanggal', '=', date('m'))
-                //     ->get();
-                // $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
-
-                //     ->whereIn('transaction_id', $trxM)
                 ->groupBy('detail_transactions.product_id')->get();
         } else {
             $period = Transaction::select(
@@ -277,10 +267,6 @@ class LaporanBaruController extends Controller
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->whereDate('transactions.tanggal', '=', $header->from)
-                //     ->get();
-                // $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml')
-
-                //     ->whereIn('transaction_id', $trxS)
                 ->groupBy('detail_transactions.product_id')->get();
         }
 
@@ -305,9 +291,6 @@ class LaporanBaruController extends Controller
             ->where('transactions.nama', '=', $nama)
             ->where('transactions.status', '>=', 2)
             ->whereDate('transactions.tanggal', '<', $header->from)
-            //     ->get();
-            // $before = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
-            //     ->whereIn('transaction_id', $trxB)
             ->groupBy('detail_transactions.product_id', 'detail_transactions.harga')->get();
 
         if ($header->selection === 'range') {
@@ -321,9 +304,6 @@ class LaporanBaruController extends Controller
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->whereBetween('transactions.tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59'])
-                //     ->get();
-                // $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
-                //     ->whereIn('transaction_id', $trxR)
                 ->groupBy('detail_transactions.product_id', 'detail_transactions.harga')->get();
         } else if ($header->selection === 'tillToday') {
             $period = Transaction::select(
@@ -336,9 +316,6 @@ class LaporanBaruController extends Controller
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->whereBetween('transactions.tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59'])
-                //     ->get();
-                // $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
-                //     ->whereIn('transaction_id', $trxM)
                 ->groupBy('detail_transactions.product_id', 'detail_transactions.harga')->get();
         } else {
             $period = Transaction::select(
@@ -351,10 +328,6 @@ class LaporanBaruController extends Controller
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->whereDate('transactions.tanggal', '=', $header->from)
-                //     ->get();
-                // $period = DetailTransaction::selectRaw('product_id, sum(qty) as jml, harga')
-
-                //     ->whereIn('transaction_id', $trxE)
                 ->groupBy('detail_transactions.product_id', 'detail_transactions.harga')->get();
         }
 
@@ -378,10 +351,6 @@ class LaporanBaruController extends Controller
             ->where('transactions.jenis', '=', 'tunai')
             ->where('transactions.supplier_id', null)
             ->whereDate('transactions.tanggal', '<', $header->from)
-            //     ->get();
-            // $before = BebanTransaction::selectRaw('beban_id, sum(sub_total) as total')
-
-            // ->whereIn('transaction_id', $trxB)
             ->groupBy('beban_transactions.beban_id')->get();
 
         if ($header->selection === 'range') {
@@ -395,10 +364,6 @@ class LaporanBaruController extends Controller
                 ->where('transactions.jenis', '=', 'tunai')
                 ->where('transactions.supplier_id', null)
                 ->whereBetween('transactions.tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59'])
-                //     ->get();
-                // $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
-
-                // ->whereIn('transaction_id', $trxR)
                 ->groupBy('beban_transactions.beban_id')->get();
         } else if ($header->selection === 'tillToday') {
             $period = Transaction::select(
@@ -411,10 +376,6 @@ class LaporanBaruController extends Controller
                 ->where('transactions.jenis', '=', 'tunai')
                 ->where('transactions.supplier_id', null)
                 ->whereBetween('transactions.tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59'])
-                //     ->get();
-                // $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
-
-                //     ->whereIn('transaction_id', $trxM)
                 ->groupBy('beban_transactions.beban_id')->get();
         } else {
             $period = Transaction::select(
@@ -427,10 +388,6 @@ class LaporanBaruController extends Controller
                 ->where('transactions.jenis', '=', 'tunai')
                 ->where('transactions.supplier_id', null)
                 ->whereDate('transactions.tanggal', '=', $header->from)
-                //     ->get();
-                // $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
-
-                //     ->whereIn('transaction_id', $trxE)
                 ->groupBy('beban_transactions.beban_id')->get();
         }
 

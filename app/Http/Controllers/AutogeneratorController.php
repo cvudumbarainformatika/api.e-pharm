@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Api\v1\LaporanBaruController;
 use App\Http\Controllers\Api\v1\SettingController;
 use App\Models\DetailTransaction;
 use App\Models\Product;
@@ -112,22 +113,103 @@ class AutogeneratorController extends Controller
         ]);
     }
 
-    public function getSingleDetails($header, $nama)
+    public function getStokProd()
     {
-        $before = DetailTransaction::where('product_id', $header->product_id)
-            ->whereHas('transaction', function ($f) use ($header, $nama) {
-                $f->where('nama', '=', $nama)
-                    ->where('status', '>=', 2)
-                    ->whereDate('tanggal', '<', $header->from);
-            })->get();
-        $period = DetailTransaction::where('product_id', $header->product_id)
-            ->whereHas('transaction', function ($f) use ($header, $nama) {
-                $f->where('nama', '=', $nama)
-                    ->where('status', '>=', 2)
-                    ->whereDate('tanggal', '=', $header->from);
-            })->get();
+        $header = (object) array(
+            'from' => date('Y-m-d'),
+            'product_id' => 93
+        );
+        $produ = Product::find($header->product_id);
+        $singleDet = new LaporanBaruController;
+        $stokMasuk = $singleDet->getSingleDetails($header, 'PEMBELIAN');
+        $returPembelian = $singleDet->getSingleDetails($header, 'RETUR PEMBELIAN');
+        $stokKeluar = $singleDet->getSingleDetails($header, 'PENJUALAN');
+        $returPenjualan = $singleDet->getSingleDetails($header, 'RETUR PENJUALAN');
+        $penyesuaian = $singleDet->getSingleDetails($header, 'FORM PENYESUAIAN');
+
+        $masukBefore = collect($stokMasuk->before)->sum('qty');
+        $masukPeriod = collect($stokMasuk->period)->sum('qty');
+        $keluarBefore = collect($stokKeluar->before)->sum('qty');
+        $keluarPeriod = collect($stokKeluar->period)->sum('qty');
+        $retBeliBefore = collect($returPembelian->before)->sum('qty');
+        $retBeliPeriod = collect($returPembelian->period)->sum('qty');
+        $retJualBefore = collect($returPenjualan->before)->sum('qty');
+        $retJualPeriod = collect($returPenjualan->period)->sum('qty');
+        $penyeBefore = collect($penyesuaian->before)->sum('qty');
+        $penyePeriod = collect($penyesuaian->period)->sum('qty');
+
+        $sebelum = $masukBefore - $keluarBefore + $retJualBefore - $retBeliBefore + $penyeBefore;
+        $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod;
+        $awal = $produ->stok_awal + $sebelum;
+        $sekarang = $awal + $berjalan;
+
+        return [
+            'masukBefore' => $masukBefore,
+            'masukPeriod' => $masukPeriod,
+            'keluarBefore' => $keluarBefore,
+            'keluarPeriod' => $keluarPeriod,
+            'retBeliBefore' => $retBeliBefore,
+            'retBeliPeriod' => $retBeliPeriod,
+            'retJualBefore' => $retJualBefore,
+            'retJualPeriod' => $retJualPeriod,
+            'penyeBefore' => $penyeBefore,
+            'penyePeriod' => $penyePeriod,
+            'sebelum' => $sebelum,
+            'berjalan' => $berjalan,
+            'awal' => $awal,
+            'sekarang' => $sekarang,
+        ];
+    }
+    public function getSingleDetails()
+    {
+        $header = (object)[];
+        $nama = 'PENJUALAN';
+        $header->product_id = 93;
+        $header->from = '2023-11-01';
+        $header->to = '2023-11-09 ';
+
+        $before = Transaction::select(
+
+            'detail_transactions.qty'
+        )->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
+            ->where('detail_transactions.product_id', $header->product_id)
+            ->where('transactions.nama', '=', $nama)
+            ->where('transactions.status', '>=', 2)
+            ->whereDate('transactions.tanggal', '<', $header->from)
+            ->get();
+        $period = Transaction::select(
+
+            'detail_transactions.qty'
+        )->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
+            ->where('detail_transactions.product_id', $header->product_id)
+            ->where('transactions.nama', '=', $nama)
+            ->where('transactions.status', '>=', 2)
+            ->whereDate('transactions.tanggal', '=', $header->from)
+            ->get();
+
+        $before1 = DetailTransaction::select(
+
+            'detail_transactions.qty'
+        )->leftJoin('transactions', 'transactions.id', '=', 'detail_transactions.transaction_id')
+            ->where('detail_transactions.product_id', $header->product_id)
+            ->where('transactions.nama', '=', $nama)
+            ->where('transactions.status', '>=', 2)
+            ->whereDate('transactions.tanggal', '<', $header->from)
+            ->get();
+        $period1 = DetailTransaction::select(
+
+            'detail_transactions.qty'
+        )->leftJoin('transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
+            ->where('detail_transactions.product_id', $header->product_id)
+            ->where('transactions.nama', '=', $nama)
+            ->where('transactions.status', '>=', 2)
+            ->whereDate('transactions.tanggal', '=', $header->from)
+            ->get();
+
 
         $data = (object) array(
+            'before1' => $before1,
+            'period1' => $period1,
             'before' => $before,
             'period' => $period,
         );
