@@ -468,4 +468,70 @@ class LaporanBaruController extends Controller
         $data = $query->get();
         return $data;
     }
+    public function ambilStok()
+    {
+        $header = (object) array(
+            'from' => request('from'),
+            'to' => request('to'),
+            'selection' => request('selection'),
+        );
+
+        $stokMasuk = $this->getDetailsPeriod($header, 'PEMBELIAN');
+        $returPembelian = $this->getDetailsPeriod($header, 'RETUR PEMBELIAN');
+        $stokKeluar = $this->getDetailsPeriod($header, 'PENJUALAN');
+        $returPenjualan = $this->getDetailsPeriod($header, 'RETUR PENJUALAN');
+        $penyesuaian = $this->getDetailsPeriod($header, 'FORM PENYESUAIAN');
+
+
+        $product = Product::orderBy(request('order_by'), request('sort'))
+            ->filter(request(['q']))->with('rak')->paginate(request('per_page'));
+
+        return new JsonResponse([
+            'product' => $product,
+            'masuk' => $stokMasuk,
+            'keluar' => $stokKeluar,
+            'returPembelian' => $returPembelian,
+            'returPenjualan' => $returPenjualan,
+            'penyesuaian' => $penyesuaian,
+        ], 200);
+    }
+    // Transaksi pada periode terkait hanya untuk produk terpilih
+    public function stokTransaction()
+    {
+        $header = (object) array(
+            'from' => request('from'),
+            'to' => request('to'),
+            'selection' => request('selection'),
+        );
+        // if ($header->selection === 'tillToday') {
+        //     $query->whereBetween('tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59']); // bedanya disini
+        // } else if ($header->selection === 'spesifik') {
+        //     $query->whereDate('tanggal', '=', $header->from);
+        // } else if ($header->selection === 'range') {
+        //     $query->whereBetween('tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59']);
+        // } else {
+        //     $query->whereBetween('tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59']);
+        // }
+        // $q = Transaction::select('id')->where('status', '>=', 2);
+        // $this->newUntil($q, $header);
+        // $anu = $q->get();
+        $data = DetailTransaction::select(
+            'detail_transactions.*'
+        )
+            ->leftJoin('transactions', 'transactions.id', '=', 'detail_transactions.transaction_id')
+            ->where('detail_transactions.product_id', '=', request('id'))
+            ->with('transaction:id,nama,tanggal')
+            // ->whereIn('transaction_id', $anu)
+            ->when($header->selection === 'tillToday', function ($query) {
+                $query->whereBetween('tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59']);
+            })
+            ->when($header->selection === 'range', function ($query) use ($header) {
+                $query->whereBetween('tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59']);
+            })
+            ->when($header->selection === 'spesifik', function ($query) use ($header) {
+                $query->whereDate('tanggal', '=', $header->from);
+            })
+            ->get();
+        return new JsonResponse($data);
+    }
 }
