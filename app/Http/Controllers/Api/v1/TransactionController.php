@@ -381,18 +381,23 @@ class TransactionController extends Controller
                 }
                 // if ($request->nama === 'PENJUALAN' && $request->status === 2) {
                 //     if ($request->jenis === 'tunai') {
-                // cek subtotal
+                // // cek subtotal
                 $det = DetailTransaction::where('transaction_id', $data->id)->get();
                 $detCol = collect($det)->sum('sub_total');
                 $total = $data->total;
-                if ($total !== $detCol) {
-                    $data->total = $detCol;
-                    $data->totalSemua = $detCol;
-                    // $data->save();
-                    if ($data->bayar > 0) {
-                        $data->kembali = $data->bayar - $detCol;
+                if ($request->nama === 'PENJUALAN') {
+                    if ($total !== $detCol) {
+                        $data->total = $detCol;
+                        $data->totalSemua = $detCol;
+                        // $data->save();
+                        if ($request->jenis === 'tunai') {
+
+                            if ($data->bayar > 0) {
+                                $data->kembali = $data->bayar - $detCol;
+                            }
+                        }
+                        $data->save();
                     }
-                    $data->save();
                 }
                 // }
                 // }
