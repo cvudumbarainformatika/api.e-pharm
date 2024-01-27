@@ -16,10 +16,10 @@ class CreateInfosTable extends Migration
         Schema::create('infos', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->json('menus')->nullable();
-            $table->json('infos')->nullable();
-            $table->json('themes')->nullable();
-            $table->json('levels')->nullable();
+            $table->text('menus')->nullable();
+            $table->text('infos')->nullable();
+            $table->text('themes')->nullable();
+            $table->text('levels')->nullable();
             $table->timestamps();
         });
     }

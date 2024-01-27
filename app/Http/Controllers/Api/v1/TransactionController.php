@@ -343,17 +343,21 @@ class TransactionController extends Controller
 
                 $diskon = $request->has('diskon') && $request->diskon !== null ? $request->diskon : 0;
                 $harga = $request->has('harga') && $request->harga !== null ? $request->harga : 0;
-                $sub_total = $request->has('sub_total') && $request->sub_total !== null ? $request->sub_total : 0;
+                $sub_total = $request->has('sub_total') && $request->sub_total !== null && $request->sub_total > 0 ? $request->sub_total : ((int) $request->qty * (int) $harga);
                 $expired = $request->has('expired') && $request->expired !== null ? $request->expired : null;
-                $data->detail_transaction()->updateOrCreate([
-                    'product_id' => $request->product_id,
-                ], [
-                    'harga' => $harga,
-                    'qty' => $request->qty,
-                    'expired' => $expired,
-                    'diskon' => $diskon,
-                    'sub_total' => $sub_total
-                ]);
+
+                $data->detail_transaction()->updateOrCreate(
+                    [
+                        'product_id' => $request->product_id,
+                    ],
+                    [
+                        'harga' => $harga,
+                        'qty' => $request->qty,
+                        'expired' => $expired,
+                        'diskon' => $diskon,
+                        'sub_total' => $sub_total
+                    ]
+                );
 
                 // update harga_beli di produk dan harga jual juga
                 if ($request->update_harga) {
@@ -375,7 +379,25 @@ class TransactionController extends Controller
                         // 'harga_beli' => $produk->harga_beli + $selisih
                     ]);
                 }
+                // if ($request->nama === 'PENJUALAN' && $request->status === 2) {
+                //     if ($request->jenis === 'tunai') {
+                // cek subtotal
+                $det = DetailTransaction::where('transaction_id', $data->id)->get();
+                $detCol = collect($det)->sum('sub_total');
+                $total = $data->total;
+                if ($total !== $detCol) {
+                    $data->total = $detCol;
+                    $data->totalSemua = $detCol;
+                    // $data->save();
+                    if ($data->bayar > 0) {
+                        $data->kembali = $data->bayar - $detCol;
+                    }
+                    $data->save();
+                }
+                // }
+                // }
             }
+
             /*
             * new
             * koding ongkir / PPN  disini
@@ -426,6 +448,7 @@ class TransactionController extends Controller
                     }
                 }
             }
+
             /*
             * koding ongkir / PPN  disini
             * PPN  dalam %
@@ -477,7 +500,13 @@ class TransactionController extends Controller
             }
 
             DB::commit();
-            return response()->json(['message' => 'success', 'update_harga' => $harga_di_update, 'data' => $data], 201);
+            return response()->json([
+                'message' => 'success',
+                'update_harga' => $harga_di_update,
+                'data' => $data,
+                'det' => $detCol ?? null,
+                'total' => $total ?? null
+            ], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
