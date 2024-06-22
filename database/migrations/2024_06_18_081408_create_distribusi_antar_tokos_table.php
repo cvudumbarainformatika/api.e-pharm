@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDetailTransactionsTable extends Migration
+class CreateDistribusiAntarTokosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,18 @@ class CreateDetailTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('detail_transactions', function (Blueprint $table) {
+        Schema::create('distribusi_antar_tokos', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->unique();
-            $table->foreignId('transaction_id')
-                ->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+            $table->string('reff')->unique()->default('trl70k498vdb9m4');
             $table->unsignedBigInteger('product_id')->nullable();
+            $table->string('pengirim')->nullable();
+            $table->string('dari')->nullable();
+            $table->string('tujuan')->nullable();
+            $table->string('penerima')->nullable();
             $table->double('qty', 20, 2)->default(0);
+            $table->date('tgl_distribusi')->nullable();
+            $table->date('tgl_terima')->nullable();
             $table->date('expired')->nullable();
-            $table->double('harga', 20, 2)->default(0);
-            $table->double('sub_total', 20, 3)->default(0);
-            $table->double('diskon', 20, 3)->default(0);
             $table->timestamps();
         });
     }
@@ -37,6 +36,6 @@ class CreateDetailTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('detail_transactions');
+        Schema::dropIfExists('distribusi_antar_tokos');
     }
 }
