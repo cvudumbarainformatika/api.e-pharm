@@ -15,15 +15,11 @@ class CreateDistribusiAntarTokosTable extends Migration
     {
         Schema::create('distribusi_antar_tokos', function (Blueprint $table) {
             $table->id();
-            $table->string('reff')->unique()->default('trl70k498vdb9m4');
+            $table->string('nodistribusi')->nullable();
             $table->unsignedBigInteger('product_id')->nullable();
-            $table->string('pengirim')->nullable();
-            $table->string('dari')->nullable();
-            $table->string('tujuan')->nullable();
-            $table->string('penerima')->nullable();
             $table->double('qty', 20, 2)->default(0);
-            $table->date('tgl_distribusi')->nullable();
-            $table->date('tgl_terima')->nullable();
+            $table->double('harga', 20, 2)->default(0);
+            $table->double('subtotal', 20, 2)->default(0);
             $table->date('expired')->nullable();
             $table->timestamps();
         });

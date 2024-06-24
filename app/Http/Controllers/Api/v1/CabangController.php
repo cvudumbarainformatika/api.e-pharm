@@ -22,7 +22,11 @@ class CabangController extends Controller
         $data['data'] = $col['data'];
         $data['meta'] = collect($raw)->except('data');
         return new JsonResponse($data);
-        // return MerkResource::collection($data);
+    }
+    public function allCabang()
+    {
+        $data = Cabang::get();
+        return new JsonResponse($data);
     }
     public function store(Request $request)
     {

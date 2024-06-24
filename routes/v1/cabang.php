@@ -9,6 +9,7 @@ Route::group([
     'prefix' => 'cabang'
 ], function () {
     Route::get('/index', [CabangController::class, 'index']);
+    Route::get('/all', [CabangController::class, 'allCabang']);
     Route::post('/store', [CabangController::class, 'store']);
     Route::post('/destroy', [CabangController::class, 'destroy']);
 });
