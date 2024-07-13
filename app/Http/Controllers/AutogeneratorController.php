@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\NumberHelper;
 use App\Http\Controllers\Api\v1\LaporanBaruController;
 use App\Http\Controllers\Api\v1\SettingController;
 use App\Models\Beban;
@@ -445,7 +446,7 @@ class AutogeneratorController extends Controller
 
         if (count($beban)) {
             foreach ($beban as $key) {
-                $kode = self::setNumber($key->id, 'BBN');
+                $kode = NumberHelper::setNumber($key->id, 'BBN');
                 $key->update([
                     'kode_beban' => $kode
                 ]);
@@ -453,7 +454,7 @@ class AutogeneratorController extends Controller
         }
         if (count($customer)) {
             foreach ($customer as $key) {
-                $kode = self::setNumber($key->id, 'CST');
+                $kode = NumberHelper::setNumber($key->id, 'CST');
                 $key->update([
                     'kode_customer' => $kode
                 ]);
@@ -461,7 +462,7 @@ class AutogeneratorController extends Controller
         }
         if (count($dokter)) {
             foreach ($dokter as $key) {
-                $kode = self::setNumber($key->id, 'DKT');
+                $kode = NumberHelper::setNumber($key->id, 'DKT');
                 $key->update([
                     'kode_dokter' => $kode
                 ]);
@@ -469,7 +470,7 @@ class AutogeneratorController extends Controller
         }
         if (count($kategory)) {
             foreach ($kategory as $key) {
-                $kode = self::setNumber($key->id, 'KTR');
+                $kode = NumberHelper::setNumber($key->id, 'KTR');
                 $key->update([
                     'kode_kategory' => $kode
                 ]);
@@ -477,7 +478,7 @@ class AutogeneratorController extends Controller
         }
         if (count($merk)) {
             foreach ($merk as $key) {
-                $kode = self::setNumber($key->id, 'MRK');
+                $kode = NumberHelper::setNumber($key->id, 'MRK');
                 $key->update([
                     'kode_merk' => $kode
                 ]);
@@ -485,7 +486,7 @@ class AutogeneratorController extends Controller
         }
         if (count($satuanBesar)) {
             foreach ($satuanBesar as $key) {
-                $kode = self::setNumber($key->id, 'STB');
+                $kode = NumberHelper::setNumber($key->id, 'STB');
                 $key->update([
                     'kode_satuan' => $kode
                 ]);
@@ -493,7 +494,7 @@ class AutogeneratorController extends Controller
         }
         if (count($satuan)) {
             foreach ($satuan as $key) {
-                $kode = self::setNumber($key->id, 'STK');
+                $kode = NumberHelper::setNumber($key->id, 'STK');
                 $key->update([
                     'kode_satuan' => $kode
                 ]);
@@ -501,7 +502,7 @@ class AutogeneratorController extends Controller
         }
         if (count($suplier)) {
             foreach ($suplier as $key) {
-                $kode = self::setNumber($key->id, 'SUP');
+                $kode = NumberHelper::setNumber($key->id, 'SUP');
                 $key->update([
                     'kode_supplier' => $kode
                 ]);
@@ -509,7 +510,7 @@ class AutogeneratorController extends Controller
         }
         if (count($produk)) {
             foreach ($produk as $key) {
-                $kode = self::setNumber($key->id, 'PRD');
+                $kode = NumberHelper::setNumber($key->id, 'PRD');
                 $key->update([
                     'kode_produk' => $kode
                 ]);
@@ -528,6 +529,7 @@ class AutogeneratorController extends Controller
             'produk' => $produk,
         ]);
     }
+    // ini dipake di master, jadi ga boleh dihapus
     public static function setNumber($n, $kode)
     {
         $has = null;

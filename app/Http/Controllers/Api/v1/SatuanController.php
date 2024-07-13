@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Helpers\NumberHelper;
+use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\SatuanResource;
 use App\Models\Satuan;
@@ -49,9 +51,15 @@ class SatuanController extends Controller
                 }
 
                 // Satuan::create($request->only('name'));
-                Satuan::firstOrCreate([
+                $satuan = Satuan::firstOrCreate([
                     'nama' => $request->nama
                 ]);
+                if ($satuan->kode_satuan === null) {
+                    $kode = AutogeneratorController::setNumber($satuan->id, 'STK');
+                    $satuan->update([
+                        'kode_satuan' => $kode
+                    ]);
+                }
 
                 // $auth->log("Memasukkan data satuan {$user->name}");
             } else {
@@ -160,9 +168,16 @@ class SatuanController extends Controller
                 }
 
                 // SatuanBesar::create($request->only('name'));
-                SatuanBesar::firstOrCreate([
+                $satuan = SatuanBesar::firstOrCreate([
                     'nama' => $request->nama
                 ]);
+                if ($satuan->kode_satuan === null) {
+                    $kode = NumberHelper::setNumber($satuan->id, 'STB');
+                    // $kode = AutogeneratorController::setNumber($satuan->id, 'STB');
+                    $satuan->update([
+                        'kode_satuan' => $kode
+                    ]);
+                }
 
                 // $auth->log("Memasukkan data satuan {$user->name}");
             } else {

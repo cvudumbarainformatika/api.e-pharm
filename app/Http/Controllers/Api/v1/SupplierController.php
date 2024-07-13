@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-
+use App\Helpers\NumberHelper;
+use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\SupplierResource;
 use App\Models\Supplier;
@@ -42,7 +43,14 @@ class SupplierController extends Controller
                 }
 
                 // Supplier::create($request->only(['nama', 'alamat', 'perusahaan_id', 'kontak', 'saldo_awal_hutang']));
-                Supplier::create($request->all());
+                $supp = Supplier::create($request->all());
+                if ($supp->kode_supplier === null) {
+                    $kode = NumberHelper::setNumber($supp->id, 'SUP');
+                    // $kode = AutogeneratorController::setNumber($supp->id, 'SUP');
+                    $supp->update([
+                        'kode_supplier' => $kode
+                    ]);
+                }
                 // Supplierlier::create([
                 //     'Supplierma' => $request->name
                 // ]);

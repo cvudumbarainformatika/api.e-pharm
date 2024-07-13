@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Helpers\NumberHelper;
+use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\KategoriResource;
 use App\Models\Kategori;
@@ -36,9 +38,16 @@ class KategoriController extends Controller
                 }
 
                 // Kategori::create($request->only('nama'));
-                Kategori::firstOrCreate([
+                $kate = Kategori::firstOrCreate([
                     'nama' => $request->nama
                 ]);
+                if ($kate->kode_kategory === null) {
+                    $kode = NumberHelper::setNumber($kate->id, 'KTR');
+                    // $kode = AutogeneratorController::setNumber($kate->id, 'KTR');
+                    $kate->update([
+                        'kode_kategory' => $kode
+                    ]);
+                }
 
                 // $auth->log("Memasukkan data Kategori {$user->name}");
             } else {

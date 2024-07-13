@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Helpers\NumberHelper;
+use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\DokterResource;
 use App\Models\Dokter;
@@ -37,7 +39,14 @@ class DokterController extends Controller
                     return response()->json($validatedData->errors(), 422);
                 }
 
-                Dokter::create($request->only(['nama', 'alamat', 'kontak']));
+                $dokter = Dokter::create($request->only(['nama', 'alamat', 'kontak']));
+                if ($dokter->kode_dokter === null) {
+                    $kode = NumberHelper::setNumber($dokter->id, 'DKT');
+                    // $kode = AutogeneratorController::setNumber($dokter->id, 'DKT');
+                    $dokter->update([
+                        'kode_dokter' => $kode
+                    ]);
+                }
                 // Dokter::create([
                 //     'nama' => $request->name
                 // ]);

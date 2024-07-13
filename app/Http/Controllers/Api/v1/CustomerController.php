@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Helpers\NumberHelper;
+use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\CustomerResource;
 use App\Models\Customer;
@@ -39,12 +41,19 @@ class CustomerController extends Controller
                 }
 
                 // Customer::create($request->only('nama'));
-                Customer::firstOrCreate([
+                $cust = Customer::firstOrCreate([
                     'nama' => $request->nama,
                     'alamat' => $request->alamat,
                     'kontak' => $request->kontak,
                     'saldo_awal_piutang' => $request->saldo_awal_piutang
                 ]);
+                if ($cust->kode_customer === null) {
+                    $kode = NumberHelper::setNumber($cust->id, 'CST');
+                    // $kode = AutogeneratorController::setNumber($cust->id, 'CST');
+                    $cust->update([
+                        'kode_customer' => $kode
+                    ]);
+                }
 
                 // $auth->log("Memasukkan data Customer {$user->name}");
             } else {

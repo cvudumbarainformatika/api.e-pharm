@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Helpers\NumberHelper;
+use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\MerkResource;
 use App\Models\Merk;
@@ -36,9 +38,16 @@ class MerkController extends Controller
                 }
 
                 // Merk::create($request->only('nama'));
-                Merk::firstOrCreate([
+                $merk = Merk::firstOrCreate([
                     'nama' => $request->nama
                 ]);
+                if ($merk->kode_merk === null) {
+                    $kode = NumberHelper::setNumber($merk->id, 'MRK');
+                    // $kode = AutogeneratorController::setNumber($merk->id, 'MRK');
+                    $merk->update([
+                        'kode_merk' => $kode
+                    ]);
+                }
 
                 // $auth->log("Memasukkan data Merk {$user->name}");
             } else {

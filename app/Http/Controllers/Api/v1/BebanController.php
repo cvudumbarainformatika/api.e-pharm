@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Helpers\NumberHelper;
+use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\BebanResource;
 use App\Models\Beban;
@@ -84,9 +86,16 @@ class BebanController extends Controller
                 }
 
                 // Beban::create($request->only('nama'));
-                Beban::firstOrCreate([
+                $beban = Beban::firstOrCreate([
                     'nama' => $request->nama
                 ]);
+                if ($beban->kode_beban === null) {
+                    $kode = NumberHelper::setNumber($beban->id, 'BBN');
+                    // $kode = AutogeneratorController::setNumber($beban->id, 'BBN');
+                    $beban->update([
+                        'kode_beban' => $kode
+                    ]);
+                }
 
                 // $auth->log("Memasukkan data Beban {$user->name}");
             } else {

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Helpers\NumberHelper;
+use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\ProductResource;
 use App\Models\Product;
@@ -81,6 +83,14 @@ class ProductController extends Controller
             $data = Product::updateOrCreate([
                 'id' => $request->id
             ], $request->all());
+
+            if ($data->kode_produk === null) {
+                $kode = NumberHelper::setNumber($data->id, 'PRD');
+                // $kode = AutogeneratorController::setNumber($data->id, 'PRD');
+                $data->update([
+                    'kode_produk' => $kode
+                ]);
+            }
             // if (!$request->has('id')) {
 
 
