@@ -16,6 +16,7 @@ class CreateRaksTable extends Migration
         Schema::create('raks', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
+            $table->string('kode_rak')->unique()->nullable();
             $table->string('nama')->nullable();
             $table->timestamps();
         });

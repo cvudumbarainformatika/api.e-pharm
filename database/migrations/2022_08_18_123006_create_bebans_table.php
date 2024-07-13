@@ -16,6 +16,7 @@ class CreateBebansTable extends Migration
         Schema::create('bebans', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
+            $table->string('kode_beban')->unique()->nullable();
             $table->string('nama')->nullable();
             $table->timestamps();
         });
