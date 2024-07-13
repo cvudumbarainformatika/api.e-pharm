@@ -4,8 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\v1\LaporanBaruController;
 use App\Http\Controllers\Api\v1\SettingController;
+use App\Models\Beban;
+use App\Models\Customer;
 use App\Models\DetailTransaction;
+use App\Models\Dokter;
+use App\Models\Kategori;
+use App\Models\Merk;
 use App\Models\Product;
+use App\Models\Satuan;
+use App\Models\SatuanBesar;
+use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
@@ -420,5 +428,113 @@ class AutogeneratorController extends Controller
         $data = 'PNSDA-apem';
         $return = explode('-', $data);
         return new JsonResponse($return[0]);
+    }
+
+    public function setKode()
+    {
+
+        $beban = Beban::whereNull('kode_beban')->get();
+        $customer = Customer::whereNull('kode_customer')->get();
+        $dokter = Dokter::whereNull('kode_dokter')->get();
+        $kategory = Kategori::whereNull('kode_kategory')->get();
+        $merk = Merk::whereNull('kode_merk')->get();
+        $satuanBesar = SatuanBesar::whereNull('kode_satuan')->get();
+        $satuan = Satuan::whereNull('kode_satuan')->get();
+        $suplier = Supplier::whereNull('kode_supplier')->get();
+        $produk = Product::whereNull('kode_produk')->get();
+
+        if (count($beban)) {
+            foreach ($beban as $key) {
+                $kode = self::setNumber($key->id, 'BBN');
+                $key->update([
+                    'kode_beban' => $kode
+                ]);
+            }
+        }
+        if (count($customer)) {
+            foreach ($customer as $key) {
+                $kode = self::setNumber($key->id, 'CST');
+                $key->update([
+                    'kode_customer' => $kode
+                ]);
+            }
+        }
+        if (count($dokter)) {
+            foreach ($dokter as $key) {
+                $kode = self::setNumber($key->id, 'DKT');
+                $key->update([
+                    'kode_dokter' => $kode
+                ]);
+            }
+        }
+        if (count($kategory)) {
+            foreach ($kategory as $key) {
+                $kode = self::setNumber($key->id, 'KTR');
+                $key->update([
+                    'kode_kategory' => $kode
+                ]);
+            }
+        }
+        if (count($merk)) {
+            foreach ($merk as $key) {
+                $kode = self::setNumber($key->id, 'MRK');
+                $key->update([
+                    'kode_merk' => $kode
+                ]);
+            }
+        }
+        if (count($satuanBesar)) {
+            foreach ($satuanBesar as $key) {
+                $kode = self::setNumber($key->id, 'STB');
+                $key->update([
+                    'kode_satuan' => $kode
+                ]);
+            }
+        }
+        if (count($satuan)) {
+            foreach ($satuan as $key) {
+                $kode = self::setNumber($key->id, 'STK');
+                $key->update([
+                    'kode_satuan' => $kode
+                ]);
+            }
+        }
+        if (count($suplier)) {
+            foreach ($suplier as $key) {
+                $kode = self::setNumber($key->id, 'SUP');
+                $key->update([
+                    'kode_supplier' => $kode
+                ]);
+            }
+        }
+        if (count($produk)) {
+            foreach ($produk as $key) {
+                $kode = self::setNumber($key->id, 'PRD');
+                $key->update([
+                    'kode_produk' => $kode
+                ]);
+            }
+        }
+
+        return new JsonResponse([
+            'beban' => $beban,
+            'customer' => $customer,
+            'dokter' => $dokter,
+            'kategory' => $kategory,
+            'merk' => $merk,
+            'satuanBesar' => $satuanBesar,
+            'satuan' => $satuan,
+            'suplier' => $suplier,
+            'produk' => $produk,
+        ]);
+    }
+    public static function setNumber($n, $kode)
+    {
+        $has = null;
+        $lbr = strlen($n);
+        for ($i = 1; $i <= 5 - $lbr; $i++) {
+            $has = $has . "0";
+        }
+        return $kode . $has . $n;
     }
 }

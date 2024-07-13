@@ -32,6 +32,7 @@ Route::get('/print', [PrintController::class, 'print']);
 // Route::get('/piutang', [TagihanController::class, 'piutang']);
 // Route::get('/terbayar', [TagihanController::class, 'transaksiTerbayar']);
 // Route::get('/dash', [AutogeneratorController::class, 'dashboard']);
+Route::get('/kode', [AutogeneratorController::class, 'setKode']);
 Route::get('/wawan', [AutogeneratorController::class, 'wawan']);
 Route::get('/det', [AutogeneratorController::class, 'getSingleDetails']);
 Route::get('/stok', [AutogeneratorController::class, 'getStokProd']);
