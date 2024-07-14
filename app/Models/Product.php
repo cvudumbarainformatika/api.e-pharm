@@ -24,7 +24,8 @@ class Product extends Model
     {
         $header = (object) array(
             'from' => date('Y-m-d'),
-            'product_id' => $this->id
+            'product_id' => $this->id,
+            'kode_produk' => $this->kode_produk,
         );
         $singleDet = new LaporanBaruController;
         $stokMasuk = $singleDet->getSingleDetails($header, 'PEMBELIAN');
@@ -32,7 +33,7 @@ class Product extends Model
         $stokKeluar = $singleDet->getSingleDetails($header, 'PENJUALAN');
         $returPenjualan = $singleDet->getSingleDetails($header, 'RETUR PENJUALAN');
         $penyesuaian = $singleDet->getSingleDetails($header, 'FORM PENYESUAIAN');
-
+        $distribusi = $singleDet->getSumSingleProduct($header);
 
 
         $masukBefore = collect($stokMasuk->before)->sum('qty');
@@ -46,8 +47,14 @@ class Product extends Model
         $penyeBefore = collect($penyesuaian->before)->sum('qty');
         $penyePeriod = collect($penyesuaian->period)->sum('qty');
 
-        $sebelum = $masukBefore - $keluarBefore + $retJualBefore - $retBeliBefore + $penyeBefore;
-        $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod;
+        $distMB = collect($distribusi->masukbefore)->sum('qty');
+        $distKB = collect($distribusi->keluarbefore)->sum('qty');
+        $distMP = collect($distribusi->masukperiod)->sum('qty');
+        $distKP = collect($distribusi->keluarperiod)->sum('qty');
+
+
+        $sebelum = $masukBefore - $keluarBefore + $retJualBefore - $retBeliBefore + $penyeBefore + $distMB - $distKB;
+        $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod + $distMP - $distKP;
         $awal = $this->stok_awal + $sebelum;
         $sekarang = $awal + $berjalan;
         // $sekarang = 0;
