@@ -11,6 +11,17 @@ use Illuminate\Support\Facades\DB;
 
 class DistribusiController extends Controller
 {
+    public function getList()
+    {
+        $data = HeaderDistribusi::with(
+            'details.produk.satuan',
+            'asal',
+            'menuju',
+        )
+            ->where('status', '>', 1)
+            ->paginate(request('per_page'));
+        return new JsonResponse($data);
+    }
     public function getNodistDraft()
     {
         $data = HeaderDistribusi::with('details.produk.satuan')->where('status', 1)->first();
@@ -40,8 +51,8 @@ class DistribusiController extends Controller
             $detail = DistribusiAntarToko::updateOrCreate(
                 [
                     'nodistribusi' => $nodistribusi,
+                    'kode_produk' => $request->kode_produk,
                     'product_id' => $request->product_id,
-
                 ],
                 [
                     'qty' => $request->qty,

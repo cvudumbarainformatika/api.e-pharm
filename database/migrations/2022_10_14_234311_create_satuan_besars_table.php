@@ -16,6 +16,7 @@ class CreateSatuanBesarsTable extends Migration
         Schema::create('satuan_besars', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
+            $table->string('kode_satuan')->unique()->nullable();
             $table->string('nama')->nullable();
             $table->timestamps();
         });

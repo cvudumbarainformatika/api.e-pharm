@@ -16,4 +16,12 @@ class HeaderDistribusi extends Model
     {
         return $this->hasMany(DistribusiAntarToko::class, 'nodistribusi', 'nodistribusi');
     }
+    public function asal()
+    {
+        return $this->belongsTo(Cabang::class, 'dari', 'kodecabang');
+    }
+    public function menuju()
+    {
+        return $this->belongsTo(Cabang::class, 'tujuan', 'kodecabang');
+    }
 }
