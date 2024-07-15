@@ -146,6 +146,8 @@ class LaporanBaruController extends Controller
             'to' => request('to'),
             'selection' => request('selection'),
         );
+        $kode = Product::orderBy(request('order_by'), request('sort'))
+            ->pluck('kode_produk');
         $ongkir = $this->getDiscOngkirPeriode($header, 'PEMBELIAN');
         $pembelian = $this->getDetailsPeriodUang($header, 'PEMBELIAN');
         $returPembelian = $this->getDetailsPeriodUang($header, 'RETUR PEMBELIAN');
@@ -153,7 +155,7 @@ class LaporanBaruController extends Controller
         $returPenjualan = $this->getDetailsPeriodUang($header, 'RETUR PENJUALAN');
         $beban = $this->getBebansPeriod($header, 'PENGELUARAN');
         $penerimaan = $this->getPenerimaansPeriod($header, 'PENDAPATAN');
-
+        $distribusi = $this->getDistPeriod($header, $kode);
 
         // hpp = pemelian bersih + persediaan awal - persediaan akhir
         // pembelian bersih = pembelian tunai dan kredit + biaya (mis: ongkir) - potongan pembelian - retur pembelian
@@ -178,6 +180,7 @@ class LaporanBaruController extends Controller
             'totalOngkir' => $totalOngkir,
             'pembelianDgKredit' => $pembelianDgKredit,
             'stok' => $stok,
+            'distribusi' => $distribusi,
 
         ], 200);
     }
@@ -200,7 +203,8 @@ class LaporanBaruController extends Controller
             $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos, sum(totalSemua) as totalSemua')
                 ->where('nama', '=', $nama)
                 ->where('status', '>=', 2)
-                ->whereMonth('tanggal', '=', date('m'))
+                // ->whereMonth('transactions.tanggal', '=', date('m'))
+                ->whereBetween('transactions.tanggal',  [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59'])
                 ->get();
         } else {
             $period = Transaction::selectRaw('sum(total) as jumlah, sum(potongan) as diskon, sum(ongkir) as ongkos, sum(totalSemua) as totalSemua')
@@ -272,7 +276,7 @@ class LaporanBaruController extends Controller
             'returPembelian' => $returPembelian,
             'returPenjualan' => $returPenjualan,
             'penyesuaian' => $penyesuaian,
-            '$distribusi' => $$distribusi,
+            'distribusi' => $distribusi,
         );
         return $data;
     }
@@ -281,7 +285,7 @@ class LaporanBaruController extends Controller
         $sebelumBulanIni = date('Y-', strtotime($header->from)) . date('m-', strtotime($header->from)) . '01 00:00:00';
         $me = Info::first();
         $masukbefore = DistribusiAntarToko::selectRaw(
-            'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id'
+            'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id, distribusi_antar_tokos.harga'
         )
             ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
             // ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
@@ -292,7 +296,7 @@ class LaporanBaruController extends Controller
             ->get();
 
         $keluarbefore = DistribusiAntarToko::selectRaw(
-            'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id'
+            'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id, distribusi_antar_tokos.harga'
         )
             ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
             // ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
@@ -303,7 +307,7 @@ class LaporanBaruController extends Controller
             ->get();
         if ($header->selection === 'range') {
             $masukperiod = DistribusiAntarToko::selectRaw(
-                'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id'
+                'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id, distribusi_antar_tokos.harga'
             )
                 ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
                 // ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
@@ -313,7 +317,7 @@ class LaporanBaruController extends Controller
                 ->groupBy('distribusi_antar_tokos.kode_produk')
                 ->get();
             $keluarperiod = DistribusiAntarToko::selectRaw(
-                'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id'
+                'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id, distribusi_antar_tokos.harga'
             )
                 ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
                 // ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
@@ -325,29 +329,30 @@ class LaporanBaruController extends Controller
         } else if ($header->selection === 'tillToday') {
 
             $masukperiod = DistribusiAntarToko::selectRaw(
-                'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id'
+                'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id, distribusi_antar_tokos.harga'
             )
                 ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
                 // ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
                 ->where('header_distribusis.tujuan', $me->kodecabang)
                 ->whereIn('distribusi_antar_tokos.kode_produk', $kode)
-                ->whereMonth('header_distribusis.tgl_terima', '=', date('m'))
+                // ->whereMonth('transactions.tanggal', '=', date('m'))
+                ->whereBetween('header_distribusis.tgl_terima',  [date('Y-m-01') . '00:00:00', date('Y-m-t') . ' 23:59:59'])
                 ->groupBy('distribusi_antar_tokos.kode_produk')
                 ->get();
             $keluarperiod = DistribusiAntarToko::selectRaw(
-                'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id'
+                'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id, distribusi_antar_tokos.harga'
             )
                 ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
                 // ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
                 ->where('header_distribusis.dari', $me->kodecabang)
                 ->whereIn('distribusi_antar_tokos.kode_produk', $kode)
-                ->whereMonth('header_distribusis.tgl_distribusi', '=', date('m')) // period is today
+                ->whereBetween('header_distribusis.tgl_distribusi', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59']) // period is today
                 ->groupBy('distribusi_antar_tokos.kode_produk')
                 ->get();
         } else {
 
             $masukperiod = DistribusiAntarToko::selectRaw(
-                'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id'
+                'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id, distribusi_antar_tokos.harga'
             )
                 ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
                 // ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
@@ -357,7 +362,7 @@ class LaporanBaruController extends Controller
                 ->groupBy('distribusi_antar_tokos.kode_produk')
                 ->get();
             $keluarperiod = DistribusiAntarToko::selectRaw(
-                'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id'
+                'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id, distribusi_antar_tokos.harga'
             )
                 ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
                 // ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
@@ -417,7 +422,8 @@ class LaporanBaruController extends Controller
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->whereIn('detail_transactions.product_id', $id)
-                ->whereMonth('transactions.tanggal', '=', date('m'))
+                // ->whereMonth('transactions.tanggal', '=', date('m'))
+                ->whereBetween('transactions.tanggal',  [date('Y-m-01') . ' 00:00:00', date('Y-m-31') . ' 23:59:59'])
                 ->groupBy('detail_transactions.product_id')
                 ->get();
         } else {
@@ -449,8 +455,9 @@ class LaporanBaruController extends Controller
             'transactions.id',
             'detail_transactions.product_id',
             'detail_transactions.harga',
+            DB::raw('sum(detail_transactions.qty) as jml')
         )
-            ->selectRaw(' sum(detail_transactions.qty) as jml')
+            // ->selectRaw('sum(detail_transactions.qty) as jml')
             ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
             ->where('transactions.nama', '=', $nama)
             ->where('transactions.status', '>=', 2)
@@ -462,8 +469,9 @@ class LaporanBaruController extends Controller
                 'transactions.id',
                 'detail_transactions.product_id',
                 'detail_transactions.harga',
+                DB::raw('sum(detail_transactions.qty) as jml')
             )
-                ->selectRaw(' sum(detail_transactions.qty) as jml')
+                // ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
@@ -474,8 +482,9 @@ class LaporanBaruController extends Controller
                 'transactions.id',
                 'detail_transactions.product_id',
                 'detail_transactions.harga',
+                DB::raw('sum(detail_transactions.qty) as jml')
             )
-                ->selectRaw(' sum(detail_transactions.qty) as jml')
+                // ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
@@ -486,8 +495,9 @@ class LaporanBaruController extends Controller
                 'transactions.id',
                 'detail_transactions.product_id',
                 'detail_transactions.harga',
+                DB::raw('sum(detail_transactions.qty) as jml')
             )
-                ->selectRaw(' sum(detail_transactions.qty) as jml')
+                // ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
@@ -599,7 +609,8 @@ class LaporanBaruController extends Controller
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->where('transactions.jenis', '=', 'tunai')
-                ->whereMonth('transactions.tanggal', '=', date('m'))
+                // ->whereMonth('transactions.tanggal', '=', date('m'))
+                ->whereBetween('transactions.tanggal',  [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59'])
 
                 ->groupBy('detail_penerimaans.penerimaan_id')->get();
         } else {
@@ -665,7 +676,7 @@ class LaporanBaruController extends Controller
 
 
         return new JsonResponse([
-            '$kode' => $kode,
+            'kode' => $kode,
             'prodID' => $prodID,
             'product' => $product,
             'masuk' => $stokMasuk,
@@ -697,11 +708,13 @@ class LaporanBaruController extends Controller
         // $this->newUntil($q, $header);
         // $anu = $q->get();
         $data = DetailTransaction::select(
-            'detail_transactions.*'
+            'detail_transactions.*',
+            'transactions.nama',
+            'transactions.tanggal',
         )
             ->leftJoin('transactions', 'transactions.id', '=', 'detail_transactions.transaction_id')
             ->where('detail_transactions.product_id', '=', request('id'))
-            ->with('transaction:id,nama,tanggal')
+            // ->with('transaction:id,nama,tanggal')
             // ->whereIn('transaction_id', $anu)
             ->when($header->selection === 'tillToday', function ($query) {
                 $query->whereBetween('tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59']);
@@ -713,6 +726,45 @@ class LaporanBaruController extends Controller
                 $query->whereDate('tanggal', '=', $header->from);
             })
             ->get();
-        return new JsonResponse($data);
+        $me = Info::first();
+        $distM = DistribusiAntarToko::select(
+            'distribusi_antar_tokos.*',
+            'header_distribusis.tgl_terima as tanggal'
+        )
+            ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
+            ->where('header_distribusis.tujuan', $me->kodecabang)
+            ->where('distribusi_antar_tokos.product_id', '=', request('id'))
+            ->when($header->selection === 'tillToday', function ($query) {
+                $query->whereBetween('header_distribusis.tgl_terima', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59']);
+            })
+            ->when($header->selection === 'range', function ($query) use ($header) {
+                $query->whereBetween('header_distribusis.tgl_terima', [$header->from . ' 00:00:00', $header->to . ' 23:59:59']);
+            })
+            ->when($header->selection === 'spesifik', function ($query) use ($header) {
+                $query->whereDate('header_distribusis.tgl_terima', '=', $header->from);
+            })
+            ->get();
+        $distK = DistribusiAntarToko::select(
+            'distribusi_antar_tokos.*',
+            'header_distribusis.tgl_distribusi as tanggal'
+        )
+            ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
+            ->where('header_distribusis.dari', $me->kodecabang)
+            ->where('distribusi_antar_tokos.product_id', '=', request('id'))
+            ->when($header->selection === 'tillToday', function ($query) {
+                $query->whereBetween('header_distribusis.tgl_distribusi', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59']);
+            })
+            ->when($header->selection === 'range', function ($query) use ($header) {
+                $query->whereBetween('header_distribusis.tgl_distribusi', [$header->from . ' 00:00:00', $header->to . ' 23:59:59']);
+            })
+            ->when($header->selection === 'spesifik', function ($query) use ($header) {
+                $query->whereDate('header_distribusis.tgl_distribusi', '=', $header->from);
+            })
+            ->get();
+        return new JsonResponse([
+            'trans' => $data,
+            'distm' => $distM,
+            'distk' => $distK,
+        ]);
     }
 }

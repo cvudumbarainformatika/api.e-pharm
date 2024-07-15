@@ -17,6 +17,7 @@ class CreateTransactionsTable extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
             $table->string('reff')->unique()->default('l70k498vdb9m4');
+            $table->string('nota')->nullable();
             $table->string('faktur')->nullable();
             $table->dateTime('tanggal')->nullable();
             $table->string('nama')->nullable();
@@ -28,6 +29,7 @@ class CreateTransactionsTable extends Migration
             $table->double('potongan', 10, 2)->default(0);
             $table->double('bayar', 20, 2)->default(0);
             $table->double('kembali', 20, 2)->default(0);
+            $table->double('embalase', 20, 2)->default(0);
             $table->date('tempo')->nullable();
             $table->date('tanggal_faktur')->nullable();
             $table->date('tanggal_bayar')->nullable();

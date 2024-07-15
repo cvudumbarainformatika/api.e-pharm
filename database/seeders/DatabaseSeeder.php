@@ -4,10 +4,13 @@ namespace Database\Seeders;
 
 use App\Models\Beban;
 use App\Models\BebanTransaction;
+use App\Models\Cabang;
 use App\Models\Customer;
 use App\Models\DetailPenerimaan;
 use App\Models\DetailTransaction;
+use App\Models\DistribusiAntarToko;
 use App\Models\Dokter;
+use App\Models\HeaderDistribusi;
 use App\Models\Kategori;
 use App\Models\Merk;
 use App\Models\Penerimaan;
@@ -69,18 +72,18 @@ class DatabaseSeeder extends Seeder
             'level' => 5,
             'password' => bcrypt('123456')
         ]);
-        Satuan::create([
-            'nama' => 'PCS'
-        ]);
-        Satuan::create([
-            'nama' => 'KAPLET'
-        ]);
-        SatuanBesar::create([
-            'nama' => 'KARDUS'
-        ]);
-        SatuanBesar::create([
-            'nama' => 'KOTAK'
-        ]);
+        // Satuan::create([
+        //     'nama' => 'PCS'
+        // ]);
+        // Satuan::create([
+        //     'nama' => 'KAPLET'
+        // ]);
+        // SatuanBesar::create([
+        //     'nama' => 'KARDUS'
+        // ]);
+        // SatuanBesar::create([
+        //     'nama' => 'KOTAK'
+        // ]);
         Dokter::create([
             'nama' => 'Sugeng',
             'alamat' => 'Jl. kenangan yang sulit untuk dilupakan',
@@ -91,77 +94,77 @@ class DatabaseSeeder extends Seeder
             'alamat' => 'Jl. kenangan yang menolak untuk dilupakan',
             'kontak' => '09767476834762'
         ]);
-        Supplier::create([
-            'nama' => 'Agung Podomoro',
-            'alamat' => 'Jl. untuk kembali',
-            'perusahaan_id' => 1,
-            'kontak' => '0992839879872',
-            'saldo_awal_hutang' => '1000000'
-        ]);
-        Supplier::create([
-            'nama' => 'Hasan Sadikin',
-            'alamat' => 'Jl. untuk Pulang',
-            'perusahaan_id' => 2,
-            'kontak' => '0992839879845',
-            'saldo_awal_hutang' => '9000000'
-        ]);
+        // Supplier::create([
+        //     'nama' => 'Agung Podomoro',
+        //     'alamat' => 'Jl. untuk kembali',
+        //     'perusahaan_id' => 1,
+        //     'kontak' => '0992839879872',
+        //     'saldo_awal_hutang' => '1000000'
+        // ]);
+        // Supplier::create([
+        //     'nama' => 'Hasan Sadikin',
+        //     'alamat' => 'Jl. untuk Pulang',
+        //     'perusahaan_id' => 2,
+        //     'kontak' => '0992839879845',
+        //     'saldo_awal_hutang' => '9000000'
+        // ]);
         Kategori::create([
             'nama' => 'GENERIK'
         ]);
         Kategori::create([
             'nama' => 'NON-GENERIK'
         ]);
-        Rak::create([
-            'nama' => 'KAPSUL'
-        ]);
-        Rak::create([
-            'nama' => 'SALEP'
-        ]);
-        Product::create([
-            'barcode' => 214323231,
-            'nama' => 'Paracetamol',
-            'merk_id' => 1,
-            'satuan_id' => 1,
-            'pengali' => 10,
-            'satuan_besar_id' => 1,
-            'harga_beli' => 5500,
-            'harga_jual_umum' => 8000,
-            'harga_jual_resep' => 9000,
-            'harga_jual_cust' => 9500,
-            'stok_awal' => 12,
-            'rak_id' => 1,
-            'kategori_id' => 1
-        ]);
-        Product::create([
-            'barcode' => 212323232,
-            'nama' => 'Sanmol',
-            'merk_id' => 1,
-            'satuan_id' => 1,
-            'pengali' => 10,
-            'satuan_besar_id' => 1,
-            'harga_beli' => 7500,
-            'harga_jual_umum' => 10000,
-            'harga_jual_resep' => 11000,
-            'harga_jual_cust' => 10500,
-            'stok_awal' => 12,
-            'rak_id' => 1,
-            'kategori_id' => 1
-        ]);
-        Product::create([
-            'barcode' => 312323232,
-            'nama' => 'Vitamin C',
-            'merk_id' => 2,
-            'satuan_id' => 2,
-            'pengali' => 10,
-            'satuan_besar_id' => 2,
-            'harga_beli' => 4500,
-            'harga_jual_umum' => 5500,
-            'harga_jual_resep' => 7000,
-            'harga_jual_cust' => 6500,
-            'stok_awal' => 12,
-            'rak_id' => 2,
-            'kategori_id' => 2
-        ]);
+        // Rak::create([
+        //     'nama' => 'KAPSUL'
+        // ]);
+        // Rak::create([
+        //     'nama' => 'SALEP'
+        // ]);
+        // Product::create([
+        //     'barcode' => 214323231,
+        //     'nama' => 'Paracetamol',
+        //     'merk_id' => 1,
+        //     'satuan_id' => 1,
+        //     'pengali' => 10,
+        //     'satuan_besar_id' => 1,
+        //     'harga_beli' => 5500,
+        //     'harga_jual_umum' => 8000,
+        //     'harga_jual_resep' => 9000,
+        //     'harga_jual_cust' => 9500,
+        //     'stok_awal' => 12,
+        //     'rak_id' => 1,
+        //     'kategori_id' => 1
+        // ]);
+        // Product::create([
+        //     'barcode' => 212323232,
+        //     'nama' => 'Sanmol',
+        //     'merk_id' => 1,
+        //     'satuan_id' => 1,
+        //     'pengali' => 10,
+        //     'satuan_besar_id' => 1,
+        //     'harga_beli' => 7500,
+        //     'harga_jual_umum' => 10000,
+        //     'harga_jual_resep' => 11000,
+        //     'harga_jual_cust' => 10500,
+        //     'stok_awal' => 12,
+        //     'rak_id' => 1,
+        //     'kategori_id' => 1
+        // ]);
+        // Product::create([
+        //     'barcode' => 312323232,
+        //     'nama' => 'Vitamin C',
+        //     'merk_id' => 2,
+        //     'satuan_id' => 2,
+        //     'pengali' => 10,
+        //     'satuan_besar_id' => 2,
+        //     'harga_beli' => 4500,
+        //     'harga_jual_umum' => 5500,
+        //     'harga_jual_resep' => 7000,
+        //     'harga_jual_cust' => 6500,
+        //     'stok_awal' => 12,
+        //     'rak_id' => 2,
+        //     'kategori_id' => 2
+        // ]);
         Merk::create([
             'nama' => 'KALBE'
         ]);
@@ -213,8 +216,17 @@ class DatabaseSeeder extends Seeder
         Perusahaan::create([
             'nama' => 'PT. AMPUNAN'
         ]);
+        Cabang::create([
+            'kodecabang' => 'APS0001',
+            'namacabang' => 'Apotek Setiawan Cokro',
+        ]);
+        Cabang::create([
+            'kodecabang' => 'APS0002',
+            'namacabang' => 'Apotek Setiawan Triwung',
+        ]);
         Info::create([
             'nama' => 'eAchy',
+            'kodecabang' => 'APS0001',
             'infos' => [
                 'nama' => 'apotek sehat selalu',
                 'alamat' => 'alamat belum di isi',
@@ -330,7 +342,62 @@ class DatabaseSeeder extends Seeder
                 ]
             ]
         ]);
-
+        HeaderDistribusi::create([
+            'nodistribusi' => '1307202400001',
+            'pengirim' => 'root',
+            'dari' => 'APS0001',
+            'tujuan' => 'APS0002',
+            'penerima' => 'gudang',
+            'tgl_distribusi' => '2024-07-13',
+            'tgl_terima' => null,
+            'status' => 2,
+        ]);
+        HeaderDistribusi::create([
+            'nodistribusi' => '1307202400002',
+            'pengirim' => 'gudang',
+            'dari' => 'APS0002',
+            'tujuan' => 'APS0001',
+            'penerima' => 'root',
+            'tgl_distribusi' => '2024-07-13',
+            'tgl_terima' => '2024-07-14',
+            'status' => 2,
+        ]);
+        DistribusiAntarToko::create([
+            'nodistribusi' => '1307202400001',
+            'product_id' => 2419,
+            'kode_produk' => 'PRD02419',
+            'qty' => 10,
+            'harga' => 3325,
+            'subtotal' => 33250,
+            'expired' => '2026-07-31',
+        ]);
+        DistribusiAntarToko::create([
+            'nodistribusi' => '1307202400001',
+            'product_id' => 1410,
+            'kode_produk' => 'PRD01410',
+            'qty' => 10,
+            'harga' => 13000,
+            'subtotal' => 130000,
+            'expired' => '2026-07-31',
+        ]);
+        DistribusiAntarToko::create([
+            'nodistribusi' => '1307202400002',
+            'product_id' => 2819,
+            'kode_produk' => 'PRD02819',
+            'qty' => 15,
+            'harga' => 542,
+            'subtotal' => 8130,
+            'expired' => '2025-07-31',
+        ]);
+        DistribusiAntarToko::create([
+            'nodistribusi' => '1307202400002',
+            'product_id' => 2049,
+            'kode_produk' => 'PRD02049',
+            'qty' => 20,
+            'harga' => 9900,
+            'subtotal' => 198000,
+            'expired' => '2025-07-31',
+        ]);
 
         // Transaction::factory()->count(50)
         //     ->has(DetailTransaction::factory()->count(3), 'detail_transaction')
