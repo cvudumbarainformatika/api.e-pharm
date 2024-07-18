@@ -20,6 +20,7 @@ class CreateHeaderDistribusisTable extends Migration
             $table->string('dari')->nullable();
             $table->string('tujuan')->nullable();
             $table->string('penerima')->nullable();
+            $table->date('tgl_permintaan')->nullable();
             $table->date('tgl_distribusi')->nullable();
             $table->date('tgl_terima')->nullable();
             $table->tinyInteger('status')->default(1);

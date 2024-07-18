@@ -18,6 +18,7 @@ class CreateDistribusiAntarTokosTable extends Migration
             $table->string('nodistribusi')->nullable();
             $table->unsignedBigInteger('product_id')->nullable();
             $table->string('kode_produk')->nullable();
+            $table->double('jumlah', 20, 2)->default(0);
             $table->double('qty', 20, 2)->default(0);
             $table->double('harga', 20, 2)->default(0);
             $table->double('subtotal', 20, 2)->default(0);

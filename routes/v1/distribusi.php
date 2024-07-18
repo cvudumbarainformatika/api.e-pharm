@@ -12,4 +12,5 @@ Route::group([
     Route::post('simpan', [DistribusiController::class, 'store']);
     Route::post('hapus-draft', [DistribusiController::class, 'daleteItem']);
     Route::post('selesai', [DistribusiController::class, 'selesai']);
+    Route::post('distribusi', [DistribusiController::class, 'distribusi']);
 });

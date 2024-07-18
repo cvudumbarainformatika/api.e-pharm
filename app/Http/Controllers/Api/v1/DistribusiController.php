@@ -44,8 +44,9 @@ class DistribusiController extends Controller
                     'dari' => $request->dari,
                     'tujuan' => $request->tujuan,
                     'penerima' => $request->penerima,
-                    'tgl_distribusi' => $request->tgl_distribusi,
-                    'tgl_terima' => $request->tgl_terima,
+                    'tgl_permintaan' => $request->tgl_permintaan,
+                    // 'tgl_distribusi' => $request->tgl_distribusi,
+                    // 'tgl_terima' => $request->tgl_terima,
                 ]
             );
             $detail = DistribusiAntarToko::updateOrCreate(
@@ -55,9 +56,9 @@ class DistribusiController extends Controller
                     'product_id' => $request->product_id,
                 ],
                 [
-                    'qty' => $request->qty,
-                    'harga' => $request->harga,
-                    'subtotal' => $request->subtotal,
+                    'jumlah' => $request->jumlah,
+                    // 'harga' => $request->harga,
+                    // 'subtotal' => $request->subtotal,
                     'expired' => $request->expired,
 
                 ]
@@ -123,5 +124,55 @@ class DistribusiController extends Controller
             'message' => 'Data Tidak ditemukan',
             'data' => $head,
         ]);
+    }
+    public function distribusi(Request $request)
+    {
+        // $user = auth()->user();
+        // return new JsonResponse([
+        //     'message' => 'Data Tidak Ditemukan',
+        //     'user' => $user
+        // ], 410);
+        try {
+            DB::beginTransaction();
+            $data = HeaderDistribusi::find($request->id);
+            if (!$data) {
+                return new JsonResponse([
+                    'message' => 'Data Tidak Ditemukan',
+                ], 410);
+            }
+            $det = $request->details;
+            if (count($det) > 0) {
+                foreach ($det as $key) {
+                    $ada = DistribusiAntarToko::find($key['id']);
+                    if (!$ada) {
+                        return new JsonResponse([
+                            'message' => 'Rinci Tidak Ditemukan',
+                            'key' => $key
+                        ], 410);
+                    }
+                    $ada->update([
+                        'qty' => $key['qty']
+                    ]);
+                }
+            }
+            $user = auth()->user();
+            $data->update([
+                'tgl_distribusi' => $request->tgl_distribusi,
+                'pengirim' => $user->name,
+                'status' => 3,
+            ]);
+            DB::commit();
+            return new JsonResponse([
+                'message' => 'Sudah Didistribusikan',
+                'data' => $data
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'ada kesalahan ' . $th,
+                'error' => $th,
+                'request' => $request->all()
+            ], 500);
+        }
     }
 }
