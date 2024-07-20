@@ -27,9 +27,15 @@ class NotificationController extends Controller
     public function read(Request $request)
     {
         if ($request->is_read != 0) {
-            return new JsonResponse([
-                'message' => 'notifikasi sudah dibaca'
-            ], 410);
+            if ($request->model === 'HeaderDistribusi') {
+                return new JsonResponse([
+                    'message' => 'notifikasi sudah dibaca, silahkan cek History distribusi'
+                ], 410);
+            } else {
+                return new JsonResponse([
+                    'message' => 'notifikasi sudah dibaca'
+                ], 410);
+            }
         }
         $me = Info::first();
         if ($request->receiver != $me->kodecabang) {
