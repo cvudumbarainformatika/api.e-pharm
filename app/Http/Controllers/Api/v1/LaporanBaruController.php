@@ -654,12 +654,12 @@ class LaporanBaruController extends Controller
         $product = Product::orderBy(request('order_by'), request('sort'))
             ->filter(request(['q']))->with('rak')->paginate(request('per_page'));
 
-
-        $prodID = Product::orderBy(request('order_by'), request('sort'))
-            ->filter(request(['q']))
-            ->offset(((int)request('page') - 1) * (int)request('per_page'))
-            ->limit(request('per_page'))
-            ->pluck('id');
+        $prodID = collect($product->items())->pluck('id');
+        // $prodID = Product::orderBy(request('order_by'), request('sort'))
+        //     ->filter(request(['q']))
+        //     ->offset(((int)request('page') - 1) * (int)request('per_page'))
+        //     ->limit(request('per_page'))
+        //     ->pluck('id');
         $kode = Product::orderBy(request('order_by'), request('sort'))
             ->filter(request(['q']))
             ->offset(((int)request('page') - 1) * (int)request('per_page'))

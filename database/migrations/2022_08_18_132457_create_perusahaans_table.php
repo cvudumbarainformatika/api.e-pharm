@@ -16,6 +16,7 @@ class CreatePerusahaansTable extends Migration
         Schema::create('perusahaans', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
+            $table->uuid('kode')->unique();
             $table->string('nama')->nullable();
             $table->timestamps();
         });

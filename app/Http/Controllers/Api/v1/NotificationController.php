@@ -12,6 +12,7 @@ use App\Models\Dokter;
 use App\Models\HeaderDistribusi;
 use App\Models\Kategori;
 use App\Models\Merk;
+use App\Models\Perusahaan;
 use App\Models\Product;
 use App\Models\Rak;
 use App\Models\Satuan;
@@ -133,6 +134,11 @@ class NotificationController extends Controller
                         'sring' => 'Supplier',
                         'kode' => 'kode_supplier',
                     ],
+                    [
+                        'name' => Perusahaan::class,
+                        'sring' => 'Perusahaan',
+                        'kode' => 'kode',
+                    ],
                 ];
                 $str = $request->model;
                 $keys = array_column($model, 'sring');
@@ -142,6 +148,8 @@ class NotificationController extends Controller
                     [$kode => $content[$kode]],
                     $content,
                 );
+                $mod = $model[$ind]['sring'] === 'Product' ? 'Produk' : $model[$ind]['sring'];
+                $msg = 'Notifikasi sudah dibaca dan ' . $request->type . ' ' . $mod . ' sudah dilaksanakan';
             }
 
             $get = CloudHelper::post_readNotif($request->id);
@@ -150,7 +158,7 @@ class NotificationController extends Controller
             DB::commit();
             return new JsonResponse([
                 'message' => $msg,
-                'data' => $content,
+                'data' => $content ?? null,
                 'head' => $head ?? null,
                 'det' => $det ?? null,
                 'prod' => $prod ?? null,

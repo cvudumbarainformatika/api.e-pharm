@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Helpers\CloudHelper;
+use App\Helpers\NumberHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\PerusahaanResource;
+use App\Models\Cabang;
 use App\Models\Perusahaan;
+use App\Models\Setting\Info;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -22,6 +27,12 @@ class PerusahaanController extends Controller
     public function store(Request $request)
     {
         // $auth = $request->user();
+        // validasi cabang utama strt
+        $me = Info::first();
+        if ($me->kodecabang != 'APS0001') {
+            return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
+        }
+        // validasi cabang utama end
         try {
 
             DB::beginTransaction();
@@ -36,9 +47,16 @@ class PerusahaanController extends Controller
                 }
 
                 // Perusahaan::create($request->only('nama'));
-                Perusahaan::firstOrCreate([
+                $kategori = Perusahaan::firstOrCreate([
                     'nama' => $request->nama
                 ]);
+                if ($kategori->kode_beban === null) {
+                    $kode = NumberHelper::setNumber($kategori->id, 'CMP');
+                    // $kode = AutogeneratorController::setNumber($kategori->id, 'BBN');
+                    $kategori->update([
+                        'kode_beban' => $kode
+                    ]);
+                }
 
                 // $auth->log("Memasukkan data Perusahaan {$user->name}");
             } else {
@@ -49,6 +67,23 @@ class PerusahaanController extends Controller
 
                 // $auth->log("Merubah data Perusahaan {$user->name}");
             }
+            // pots notif start
+            $cabang = Cabang::pluck('kodecabang')->toArray();
+            $ind = array_search($me->kodecabang, $cabang);
+            $anu = $cabang;
+            unset($anu[$ind]);
+            foreach ($anu as $key) {
+                $msg = [
+                    'sender' => $me->kodecabang,
+                    'receiver' => $key,
+                    'type' => 'update master',
+                    'model' => 'Perusahaan',
+                    'content' => $kategori,
+                ];
+
+                $response = CloudHelper::post_cloud($msg);
+            }
+            // pots notif end
 
             DB::commit();
             return response()->json(['message' => 'success'], 201);

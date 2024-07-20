@@ -12,6 +12,7 @@ use App\Models\DetailTransaction;
 use App\Models\Dokter;
 use App\Models\Kategori;
 use App\Models\Merk;
+use App\Models\Perusahaan;
 use App\Models\Product;
 use App\Models\Satuan;
 use App\Models\SatuanBesar;
@@ -505,6 +506,7 @@ class AutogeneratorController extends Controller
         $satuan = Satuan::whereNull('kode_satuan')->get();
         $suplier = Supplier::whereNull('kode_supplier')->get();
         $produk = Product::whereNull('kode_produk')->get();
+        $perusahaan = Perusahaan::whereNull('kode')->get();
 
         if (count($beban)) {
             foreach ($beban as $key) {
@@ -578,6 +580,14 @@ class AutogeneratorController extends Controller
                 ]);
             }
         }
+        if (count($perusahaan)) {
+            foreach ($perusahaan as $key) {
+                $kode = NumberHelper::setNumber($key->id, 'CMP');
+                $key->update([
+                    'kode' => $kode
+                ]);
+            }
+        }
 
         return new JsonResponse([
             'beban' => $beban,
@@ -589,6 +599,7 @@ class AutogeneratorController extends Controller
             'satuan' => $satuan,
             'suplier' => $suplier,
             'produk' => $produk,
+            'perusahaan' => $perusahaan,
         ]);
     }
     // ini dipake di master, jadi ga boleh dihapus
