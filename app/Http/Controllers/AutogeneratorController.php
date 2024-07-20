@@ -14,6 +14,7 @@ use App\Models\Merk;
 use App\Models\Product;
 use App\Models\Satuan;
 use App\Models\SatuanBesar;
+use App\Models\Setting\Info;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Models\User;
@@ -26,17 +27,33 @@ use Illuminate\Support\Facades\Schema;
 class AutogeneratorController extends Controller
 {
     //
+    public function anuGet()
+    {
+        $data = "{\"message\":{\"id\":8,\"sender\":\"APS0001\",\"receiver\":\"APS0002\",\"type\":\"kirim permintaan distribusi\",\"model\":\"HeaderDistribusi\",\"content\":{\"id\":1,\"nodistribusi\":\"1307202400001\",\"pengirim\":\"root\",\"dari\":\"APS0001\",\"tujuan\":\"APS0002\",\"penerima\":\"gudang\",\"tgl_permintaan\":null,\"tgl_distribusi\":\"2024-07-18\",\"tgl_terima\":null,\"status\":2,\"created_at\":\"2024-07-15T13:59:03.000000Z\",\"updated_at\":\"2024-07-19T18:32:17.000000Z\",\"details\":[{\"id\":1,\"nodistribusi\":\"1307202400001\",\"product_id\":2419,\"kode_produk\":\"PRD02419\",\"jumlah\":10,\"qty\":20,\"harga\":0,\"subtotal\":0,\"expired\":\"2026-07-31\",\"created_at\":\"2024-07-15T13:59:03.000000Z\",\"updated_at\":\"2024-07-18T15:43:58.000000Z\"},{\"id\":2,\"nodistribusi\":\"1307202400001\",\"product_id\":1410,\"kode_produk\":\"PRD01410\",\"jumlah\":10,\"qty\":10,\"harga\":0,\"subtotal\":0,\"expired\":\"2026-07-31\",\"created_at\":\"2024-07-15T13:59:03.000000Z\",\"updated_at\":\"2024-07-18T15:43:58.000000Z\"}]},\"is_read\":0,\"created_at\":\"2024-07-19T18:32:17.000000Z\",\"updated_at\":\"2024-07-19T18:32:17.000000Z\"}}";
+
+        return json_decode($data, true);
+    }
     public function index()
     {
-        $table = 'transactions';
-        $data = Schema::getColumnListing($table);
+        // $table = 'transactions';
+        // $data = Schema::getColumnListing($table);
 
 
-        echo '<br>';
-        foreach ($data as $key) {
-            echo '\'' . $key . '\' => $this->' . $key . ',<br>';
+        // echo '<br>';
+        // foreach ($data as $key) {
+        //     echo '\'' . $key . '\' => $this->' . $key . ',<br>';
+        // }
+        // echo '<br>';
+
+        $info = Info::first();
+        $rw = str_split($info->kodecabang);
+        $hlf = [];
+        foreach ($rw as $key) {
+            if (!is_numeric($key)) $hlf[] =  $key;
+            else if (is_numeric($key) && (int)$key != 0) $hlf[] =  $key;
         }
-        echo '<br>';
+        $kodecabang = join('', $hlf);
+        return $kodecabang;
     }
     public function until($query, $selection, $from, $to)
     {

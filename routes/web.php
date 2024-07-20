@@ -23,7 +23,7 @@ Route::get('/', function () {
 });
 Route::view("login", "login");
 Route::view("print.penjualan", "print");
-// Route::get('/autogen', [AutogeneratorController::class, 'index']);
+Route::get('/autogen', [AutogeneratorController::class, 'index']);
 Route::get('/coba', [AutogeneratorController::class, 'coba']);
 // Route::get('/cari', [AutogeneratorController::class, 'cari']);
 // Route::get('/retur', [AutogeneratorController::class, 'retur']);
@@ -36,6 +36,7 @@ Route::get('/kode', [AutogeneratorController::class, 'setKode']);
 Route::get('/wawan', [AutogeneratorController::class, 'wawan']);
 Route::get('/det', [AutogeneratorController::class, 'getSingleDetails']);
 Route::get('/stok', [AutogeneratorController::class, 'getStokProd']);
+Route::get('/anu', [AutogeneratorController::class, 'anuGet']);
 // Route::get('/time', function () {
 //     echo time();
 // });

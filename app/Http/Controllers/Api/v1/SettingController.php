@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Helpers\CloudHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Setting\Info;
 use App\Models\Setting\Menu;
@@ -15,8 +16,11 @@ class SettingController extends Controller
     // bagian info
     public function getInfo()
     {
-        $data = Info::get();
-        return new JsonResponse($data, 200);
+        $data = Info::first();
+        return new JsonResponse([
+            'data' => $data,
+            // 'unread' => $unread,
+        ], 200);
     }
     public function publicInfo()
     {

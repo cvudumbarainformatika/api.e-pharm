@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Helpers\CloudHelper;
 use App\Http\Controllers\Controller;
 use App\Models\DistribusiAntarToko;
 use App\Models\HeaderDistribusi;
+use App\Models\Setting\Info;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class DistribusiController extends Controller
 {
     public function getList()
     {
+
         $data = HeaderDistribusi::with(
             'details.produk.satuan',
             'asal',
@@ -24,7 +28,11 @@ class DistribusiController extends Controller
     }
     public function getNodistDraft()
     {
-        $data = HeaderDistribusi::with('details.produk.satuan')->where('status', 1)->first();
+        $me = Info::first();
+        $data = HeaderDistribusi::with('details.produk.satuan')
+            ->where('tujuan', $me->kodecabang)
+            ->where('status', 1)
+            ->first();
         return new JsonResponse($data);
     }
     public function store(Request $request)
@@ -57,9 +65,10 @@ class DistribusiController extends Controller
                 ],
                 [
                     'jumlah' => $request->jumlah,
+                    // 'qty' => $request->qty,
                     // 'harga' => $request->harga,
                     // 'subtotal' => $request->subtotal,
-                    'expired' => $request->expired,
+                    // 'expired' => $request->expired,
 
                 ]
             );
@@ -76,19 +85,29 @@ class DistribusiController extends Controller
             return response()->json([
                 'message' => 'ada kesalahan',
                 'error' => $th,
-                'request' => $request->all()
+                'request' => $request->all(),
+                'nodistribusi' => $nodistribusi,
             ], 500);
         }
     }
     public static function nomoring($n)
     {
+        $info = Info::first();
+        $rw = str_split($info->kodecabang);
+        $hlf = [];
+        foreach ($rw as $key) {
+            if (!is_numeric($key)) $hlf[] =  $key;
+            else if (is_numeric($key) && (int)$key != 0) $hlf[] =  $key;
+        }
+        $kodecabang = join('', $hlf);
+
         $a = $n + 1;
         $has = null;
         $lbr = strlen($a);
         for ($i = 1; $i <= 5 - $lbr; $i++) {
             $has = $has . "0";
         }
-        return date('dmY') . $has  . $a;
+        return date('dmY') . $has  . $a . '/' . $kodecabang;
     }
     public function daleteItem(Request $request)
     {
@@ -112,18 +131,48 @@ class DistribusiController extends Controller
     }
     public function selesai(Request $request)
     {
+        try {
+            DB::beginTransaction();
+            $head = HeaderDistribusi::where('nodistribusi', $request->nodistribusi)->where('status', 1)->first();
+            if (!$head) {
+                return new JsonResponse([
+                    'message' => 'Data Tidak ditemukan'
+                ], 410);
+            }
+            $head->update(['status' => 2]);
+            $head->load('details');
+            $msg = [
+                'sender' => $head->tujuan,
+                'receiver' => $head->dari,
+                'type' => 'permintaan distribusi',
+                'model' => 'HeaderDistribusi',
+                'content' => $head,
+            ];
 
-        $head = HeaderDistribusi::where('nodistribusi', $request->nodistribusi)->where('status', 1)->first();
-        if (!$head) {
+            $response = CloudHelper::post_cloud($msg);
+            if (!$response) {
+                return response()->json([
+                    'message' => 'Harap Ulangi... Post ke Cloud Error'
+                ], 500);
+            }
+            $responseBody = json_decode($response->getBody(), true);
+
+
+            DB::commit();
             return new JsonResponse([
-                'message' => 'Data Tidak ditemukan'
-            ], 410);
+                'message' => 'Sudah Dikirimkan  ',
+                'data' => $head,
+                'respB' => $responseBody,
+                'resp' => $response
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'ada kesalahan ' . $th,
+                'error' => $th,
+                'request' => $request->all()
+            ], 500);
         }
-        $head->update(['status' => 2]);
-        return new JsonResponse([
-            'message' => 'Data Tidak ditemukan',
-            'data' => $head,
-        ]);
     }
     public function distribusi(Request $request)
     {
@@ -161,10 +210,27 @@ class DistribusiController extends Controller
                 'pengirim' => $user->name,
                 'status' => 3,
             ]);
+            $data->load('details');
+            $msg = [
+                'sender' => $data->dari,
+                'receiver' => $data->tujuan,
+                'type' => 'kiriman distribusi',
+                'model' => 'HeaderDistribusi',
+                'content' => $data,
+            ];
+
+            $response = CloudHelper::post_cloud($msg);
+            if (!$response) {
+                return response()->json([
+                    'message' => 'Harap Ulangi... Post ke Cloud Error'
+                ], 500);
+            }
+            $responseBody = json_decode($response->getBody(), true);
             DB::commit();
             return new JsonResponse([
                 'message' => 'Sudah Didistribusikan',
-                'data' => $data
+                'data' => $data,
+                'respB' => $responseBody,
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
