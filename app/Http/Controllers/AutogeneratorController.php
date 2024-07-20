@@ -6,6 +6,7 @@ use App\Helpers\NumberHelper;
 use App\Http\Controllers\Api\v1\LaporanBaruController;
 use App\Http\Controllers\Api\v1\SettingController;
 use App\Models\Beban;
+use App\Models\Cabang;
 use App\Models\Customer;
 use App\Models\DetailTransaction;
 use App\Models\Dokter;
@@ -46,14 +47,58 @@ class AutogeneratorController extends Controller
         // echo '<br>';
 
         $info = Info::first();
-        $rw = str_split($info->kodecabang);
-        $hlf = [];
-        foreach ($rw as $key) {
-            if (!is_numeric($key)) $hlf[] =  $key;
-            else if (is_numeric($key) && (int)$key != 0) $hlf[] =  $key;
-        }
-        $kodecabang = join('', $hlf);
-        return $kodecabang;
+        // $rw = str_split($info->kodecabang);
+        // $hlf = [];
+        // foreach ($rw as $key) {
+        //     if (!is_numeric($key)) $hlf[] =  $key;
+        //     else if (is_numeric($key) && (int)$key != 0) $hlf[] =  $key;
+        // }
+        // $kodecabang = join('', $hlf);
+        // return $kodecabang;
+
+        // $cabang = Cabang::pluck('kodecabang')->toArray();
+        // $ind = array_search($info->kodecabang, $cabang);
+        // $anu = $cabang;
+        // unset($anu[$ind]);
+        // return [
+        //     'cabang' => $cabang,
+        //     'kode' => $info->kodecabang,
+        //     'ind' => $ind,
+        //     'anu' => $anu,
+        // ];
+        $model = [
+            [
+                'name' => Beban::class,
+                'sring' => 'Beban',
+            ],
+            [
+                'name' => Cabang::class,
+                'sring' => 'Cabang',
+            ],
+            [
+                'name' => Customer::class,
+                'sring' => 'Customer',
+            ],
+            [
+                'name' => Dokter::class,
+                'sring' => 'Dokter',
+            ],
+            [
+                'name' => Satuan::class,
+                'sring' => 'Satuan',
+            ],
+        ];
+        $str = 'Satuan';
+        $keys = array_column($model, 'sring');
+        $ind = array_search($str, $keys);
+        $data = $model[$ind]['name']::get();
+        return [
+            'str' => $str,
+            'keys' => $keys,
+            'ind' => $ind,
+            'model' => $model[$ind]['name'],
+            'data' => $data,
+        ];
     }
     public function until($query, $selection, $from, $to)
     {

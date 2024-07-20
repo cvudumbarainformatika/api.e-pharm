@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Helpers\CloudHelper;
 use App\Helpers\NumberHelper;
 use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\BebanResource;
 use App\Models\Beban;
 use App\Models\BebanTransaction;
+use App\Models\Cabang;
+use App\Models\Setting\Info;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -72,6 +75,10 @@ class BebanController extends Controller
     public function store(Request $request)
     {
         // $auth = $request->user();
+        $me = Info::first();
+        if ($me->kodecabang != 'APS0001') {
+            return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
+        }
         try {
 
             DB::beginTransaction();
@@ -99,14 +106,30 @@ class BebanController extends Controller
 
                 // $auth->log("Memasukkan data Beban {$user->name}");
             } else {
-                $kategori = Beban::find($request->id);
-                $kategori->update([
+                $beban = Beban::find($request->id);
+                $beban->update([
                     'nama' => $request->nama
                 ]);
 
                 // $auth->log("Merubah data Beban {$user->name}");
             }
+            // pots notif start
+            $cabang = Cabang::pluck('kodecabang')->toArray();
+            $ind = array_search($me->kodecabang, $cabang);
+            $anu = $cabang;
+            unset($anu[$ind]);
+            foreach ($anu as $key) {
+                $msg = [
+                    'sender' => $me->kodecabang,
+                    'receiver' => $key,
+                    'type' => 'update master',
+                    'model' => 'Beban',
+                    'content' => $beban,
+                ];
 
+                $response = CloudHelper::post_cloud($msg);
+            }
+            // pots notif end
             DB::commit();
             return response()->json(['message' => 'success'], 201);
         } catch (\Exception $e) {
