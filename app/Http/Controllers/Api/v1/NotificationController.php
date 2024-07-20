@@ -150,7 +150,7 @@ class NotificationController extends Controller
             DB::commit();
             return new JsonResponse([
                 'message' => $msg,
-                'data' => $data,
+                'data' => $content,
                 'head' => $head ?? null,
                 'det' => $det ?? null,
                 'prod' => $prod ?? null,
