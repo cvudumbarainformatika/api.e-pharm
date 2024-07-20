@@ -342,62 +342,62 @@ class DatabaseSeeder extends Seeder
                 ]
             ]
         ]);
-        HeaderDistribusi::create([
-            'nodistribusi' => '1307202400001',
-            'pengirim' => 'root',
-            'dari' => 'APS0001',
-            'tujuan' => 'APS0002',
-            'penerima' => 'gudang',
-            'tgl_distribusi' => '2024-07-13',
-            'tgl_terima' => null,
-            'status' => 2,
-        ]);
-        HeaderDistribusi::create([
-            'nodistribusi' => '1307202400002',
-            'pengirim' => 'gudang',
-            'dari' => 'APS0002',
-            'tujuan' => 'APS0001',
-            'penerima' => 'root',
-            'tgl_distribusi' => '2024-07-13',
-            'tgl_terima' => '2024-07-14',
-            'status' => 2,
-        ]);
-        DistribusiAntarToko::create([
-            'nodistribusi' => '1307202400001',
-            'product_id' => 2419,
-            'kode_produk' => 'PRD02419',
-            'qty' => 10,
-            'harga' => 3325,
-            'subtotal' => 33250,
-            'expired' => '2026-07-31',
-        ]);
-        DistribusiAntarToko::create([
-            'nodistribusi' => '1307202400001',
-            'product_id' => 1410,
-            'kode_produk' => 'PRD01410',
-            'qty' => 10,
-            'harga' => 13000,
-            'subtotal' => 130000,
-            'expired' => '2026-07-31',
-        ]);
-        DistribusiAntarToko::create([
-            'nodistribusi' => '1307202400002',
-            'product_id' => 2819,
-            'kode_produk' => 'PRD02819',
-            'qty' => 15,
-            'harga' => 542,
-            'subtotal' => 8130,
-            'expired' => '2025-07-31',
-        ]);
-        DistribusiAntarToko::create([
-            'nodistribusi' => '1307202400002',
-            'product_id' => 2049,
-            'kode_produk' => 'PRD02049',
-            'qty' => 20,
-            'harga' => 9900,
-            'subtotal' => 198000,
-            'expired' => '2025-07-31',
-        ]);
+        // HeaderDistribusi::create([
+        //     'nodistribusi' => '1307202400001',
+        //     'pengirim' => 'root',
+        //     'dari' => 'APS0001',
+        //     'tujuan' => 'APS0002',
+        //     'penerima' => 'gudang',
+        //     'tgl_distribusi' => '2024-07-13',
+        //     'tgl_terima' => null,
+        //     'status' => 2,
+        // ]);
+        // HeaderDistribusi::create([
+        //     'nodistribusi' => '1307202400002',
+        //     'pengirim' => 'gudang',
+        //     'dari' => 'APS0002',
+        //     'tujuan' => 'APS0001',
+        //     'penerima' => 'root',
+        //     'tgl_distribusi' => '2024-07-13',
+        //     'tgl_terima' => '2024-07-14',
+        //     'status' => 2,
+        // ]);
+        // DistribusiAntarToko::create([
+        //     'nodistribusi' => '1307202400001',
+        //     'product_id' => 2419,
+        //     'kode_produk' => 'PRD02419',
+        //     'qty' => 10,
+        //     'harga' => 3325,
+        //     'subtotal' => 33250,
+        //     'expired' => '2026-07-31',
+        // ]);
+        // DistribusiAntarToko::create([
+        //     'nodistribusi' => '1307202400001',
+        //     'product_id' => 1410,
+        //     'kode_produk' => 'PRD01410',
+        //     'qty' => 10,
+        //     'harga' => 13000,
+        //     'subtotal' => 130000,
+        //     'expired' => '2026-07-31',
+        // ]);
+        // DistribusiAntarToko::create([
+        //     'nodistribusi' => '1307202400002',
+        //     'product_id' => 2819,
+        //     'kode_produk' => 'PRD02819',
+        //     'qty' => 15,
+        //     'harga' => 542,
+        //     'subtotal' => 8130,
+        //     'expired' => '2025-07-31',
+        // ]);
+        // DistribusiAntarToko::create([
+        //     'nodistribusi' => '1307202400002',
+        //     'product_id' => 2049,
+        //     'kode_produk' => 'PRD02049',
+        //     'qty' => 20,
+        //     'harga' => 9900,
+        //     'subtotal' => 198000,
+        //     'expired' => '2025-07-31',
+        // ]);
 
         // Transaction::factory()->count(50)
         //     ->has(DetailTransaction::factory()->count(3), 'detail_transaction')
