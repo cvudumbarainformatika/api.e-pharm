@@ -84,16 +84,16 @@ class DatabaseSeeder extends Seeder
         // SatuanBesar::create([
         //     'nama' => 'KOTAK'
         // ]);
-        Dokter::create([
-            'nama' => 'Sugeng',
-            'alamat' => 'Jl. kenangan yang sulit untuk dilupakan',
-            'kontak' => '0976765476834762'
-        ]);
-        Dokter::create([
-            'nama' => 'Handoko',
-            'alamat' => 'Jl. kenangan yang menolak untuk dilupakan',
-            'kontak' => '09767476834762'
-        ]);
+        // Dokter::create([
+        //     'nama' => 'Sugeng',
+        //     'alamat' => 'Jl. kenangan yang sulit untuk dilupakan',
+        //     'kontak' => '0976765476834762'
+        // ]);
+        // Dokter::create([
+        //     'nama' => 'Handoko',
+        //     'alamat' => 'Jl. kenangan yang menolak untuk dilupakan',
+        //     'kontak' => '09767476834762'
+        // ]);
         // Supplier::create([
         //     'nama' => 'Agung Podomoro',
         //     'alamat' => 'Jl. untuk kembali',
@@ -165,12 +165,12 @@ class DatabaseSeeder extends Seeder
         //     'rak_id' => 2,
         //     'kategori_id' => 2
         // ]);
-        Merk::create([
-            'nama' => 'KALBE'
-        ]);
-        Merk::create([
-            'nama' => 'KOPLO'
-        ]);
+        // Merk::create([
+        //     'nama' => 'KALBE'
+        // ]);
+        // Merk::create([
+        //     'nama' => 'KOPLO'
+        // ]);
         Beban::create([
             'nama' => 'BIAYA ADMINISTRASI'
         ]);
@@ -192,30 +192,30 @@ class DatabaseSeeder extends Seeder
         Beban::create([
             'nama' => 'BAYAR HUTANG'
         ]);
-        Customer::create([
-            'nama' => 'Suhar',
-            'alamat' => 'Jl. mana yang akan kau pilih',
-            'kontak' => '00904293040',
-            'saldo_awal_piutang' => 100000
-        ]);
-        Customer::create([
-            'nama' => 'Sahili',
-            'alamat' => 'Jl. mana yang akan kau lalui',
-            'kontak' => '00904293041',
-            'saldo_awal_piutang' => 1000000
-        ]);
-        Penerimaan::create([
-            'nama' => 'PENDAPATAN PIUTANG'
-        ]);
-        Penerimaan::create([
-            'nama' => 'PENDAPATAN LAIN-LAIN'
-        ]);
-        Perusahaan::create([
-            'nama' => 'PT. KALBE'
-        ]);
-        Perusahaan::create([
-            'nama' => 'PT. AMPUNAN'
-        ]);
+        // Customer::create([
+        //     'nama' => 'Suhar',
+        //     'alamat' => 'Jl. mana yang akan kau pilih',
+        //     'kontak' => '00904293040',
+        //     'saldo_awal_piutang' => 100000
+        // ]);
+        // Customer::create([
+        //     'nama' => 'Sahili',
+        //     'alamat' => 'Jl. mana yang akan kau lalui',
+        //     'kontak' => '00904293041',
+        //     'saldo_awal_piutang' => 1000000
+        // ]);
+        // Penerimaan::create([
+        //     'nama' => 'PENDAPATAN PIUTANG'
+        // ]);
+        // Penerimaan::create([
+        //     'nama' => 'PENDAPATAN LAIN-LAIN'
+        // ]);
+        // Perusahaan::create([
+        //     'nama' => 'PT. KALBE'
+        // ]);
+        // Perusahaan::create([
+        //     'nama' => 'PT. AMPUNAN'
+        // ]);
         Cabang::create([
             'kodecabang' => 'APS0001',
             'namacabang' => 'Apotek Setiawan Cokro',
