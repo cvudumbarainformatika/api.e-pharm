@@ -62,7 +62,7 @@ class NotificationController extends Controller
                             $prod = Product::select('id', 'kode_produk', 'nama')->where('kode_produk', $key['kode_produk'])->first();
                             if (!$prod) {
                                 return new JsonResponse([
-                                    'message' => 'Produk (Item Obat) tidak ada dicabang ini'
+                                    'message' => 'Produk ' . $key['kode_produk'] . ' (Item Obat) tidak ada dicabang ini'
                                 ], 410);
                             }
                             $key['product_id'] = $prod->id;

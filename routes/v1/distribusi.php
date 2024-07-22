@@ -8,6 +8,7 @@ Route::group([
     'prefix' => 'distribusi/'
 ], function () {
     Route::get('get-nodist-draft', [DistribusiController::class, 'getNodistDraft']);
+    Route::get('get-dist-by-id', [DistribusiController::class, 'getDistById']);
     Route::get('list', [DistribusiController::class, 'getList']);
     Route::post('simpan', [DistribusiController::class, 'store']);
     Route::post('hapus-draft', [DistribusiController::class, 'daleteItem']);

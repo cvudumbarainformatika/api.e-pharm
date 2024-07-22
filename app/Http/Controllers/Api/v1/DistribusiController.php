@@ -14,6 +14,19 @@ use Illuminate\Support\Facades\Http;
 
 class DistribusiController extends Controller
 {
+    public function getDistById()
+    {
+        $me = Info::first();
+        $data = HeaderDistribusi::with(
+            'details.produk.satuan',
+            'asal',
+            'menuju',
+        )->find(request('id'));
+        return new JsonResponse([
+            'data' => $data,
+            'kodecabang' => $me->kodecabang,
+        ]);
+    }
     public function getList()
     {
 
