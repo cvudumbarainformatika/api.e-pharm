@@ -100,20 +100,51 @@ class DokterController extends Controller
     {
 
         // $auth = auth()->user()->id;
-        $id = $request->id;
-
-        $data = Dokter::find($id);
-        $del = $data->delete();
-
-        if (!$del) {
-            return response()->json([
-                'message' => 'Error on Delete'
-            ], 500);
+        // validasi cabang utama strt
+        $me = Info::first();
+        if ($me->kodecabang != 'APS0001') {
+            return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
         }
+        // validasi cabang utama end
+        try {
 
-        // $user->log("Menghapus Data Dokter {$data->nama}");
-        return response()->json([
-            'message' => 'Data sukses terhapus'
-        ], 200);
+            DB::beginTransaction();
+            $id = $request->id;
+
+            $data = Dokter::find($id);
+            $del = $data->delete();
+
+            if (!$del) {
+                return response()->json([
+                    'message' => 'Error on Delete'
+                ], 500);
+            }
+            // pots notif start
+            $cabang = Cabang::pluck('kodecabang')->toArray();
+            $ind = array_search($me->kodecabang, $cabang);
+            $anu = $cabang;
+            unset($anu[$ind]);
+            foreach ($anu as $key) {
+                $msg = [
+                    'sender' => $me->kodecabang,
+                    'receiver' => $key,
+                    'type' => 'update master',
+                    'model' => 'Dokter',
+                    'content' => $data,
+                ];
+
+                $response = CloudHelper::post_cloud($msg);
+            }
+            // pots notif end
+            DB::commit();
+
+            // $user->log("Menghapus Data Dokter {$data->nama}");
+            return response()->json([
+                'message' => 'Data sukses terhapus'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'ada kesalahan', 'error' => $e], 500);
+        }
     }
 }

@@ -141,20 +141,50 @@ class BebanController extends Controller
     {
 
         // $auth = auth()->user()->id;
-        $id = $request->id;
-
-        $data = Beban::find($id);
-        $del = $data->delete();
-
-        if (!$del) {
-            return response()->json([
-                'message' => 'Error on Delete'
-            ], 500);
+        $me = Info::first();
+        if ($me->kodecabang != 'APS0001') {
+            return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
         }
 
-        // $user->log("Menghapus Data Beban {$data->nama}");
-        return response()->json([
-            'message' => 'Data sukses terhapus'
-        ], 200);
+        try {
+
+            DB::beginTransaction();
+            $id = $request->id;
+
+            $data = Beban::find($id);
+            $del = $data->delete();
+
+            if (!$del) {
+                return response()->json([
+                    'message' => 'Error on Delete'
+                ], 500);
+            }
+
+            // pots notif start
+            $cabang = Cabang::pluck('kodecabang')->toArray();
+            $ind = array_search($me->kodecabang, $cabang);
+            $anu = $cabang;
+            unset($anu[$ind]);
+            foreach ($anu as $key) {
+                $msg = [
+                    'sender' => $me->kodecabang,
+                    'receiver' => $key,
+                    'type' => 'delete master',
+                    'model' => 'Beban',
+                    'content' => $data,
+                ];
+
+                $response = CloudHelper::post_cloud($msg);
+            }
+            // pots notif end
+            DB::commit();
+            // $user->log("Menghapus Data Beban {$data->nama}");
+            return response()->json([
+                'message' => 'Data sukses terhapus'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'ada kesalahan', 'error' => $e], 500);
+        }
     }
 }

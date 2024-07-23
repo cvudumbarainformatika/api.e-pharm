@@ -139,21 +139,52 @@ class SatuanController extends Controller
     {
 
         // $auth = auth()->user()->id;
-        $id = $request->id;
-
-        $data = Satuan::find($id);
-        $del = $data->delete();
-
-        if (!$del) {
-            return response()->json([
-                'message' => 'Error on Delete'
-            ], 500);
+        // validasi cabang utama strt
+        $me = Info::first();
+        if ($me->kodecabang != 'APS0001') {
+            return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
         }
+        // validasi cabang utama end
+        try {
 
-        // $user->log("Menghapus Data Satuan {$data->nama}");
-        return response()->json([
-            'message' => 'Data sukses terhapus'
-        ], 200);
+            DB::beginTransaction();
+            $id = $request->id;
+
+            $data = Satuan::find($id);
+            $del = $data->delete();
+
+            if (!$del) {
+                return response()->json([
+                    'message' => 'Error on Delete'
+                ], 500);
+            }
+            // pots notif start
+            $cabang = Cabang::pluck('kodecabang')->toArray();
+            $ind = array_search($me->kodecabang, $cabang);
+            $anu = $cabang;
+            unset($anu[$ind]);
+            foreach ($anu as $key) {
+                $msg = [
+                    'sender' => $me->kodecabang,
+                    'receiver' => $key,
+                    'type' => 'delete master',
+                    'model' => 'Satuan',
+                    'content' => $data,
+                ];
+
+                $response = CloudHelper::post_cloud($msg);
+            }
+            // pots notif end
+
+            DB::commit();
+            // $user->log("Menghapus Data Kategori {$data->nama}");
+            return response()->json([
+                'message' => 'Data sukses terhapus'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'ada kesalahan', 'error' => $e], 500);
+        }
     }
     /**
      * Display a listing of the resource.
@@ -256,20 +287,51 @@ class SatuanController extends Controller
     {
 
         // $auth = auth()->user()->id;
-        $id = $request->id;
-
-        $data = SatuanBesar::find($id);
-        $del = $data->delete();
-
-        if (!$del) {
-            return response()->json([
-                'message' => 'Error on Delete'
-            ], 500);
+        // validasi cabang utama strt
+        $me = Info::first();
+        if ($me->kodecabang != 'APS0001') {
+            return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
         }
+        // validasi cabang utama
+        try {
 
-        // $user->log("Menghapus Data SatuanBesar {$data->nama}");
-        return response()->json([
-            'message' => 'Data sukses terhapus'
-        ], 200);
+            DB::beginTransaction();
+            $id = $request->id;
+
+            $data = SatuanBesar::find($id);
+            $del = $data->delete();
+
+            if (!$del) {
+                return response()->json([
+                    'message' => 'Error on Delete'
+                ], 500);
+            }
+            // pots notif start
+            $cabang = Cabang::pluck('kodecabang')->toArray();
+            $ind = array_search($me->kodecabang, $cabang);
+            $anu = $cabang;
+            unset($anu[$ind]);
+            foreach ($anu as $key) {
+                $msg = [
+                    'sender' => $me->kodecabang,
+                    'receiver' => $key,
+                    'type' => 'delete master',
+                    'model' => 'SatuanBesar',
+                    'content' => $data,
+                ];
+
+                $response = CloudHelper::post_cloud($msg);
+            }
+            // pots notif end
+
+            DB::commit();
+            // $user->log("Menghapus Data Kategori {$data->nama}");
+            return response()->json([
+                'message' => 'Data sukses terhapus'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'ada kesalahan', 'error' => $e], 500);
+        }
     }
 }

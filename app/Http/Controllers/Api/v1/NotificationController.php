@@ -155,6 +155,82 @@ class NotificationController extends Controller
                 );
                 $mod = $model[$ind]['sring'] === 'Product' ? 'Produk' : $model[$ind]['sring'];
                 $msg = 'Notifikasi sudah dibaca dan ' . $request->type . ' ' . $mod . ' sudah dilaksanakan';
+            } else if ($request->type === 'delete master') {
+                $model = [
+                    [
+                        'name' => Beban::class,
+                        'sring' => 'Beban',
+                        'kode' => 'kode_beban',
+                    ],
+                    [
+                        'name' => Cabang::class,
+                        'sring' => 'Cabang',
+                        'kode' => 'kodecabang',
+                    ],
+                    [
+                        'name' => Customer::class,
+                        'sring' => 'Customer',
+                        'kode' => 'kode_customer',
+                    ],
+                    [
+                        'name' => Dokter::class,
+                        'sring' => 'Dokter',
+                        'kode' => 'kode_dokter',
+                    ],
+                    [
+                        'name' => Kategori::class,
+                        'sring' => 'Kategori',
+                        'kode' => 'kode_kategory',
+                    ],
+                    [
+                        'name' => Merk::class,
+                        'sring' => 'Merk',
+                        'kode' => 'kode_merk',
+                    ],
+                    [
+                        'name' => Product::class,
+                        'sring' => 'Product',
+                        'kode' => 'kode_produk',
+                    ],
+                    [
+                        'name' => Rak::class,
+                        'sring' => 'Rak',
+                        'kode' => 'kode_rak',
+                    ],
+                    [
+                        'name' => Satuan::class,
+                        'sring' => 'Satuan',
+                        'kode' => 'kode_satuan',
+                    ],
+                    [
+                        'name' => SatuanBesar::class,
+                        'sring' => 'SatuanBesar',
+                        'kode' => 'kode_satuan',
+                    ],
+                    [
+                        'name' => Supplier::class,
+                        'sring' => 'Supplier',
+                        'kode' => 'kode_supplier',
+                    ],
+                    [
+                        'name' => Perusahaan::class,
+                        'sring' => 'Perusahaan',
+                        'kode' => 'kode',
+                    ],
+                ];
+                $str = $request->model;
+                $keys = array_column($model, 'sring');
+                $ind = array_search($str, $keys);
+                $kode = $model[$ind]['kode'];
+                $data = $model[$ind]['name']::where($kode, $content[$kode])->first();
+                if (!$data) {
+                    return new JsonResponse([
+                        'message' => 'master ' . $model[$ind]['sring'] . ' dengan ' . $kode . ' ' . $content[$kode] . ' tidak ada dicabang ini'
+                    ], 410);
+                }
+                $data->delete();
+                $mod = $model[$ind]['sring'] === 'Product' ? 'Produk' : $model[$ind]['sring'];
+                $msg = 'Notifikasi sudah dibaca dan ' . $request->type . ' ' . $mod . ' sudah dilaksanakan';
             }
 
             $get = CloudHelper::post_readNotif($request->id);
