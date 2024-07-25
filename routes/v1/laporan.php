@@ -19,7 +19,8 @@ Route::group([
     Route::get('/cari', [LaporanController::class, 'cari']);
     Route::get('/stok-transaction', [LaporanBaruController::class, 'stokTransaction']);
     Route::get('/all-stok', [LaporanController::class, 'allStok']);
-    Route::get('/get-laporan-keuangan', [LaporanBaruController::class, 'laporanKeuangan']);
+    // Route::get('/get-laporan-keuangan', [LaporanBaruController::class, 'laporanKeuangan']);
+    Route::get('/new-get-laporan-keuangan', [LaporanBaruController::class, 'newLaporanKeuangan']);
     Route::get('/single-product', [LaporanBaruController::class, 'singleProduct']);
 });
 Route::group([

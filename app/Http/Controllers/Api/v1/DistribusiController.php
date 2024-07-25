@@ -79,8 +79,8 @@ class DistribusiController extends Controller
                 [
                     'jumlah' => $request->jumlah,
                     // 'qty' => $request->qty,
-                    // 'harga' => $request->harga,
-                    // 'subtotal' => $request->subtotal,
+                    'harga' => $request->harga,
+                    'subtotal' => $request->subtotal,
                     // 'expired' => $request->expired,
 
                 ]

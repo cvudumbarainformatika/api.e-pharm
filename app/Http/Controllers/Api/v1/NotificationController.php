@@ -148,6 +148,9 @@ class NotificationController extends Controller
                 $str = $request->model;
                 $keys = array_column($model, 'sring');
                 $ind = array_search($str, $keys);
+                if ($str === 'Product') {
+                    unset($content['stok_awal']);
+                }
                 $kode = $model[$ind]['kode'];
                 $data = $model[$ind]['name']::updateOrCreate(
                     [$kode => $content[$kode]],

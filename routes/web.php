@@ -37,6 +37,8 @@ Route::get('/wawan', [AutogeneratorController::class, 'wawan']);
 Route::get('/det', [AutogeneratorController::class, 'getSingleDetails']);
 Route::get('/stok', [AutogeneratorController::class, 'getStokProd']);
 Route::get('/anu', [AutogeneratorController::class, 'anuGet']);
+Route::get('/report', [AutogeneratorController::class, 'report']);
+Route::get('/harga', [AutogeneratorController::class, 'setHarga']);
 // Route::get('/time', function () {
 //     echo time();
 // });

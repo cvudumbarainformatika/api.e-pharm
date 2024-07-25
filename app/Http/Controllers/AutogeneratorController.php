@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\NumberHelper;
+use App\Http\Controllers\Api\v1\CloudReportController;
 use App\Http\Controllers\Api\v1\LaporanBaruController;
 use App\Http\Controllers\Api\v1\SettingController;
 use App\Models\Beban;
 use App\Models\Cabang;
 use App\Models\Customer;
 use App\Models\DetailTransaction;
+use App\Models\DistribusiAntarToko;
 use App\Models\Dokter;
 use App\Models\Kategori;
 use App\Models\Merk;
@@ -29,6 +31,43 @@ use Illuminate\Support\Facades\Schema;
 class AutogeneratorController extends Controller
 {
     //
+    public function report()
+    {
+        $head = (object) [
+            'periode' => 'bulan', // bulan atau range,, kosong berarti hari ini tergantung from dan to
+            'from' => '2024-07-01',
+            // 'to' => '2024-07-30',
+        ];
+        $data = CloudReportController::report($head);
+        return $data;
+    }
+
+    public function setHarga()
+    {
+        $trans = DistribusiAntarToko::where('harga', '=', 0)->get();
+        $tr = DistribusiAntarToko::select('kode_produk')->where('harga', '=', 0)->distinct()->pluck('kode_produk');
+        $prod = Product::select('id', 'kode_produk', 'harga_beli')->whereIn('kode_produk', $tr)->get();
+        $prdArr = $prod->toArray();
+        foreach ($trans as $key) {
+            $str = $key['kode_produk'];
+            $clm = array_column($prdArr, 'kode_produk');
+            $ind = array_search($str, $clm);
+            // return $ind;
+            if ($ind >= 0) {
+                $sub = $prod[$ind]->harga_beli * $key['qty'];
+                $key->update([
+                    'harga' => $prod[$ind]['harga_beli'],
+                    'subtotal' => $sub,
+                ]);
+                // return $prod[$ind];
+            }
+        }
+        return new JsonResponse([
+            'tr' => $tr,
+            'trans' => $trans,
+            'prod    ' => $prod,
+        ]);
+    }
     public function anuGet()
     {
         $data = "{\"message\":{\"id\":8,\"sender\":\"APS0001\",\"receiver\":\"APS0002\",\"type\":\"kirim permintaan distribusi\",\"model\":\"HeaderDistribusi\",\"content\":{\"id\":1,\"nodistribusi\":\"1307202400001\",\"pengirim\":\"root\",\"dari\":\"APS0001\",\"tujuan\":\"APS0002\",\"penerima\":\"gudang\",\"tgl_permintaan\":null,\"tgl_distribusi\":\"2024-07-18\",\"tgl_terima\":null,\"status\":2,\"created_at\":\"2024-07-15T13:59:03.000000Z\",\"updated_at\":\"2024-07-19T18:32:17.000000Z\",\"details\":[{\"id\":1,\"nodistribusi\":\"1307202400001\",\"product_id\":2419,\"kode_produk\":\"PRD02419\",\"jumlah\":10,\"qty\":20,\"harga\":0,\"subtotal\":0,\"expired\":\"2026-07-31\",\"created_at\":\"2024-07-15T13:59:03.000000Z\",\"updated_at\":\"2024-07-18T15:43:58.000000Z\"},{\"id\":2,\"nodistribusi\":\"1307202400001\",\"product_id\":1410,\"kode_produk\":\"PRD01410\",\"jumlah\":10,\"qty\":10,\"harga\":0,\"subtotal\":0,\"expired\":\"2026-07-31\",\"created_at\":\"2024-07-15T13:59:03.000000Z\",\"updated_at\":\"2024-07-18T15:43:58.000000Z\"}]},\"is_read\":0,\"created_at\":\"2024-07-19T18:32:17.000000Z\",\"updated_at\":\"2024-07-19T18:32:17.000000Z\"}}";

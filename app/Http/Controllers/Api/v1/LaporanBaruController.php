@@ -184,6 +184,57 @@ class LaporanBaruController extends Controller
 
         ], 200);
     }
+    public function newLaporanKeuangan()
+    {
+        $periode = request('selection') === 'tillToday' ? 'bulan' : request('selection');
+        $header = (object) array(
+            'from' => request('from'),
+            'to' => request('to'),
+            'periode' => $periode,
+        );
+        $data = CloudReportController::report($header);
+        return new JsonResponse([
+            'data' => $data,
+            'header' => $header
+        ]);
+        // $kode = Product::orderBy(request('order_by'), request('sort'))
+        //     ->pluck('kode_produk');
+        // $ongkir = $this->getDiscOngkirPeriode($header, 'PEMBELIAN');
+        // $pembelian = $this->getDetailsPeriodUang($header, 'PEMBELIAN');
+        // $returPembelian = $this->getDetailsPeriodUang($header, 'RETUR PEMBELIAN');
+        // $penjualan = $this->getDetailsPeriodUang($header, 'PENJUALAN');
+        // $returPenjualan = $this->getDetailsPeriodUang($header, 'RETUR PENJUALAN');
+        // $beban = $this->getBebansPeriod($header, 'PENGELUARAN');
+        // $penerimaan = $this->getPenerimaansPeriod($header, 'PENDAPATAN');
+        // $distribusi = $this->getDistPeriod($header, $kode);
+
+        // // hpp = pemelian bersih + persediaan awal - persediaan akhir
+        // // pembelian bersih = pembelian tunai dan kredit + biaya (mis: ongkir) - potongan pembelian - retur pembelian
+        // // persediaan awal = nilai barang tersedia di periode awal neraca akuntansi
+        // // persediaan akhir = nilai barang tersedia di akhir periode transaksi
+
+
+        // $totalOngkir = $this->total($header, 'PEMBELIAN');
+        // $pembelianDgKredit = $this->getDetailsWithCredit($header, 'PEMBELIAN');
+        // $stok = $this->ambilAllStok();
+
+        // return new JsonResponse([
+        //     // 'product' => $product,
+        //     'pembelian' => $pembelian,
+        //     'penjualan' => $penjualan,
+        //     'returPembelian' => $returPembelian,
+        //     'returPenjualan' => $returPenjualan,
+        //     'beban' => $beban,
+        //     'penerimaan' => $penerimaan,
+        //     // 'hitungPembelian' => $hitungPembelian,
+        //     'ongkir' => $ongkir,
+        //     'totalOngkir' => $totalOngkir,
+        //     'pembelianDgKredit' => $pembelianDgKredit,
+        //     'stok' => $stok,
+        //     'distribusi' => $distribusi,
+
+        // ], 200);
+    }
     //ambil diskon, ongkir, dan total pada periode dan sebelum periode tertentu
     public function getDiscOngkirPeriode($header, $nama)
     {
@@ -415,7 +466,8 @@ class LaporanBaruController extends Controller
         } else if ($header->selection === 'tillToday') {
             $period = Transaction::select(
                 'transactions.id',
-                'detail_transactions.product_id'
+                'detail_transactions.product_id',
+                DB::raw('sum(detail_transactions.qty) as jml'),
             )
                 ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
@@ -429,7 +481,8 @@ class LaporanBaruController extends Controller
         } else {
             $period = Transaction::select(
                 'transactions.id',
-                'detail_transactions.product_id'
+                'detail_transactions.product_id',
+                DB::raw('sum(detail_transactions.qty) as jml'),
             )
                 ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')

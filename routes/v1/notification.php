@@ -10,4 +10,5 @@ Route::group([
 ], function () {
     Route::get('/unread', [NotificationController::class, 'unread']);
     Route::post('/read', [NotificationController::class, 'read']);
+    Route::post('/report', [NotificationController::class, 'report']);
 });
