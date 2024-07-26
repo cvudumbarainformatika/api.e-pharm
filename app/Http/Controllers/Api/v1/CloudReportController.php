@@ -75,12 +75,15 @@ class CloudReportController extends Controller
 
 
         $BstokSebelum = $masukBefore - $keluarBefore + $returPenjualanBefore - $returPembelianBefore + $distribusiMasukBefore - $distribusiKeluarBefore;
+        $masukSB = $masukBefore + $returPenjualanBefore + $distribusiMasukBefore;
+        $keluarSB = $keluarBefore + $returPembelianBefore + $distribusiKeluarBefore;
         $stokSebelum = $BstokSebelum;
         // $stokSebelum = $BstokSebelum < 0 ? -$BstokSebelum : $BstokSebelum;
         $stokBerjalan = $masukPeriod - $keluarPeriod + $returPenjualanPeriod -  $returPembelianPeriod + $distribusiMasukPeriod - $distribusiKeluarPeriod;
         $stokAwal = $persediaanAwal + $stokSebelum;
         $stokSekarang = $stokAwal + $stokBerjalan; // persediaan akhir
-        $persediaanAkhir = $stokSekarang < 0 ? -$stokSekarang : $stokSekarang;
+        // $persediaanAkhir = $stokSekarang < 0 ? -$stokSekarang : $stokSekarang;
+        $persediaanAkhir = $stokSekarang;
 
         // hitung hpp
         $pembelianBersih = $totalSmw - $returPembelianPeriod + $distribusiMasukBefore - $distribusiKeluarPeriod;
@@ -98,6 +101,8 @@ class CloudReportController extends Controller
             'total' => $total,
             'diskon' => $diskon,
             'persediaanAwal' => $persediaanAwal,
+            'masukSB' => $masukSB,
+            'keluarSB' => $keluarSB,
             'masukBefore' => $masukBefore,
             'masukPeriod' => $masukPeriod,
             'keluarBefore' => $keluarBefore,
@@ -122,6 +127,7 @@ class CloudReportController extends Controller
             'totBeban' => $totBeban,
             'labaRugi' => $labaRugi,
             'masterBeban' => $masterBeban,
+            'persediaanAkhir' => $persediaanAkhir,
             // 'pembelian' => $pembelian,
             // 'penjualan' => $penjualan,
             // 'returPembelian' => $returPembelian,
@@ -147,7 +153,8 @@ class CloudReportController extends Controller
             'detail_transactions.product_id',
             'detail_transactions.harga',
             DB::raw('sum(detail_transactions.qty) as jml'),
-            DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as sub')
+            DB::raw('sum(detail_transactions.sub_total) as sub'),
+            DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr')
         )
             // ->selectRaw('sum(detail_transactions.qty) as jml')
             ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
@@ -163,7 +170,8 @@ class CloudReportController extends Controller
                 'detail_transactions.product_id',
                 'detail_transactions.harga',
                 DB::raw('sum(detail_transactions.qty) as jml'),
-                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as sub')
+                DB::raw('sum(detail_transactions.sub_total) as sub'),
+                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr')
             )
                 // ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
@@ -178,7 +186,8 @@ class CloudReportController extends Controller
                 'detail_transactions.product_id',
                 'detail_transactions.harga',
                 DB::raw('sum(detail_transactions.qty) as jml'),
-                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as sub')
+                DB::raw('sum(detail_transactions.sub_total) as sub'),
+                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr')
             )
                 // ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
@@ -193,7 +202,8 @@ class CloudReportController extends Controller
                 'detail_transactions.product_id',
                 'detail_transactions.harga',
                 DB::raw('sum(detail_transactions.qty) as jml'),
-                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as sub')
+                DB::raw('sum(detail_transactions.sub_total) as sub'),
+                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr')
             )
                 // ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
@@ -553,7 +563,8 @@ class CloudReportController extends Controller
             'transactions.id',
             'detail_transactions.product_id',
             DB::raw('sum(detail_transactions.qty) as jml'),
-            DB::raw('sum(detail_transactions.qty * detail_transactions.harga) as sub')
+            DB::raw('sum(detail_transactions.sub_total) as sub'),
+            DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr')
         )
             // ->selectRaw(' sum(detail_transactions.qty) as jml')
             ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
@@ -570,7 +581,8 @@ class CloudReportController extends Controller
                 'transactions.id',
                 'detail_transactions.product_id',
                 DB::raw('sum(detail_transactions.qty) as jml'),
-                DB::raw('sum(detail_transactions.qty * detail_transactions.harga) as sub')
+                DB::raw('sum(detail_transactions.sub_total) as sub'),
+                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr')
             )
                 // ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
@@ -585,7 +597,8 @@ class CloudReportController extends Controller
             $period = Transaction::select(
                 'transactions.id',
                 'detail_transactions.product_id',
-                DB::raw('sum(detail_transactions.qty * detail_transactions.harga) as sub')
+                DB::raw('sum(detail_transactions.sub_total) as sub'),
+                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr')
             )
                 ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
@@ -601,7 +614,8 @@ class CloudReportController extends Controller
             $period = Transaction::select(
                 'transactions.id',
                 'detail_transactions.product_id',
-                DB::raw('sum(detail_transactions.qty * detail_transactions.harga) as sub')
+                DB::raw('sum(detail_transactions.sub_total) as sub'),
+                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr')
             )
                 ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
