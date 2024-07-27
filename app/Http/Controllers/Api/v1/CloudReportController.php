@@ -74,12 +74,16 @@ class CloudReportController extends Controller
         $distribusiKeluarPeriod = $stok->distribusi->keluarperiod->sub ?? 0;
 
 
-        $BstokSebelum = $masukBefore - $keluarBefore + $returPenjualanBefore - $returPembelianBefore + $distribusiMasukBefore - $distribusiKeluarBefore;
+        // $BstokSebelum = $masukBefore - $keluarBefore + $returPenjualanBefore - $returPembelianBefore + $distribusiMasukBefore - $distribusiKeluarBefore;
         $masukSB = $masukBefore + $returPenjualanBefore + $distribusiMasukBefore;
         $keluarSB = $keluarBefore + $returPembelianBefore + $distribusiKeluarBefore;
-        $stokSebelum = $BstokSebelum;
+        $stokSebelum = $masukSB - $keluarSB;
         // $stokSebelum = $BstokSebelum < 0 ? -$BstokSebelum : $BstokSebelum;
-        $stokBerjalan = $masukPeriod - $keluarPeriod + $returPenjualanPeriod -  $returPembelianPeriod + $distribusiMasukPeriod - $distribusiKeluarPeriod;
+        // $stokBerjalan = $masukPeriod - $keluarPeriod + $returPenjualanPeriod -  $returPembelianPeriod + $distribusiMasukPeriod - $distribusiKeluarPeriod;
+        $masukP = $masukPeriod + $returPenjualanPeriod + $distribusiMasukPeriod;
+        $keluarP = $keluarPeriod + $returPembelianPeriod + $distribusiKeluarPeriod;
+        $stokBerjalan = $masukP - $keluarP;
+
         $stokAwal = $persediaanAwal + $stokSebelum;
         $stokSekarang = $stokAwal + $stokBerjalan; // persediaan akhir
         // $persediaanAkhir = $stokSekarang < 0 ? -$stokSekarang : $stokSekarang;
@@ -103,6 +107,8 @@ class CloudReportController extends Controller
             'persediaanAwal' => $persediaanAwal,
             'masukSB' => $masukSB,
             'keluarSB' => $keluarSB,
+            'masukP' => $masukP,
+            'keluarP' => $keluarP,
             'masukBefore' => $masukBefore,
             'masukPeriod' => $masukPeriod,
             'keluarBefore' => $keluarBefore,
@@ -563,11 +569,12 @@ class CloudReportController extends Controller
             'transactions.id',
             'detail_transactions.product_id',
             DB::raw('sum(detail_transactions.qty) as jml'),
-            DB::raw('sum(detail_transactions.sub_total) as sub'),
-            DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr')
+            DB::raw('sum(detail_transactions.sub_total) as subt'),
+            DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr'),
+            DB::raw('sum(detail_transactions.qty*products.harga_beli) as sub')
         )
-            // ->selectRaw(' sum(detail_transactions.qty) as jml')
             ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
+            ->leftJoin('products', 'products.id', '=', 'detail_transactions.product_id')
             ->where('transactions.nama', '=', $nama)
             ->where('transactions.status', '>=', 2)
             ->whereDate('transactions.tanggal', '<', $sebelumBulanIni)
@@ -581,11 +588,12 @@ class CloudReportController extends Controller
                 'transactions.id',
                 'detail_transactions.product_id',
                 DB::raw('sum(detail_transactions.qty) as jml'),
-                DB::raw('sum(detail_transactions.sub_total) as sub'),
-                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr')
+                DB::raw('sum(detail_transactions.sub_total) as subt'),
+                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr'),
+                DB::raw('sum(detail_transactions.qty*products.harga_beli) as sub')
             )
-                // ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
+                ->leftJoin('products', 'products.id', '=', 'detail_transactions.product_id')
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->whereBetween('transactions.tanggal',  [$header->from . ' 00:00:00', $header->to . ' 23:59:59'])
@@ -598,10 +606,12 @@ class CloudReportController extends Controller
                 'transactions.id',
                 'detail_transactions.product_id',
                 DB::raw('sum(detail_transactions.sub_total) as sub'),
-                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr')
+                DB::raw('sum(detail_transactions.sub_total) as subt'),
+                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr'),
+                DB::raw('sum(detail_transactions.qty*products.harga_beli) as sub')
             )
-                ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
+                ->leftJoin('products', 'products.id', '=', 'detail_transactions.product_id')
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->whereIn('detail_transactions.product_id', $id)
@@ -614,11 +624,12 @@ class CloudReportController extends Controller
             $period = Transaction::select(
                 'transactions.id',
                 'detail_transactions.product_id',
-                DB::raw('sum(detail_transactions.sub_total) as sub'),
-                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr')
+                DB::raw('sum(detail_transactions.sub_total) as subt'),
+                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr'),
+                DB::raw('sum(detail_transactions.qty*products.harga_beli) as sub')
             )
-                ->selectRaw(' sum(detail_transactions.qty) as jml')
                 ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
+                ->leftJoin('products', 'products.id', '=', 'detail_transactions.product_id')
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->whereIn('detail_transactions.product_id', $id)
