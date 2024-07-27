@@ -23,11 +23,11 @@ class CloudReportController extends Controller
         //     'to' => request('to'),
         //     'selection' => request('selection'),
         // );
-        $kode = Product::pluck('kode_produk');
+        // $kode = Product::pluck('kode_produk');
         $masterBeban = Beban::select('id', 'nama')->get();
         // $masterBebanArr = Beban::select('id', 'nama')->get();
-        $prod = Product::selectRaw('sum(stok_awal * harga_beli) as awal')->first();
-        $ongkir = self::getDiscOngkirPeriode($header, 'PEMBELIAN');
+        // $prod = Product::selectRaw('sum(stok_awal * harga_beli) as awal')->first();
+        // $ongkir = self::getDiscOngkirPeriode($header, 'PEMBELIAN');
         // $pembelian = self::getDetailsPeriodUang($header, 'PEMBELIAN');
         // $returPembelian = self::getDetailsPeriodUang($header, 'RETUR PEMBELIAN');
         $penjualan = self::getDetailsPeriodUang($header, 'PENJUALAN');
@@ -55,44 +55,47 @@ class CloudReportController extends Controller
             $key['total'] = $arr[$ind]['total'] ?? 0;
         }
         // hitung
-        $totalSmw = $ongkir->period->totalSemua ?? 0;
-        $total = $ongkir->period->jumlah ?? 0;;
-        $diskon = $totalSmw - $total;
-        $persediaanAwal = $prod->awal ?? 0; // jumla stok awal * harga beli
+        // $totalSmw = $ongkir->period->totalSemua ?? 0;
+        // $total = $ongkir->period->jumlah ?? 0;;
+        // $diskon = $totalSmw - $total;
+        // $persediaanAwal = $prod->awal ?? 0; // jumla stok awal * harga beli
         //stok
-        $masukBefore = $stok->masuk->before->sub ?? 0;
-        $masukPeriod = $stok->masuk->period->sub ?? 0;
-        $keluarBefore = $stok->keluar->before->sub ?? 0;
-        $keluarPeriod = $stok->keluar->period->sub ?? 0;
-        $returPembelianBefore = $stok->returPembelian->before->sub ?? 0;
-        $returPembelianPeriod = $stok->returPembelian->period->sub ?? 0;
-        $returPenjualanBefore = $stok->returPenjualan->before->sub ?? 0;
-        $returPenjualanPeriod = $stok->returPenjualan->period->sub ?? 0;
-        $distribusiMasukBefore = $stok->distribusi->masukbefore->sub ?? 0;
-        $distribusiMasukPeriod = $stok->distribusi->masukperiod->sub ?? 0;
-        $distribusiKeluarBefore = $stok->distribusi->keluarbefore->sub ?? 0;
-        $distribusiKeluarPeriod = $stok->distribusi->keluarperiod->sub ?? 0;
+        // $masukBefore = $stok->masuk->before->sub ?? 0;
+        // $masukPeriod = $stok->masuk->period->sub ?? 0;
+        // $keluarBefore = $stok->keluar->before->sub ?? 0;
+        // $keluarPeriod = $stok->keluar->period->sub ?? 0;
+        // $returPembelianBefore = $stok->returPembelian->before->sub ?? 0;
+        // $returPembelianPeriod = $stok->returPembelian->period->sub ?? 0;
+        // $returPenjualanBefore = $stok->returPenjualan->before->sub ?? 0;
+        // $returPenjualanPeriod = $stok->returPenjualan->period->sub ?? 0;
+        // $distribusiMasukBefore = $stok->distribusi->masukbefore->sub ?? 0;
+        // $distribusiMasukPeriod = $stok->distribusi->masukperiod->sub ?? 0;
+        // $distribusiKeluarBefore = $stok->distribusi->keluarbefore->sub ?? 0;
+        // $distribusiKeluarPeriod = $stok->distribusi->keluarperiod->sub ?? 0;
 
+        $bhpp = $stok->hpp->sub ?? 0;
+        $retur = $stok->returPenjualan->sub ?? 0;
+        $hpp = $bhpp - $retur;
 
         // $BstokSebelum = $masukBefore - $keluarBefore + $returPenjualanBefore - $returPembelianBefore + $distribusiMasukBefore - $distribusiKeluarBefore;
-        $masukSB = $masukBefore + $returPenjualanBefore + $distribusiMasukBefore;
-        $keluarSB = $keluarBefore + $returPembelianBefore + $distribusiKeluarBefore;
-        $stokSebelum = $masukSB - $keluarSB;
-        // $stokSebelum = $BstokSebelum < 0 ? -$BstokSebelum : $BstokSebelum;
-        // $stokBerjalan = $masukPeriod - $keluarPeriod + $returPenjualanPeriod -  $returPembelianPeriod + $distribusiMasukPeriod - $distribusiKeluarPeriod;
-        $masukP = $masukPeriod + $returPenjualanPeriod + $distribusiMasukPeriod;
-        $keluarP = $keluarPeriod + $returPembelianPeriod + $distribusiKeluarPeriod;
-        $stokBerjalan = $masukP - $keluarP;
+        // $masukSB = $masukBefore + $returPenjualanBefore + $distribusiMasukBefore;
+        // $keluarSB = $keluarBefore + $returPembelianBefore + $distribusiKeluarBefore;
+        // $stokSebelum = $masukSB - $keluarSB;
+        // // $stokSebelum = $BstokSebelum < 0 ? -$BstokSebelum : $BstokSebelum;
+        // // $stokBerjalan = $masukPeriod - $keluarPeriod + $returPenjualanPeriod -  $returPembelianPeriod + $distribusiMasukPeriod - $distribusiKeluarPeriod;
+        // $masukP = $masukPeriod + $returPenjualanPeriod + $distribusiMasukPeriod;
+        // $keluarP = $keluarPeriod + $returPembelianPeriod + $distribusiKeluarPeriod;
+        // $stokBerjalan = $masukP - $keluarP;
 
-        $stokAwal = $persediaanAwal + $stokSebelum;
-        $stokSekarang = $stokAwal + $stokBerjalan; // persediaan akhir
-        // $persediaanAkhir = $stokSekarang < 0 ? -$stokSekarang : $stokSekarang;
-        $persediaanAkhir = $stokSekarang;
+        // $stokAwal = $persediaanAwal + $stokSebelum;
+        // $stokSekarang = $stokAwal + $stokBerjalan; // persediaan akhir
+        // // $persediaanAkhir = $stokSekarang < 0 ? -$stokSekarang : $stokSekarang;
+        // $persediaanAkhir = $stokSekarang;
 
-        // hitung hpp
-        $pembelianBersih = $totalSmw - $returPembelianPeriod + $distribusiMasukBefore - $distribusiKeluarPeriod;
+        // // hitung hpp
+        // $pembelianBersih = $totalSmw - $returPembelianPeriod + $distribusiMasukBefore - $distribusiKeluarPeriod;
         // $hpp = $pembelianBersih + $persediaanAwal - $persediaanAkhir;
-        $hpp = $pembelianBersih + $persediaanAwal - $stokSekarang;
+        // $hpp = $pembelianBersih - $stokSekarang;
 
         // penjualan
         $penjualanP = $penjualan->period->sub ?? 0;
@@ -101,31 +104,31 @@ class CloudReportController extends Controller
         $totBeban = collect($beban)->sum('total');
         $labaRugi = $penjualanBersih - $hpp - $totBeban;
         return [
-            'totalSmw' => $totalSmw,
-            'total' => $total,
-            'diskon' => $diskon,
-            'persediaanAwal' => $persediaanAwal,
-            'masukSB' => $masukSB,
-            'keluarSB' => $keluarSB,
-            'masukP' => $masukP,
-            'keluarP' => $keluarP,
-            'masukBefore' => $masukBefore,
-            'masukPeriod' => $masukPeriod,
-            'keluarBefore' => $keluarBefore,
-            'keluarPeriod' => $keluarPeriod,
-            'returPembelianBefore' => $returPembelianBefore,
-            'returPembelianPeriod' => $returPembelianPeriod,
-            'returPenjualanBefore' => $returPenjualanBefore,
-            'returPenjualanPeriod' => $returPenjualanPeriod,
-            'distribusiMasukBefore' => $distribusiMasukBefore,
-            'distribusiMasukPeriod' => $distribusiMasukPeriod,
-            'distribusiKeluarBefore' => $distribusiKeluarBefore,
-            'distribusiKeluarPeriod' => $distribusiKeluarPeriod,
-            'stokSebelum' => $stokSebelum,
-            'stokAwal' => $stokAwal,
-            'stokBerjalan' => $stokBerjalan,
-            'stokSekarang' => $stokSekarang,
-            'pembelianBersih' => $pembelianBersih,
+            // 'totalSmw' => $totalSmw,
+            // 'total' => $total,
+            // 'diskon' => $diskon,
+            // 'persediaanAwal' => $persediaanAwal,
+            // 'masukSB' => $masukSB,
+            // 'keluarSB' => $keluarSB,
+            // 'masukP' => $masukP,
+            // 'keluarP' => $keluarP,
+            // 'masukBefore' => $masukBefore,
+            // 'masukPeriod' => $masukPeriod,
+            // 'keluarBefore' => $keluarBefore,
+            // 'keluarPeriod' => $keluarPeriod,
+            // 'returPembelianBefore' => $returPembelianBefore,
+            // 'returPembelianPeriod' => $returPembelianPeriod,
+            // 'returPenjualanBefore' => $returPenjualanBefore,
+            // 'returPenjualanPeriod' => $returPenjualanPeriod,
+            // 'distribusiMasukBefore' => $distribusiMasukBefore,
+            // 'distribusiMasukPeriod' => $distribusiMasukPeriod,
+            // 'distribusiKeluarBefore' => $distribusiKeluarBefore,
+            // 'distribusiKeluarPeriod' => $distribusiKeluarPeriod,
+            // 'stokSebelum' => $stokSebelum,
+            // 'stokAwal' => $stokAwal,
+            // 'stokBerjalan' => $stokBerjalan,
+            // 'stokSekarang' => $stokSekarang,
+            // 'pembelianBersih' => $pembelianBersih,
             'hpp' => $hpp,
             'penjualanP' => $penjualanP,
             'penjualanBersih' => $penjualanBersih,
@@ -133,7 +136,7 @@ class CloudReportController extends Controller
             'totBeban' => $totBeban,
             'labaRugi' => $labaRugi,
             'masterBeban' => $masterBeban,
-            'persediaanAkhir' => $persediaanAkhir,
+            // 'persediaanAkhir' => $persediaanAkhir,
             // 'pembelian' => $pembelian,
             // 'penjualan' => $penjualan,
             // 'returPembelian' => $returPembelian,
@@ -143,13 +146,72 @@ class CloudReportController extends Controller
             // 'ongkir' => $ongkir,
             // 'totalOngkir' => $totalOngkir,
             // 'pembelianDgKredit' => $pembelianDgKredit,
-            // 'stok' => $stok,
+            'stok' => $stok,
             // 'distribusi' => $distribusi,
             // 'prod' => $prod,
 
         ];
     }
 
+    public static function newHpp($header, $nama, $id)
+    {
+        if ($header->periode === 'range') {
+            $period = Transaction::select(
+                'transactions.id',
+                'detail_transactions.product_id',
+                DB::raw('sum(detail_transactions.qty) as jml'),
+                DB::raw('sum(detail_transactions.sub_total) as subt'),
+                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr'),
+                DB::raw('sum(detail_transactions.qty*products.harga_beli) as sub')
+            )
+                ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
+                ->leftJoin('products', 'products.id', '=', 'detail_transactions.product_id')
+                ->where('transactions.nama', '=', $nama)
+                ->where('transactions.status', '>=', 2)
+                ->whereBetween('transactions.tanggal',  [$header->from . ' 00:00:00', $header->to . ' 23:59:59'])
+                ->whereIn('detail_transactions.product_id', $id)
+                // ->groupBy('detail_transactions.product_id')
+                ->first();
+            // ->get();
+        } else if ($header->periode === 'bulan') {
+            $period = Transaction::select(
+                'transactions.id',
+                'detail_transactions.product_id',
+                DB::raw('sum(detail_transactions.sub_total) as sub'),
+                DB::raw('sum(detail_transactions.sub_total) as subt'),
+                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr'),
+                DB::raw('sum(detail_transactions.qty*products.harga_beli) as sub')
+            )
+                ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
+                ->leftJoin('products', 'products.id', '=', 'detail_transactions.product_id')
+                ->where('transactions.nama', '=', $nama)
+                ->where('transactions.status', '>=', 2)
+                ->whereIn('detail_transactions.product_id', $id)
+                // ->whereMonth('transactions.tanggal', '=', date('m'))
+                ->whereBetween('transactions.tanggal',  [date('Y-m-01') . ' 00:00:00', date('Y-m-31') . ' 23:59:59'])
+                // ->groupBy('detail_transactions.product_id')
+                ->first();
+            // ->get();
+        } else {
+            $period = Transaction::select(
+                'transactions.id',
+                'detail_transactions.product_id',
+                DB::raw('sum(detail_transactions.sub_total) as subt'),
+                DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr'),
+                DB::raw('sum(detail_transactions.qty*products.harga_beli) as sub')
+            )
+                ->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
+                ->leftJoin('products', 'products.id', '=', 'detail_transactions.product_id')
+                ->where('transactions.nama', '=', $nama)
+                ->where('transactions.status', '>=', 2)
+                ->whereIn('detail_transactions.product_id', $id)
+                ->whereDate('transactions.tanggal', '=', $header->from)
+                // ->groupBy('detail_transactions.product_id')
+                ->first();
+            // ->get();
+        }
+        return $period;
+    }
     //ambil detail transaksi pada periode dan sebelum periode tertentu
     public static function getDetailsPeriodUang($header, $nama)
     {
@@ -511,23 +573,27 @@ class CloudReportController extends Controller
         // );
         $prodId = Product::pluck('id');
         $kode = Product::pluck('kode_produk');
-        $stokMasuk = self::getDetailsPeriod($header, 'PEMBELIAN', $prodId);
-        $returPembelian = self::getDetailsPeriod($header, 'RETUR PEMBELIAN', $prodId);
-        $stokKeluar = self::getDetailsPeriod($header, 'PENJUALAN', $prodId);
-        $returPenjualan = self::getDetailsPeriod($header, 'RETUR PENJUALAN', $prodId);
-        $penyesuaian = self::getDetailsPeriod($header, 'FORM PENYESUAIAN', $prodId);
-        $distribusi = self::getDistPeriod($header, $kode);
+        // $stokMasuk = self::getDetailsPeriod($header, 'PEMBELIAN', $prodId);
+        // $returPembelian = self::getDetailsPeriod($header, 'RETUR PEMBELIAN', $prodId);
+        // $stokKeluar = self::getDetailsPeriod($header, 'PENJUALAN', $prodId);
+        // $returPenjualan = self::getDetailsPeriod($header, 'RETUR PENJUALAN', $prodId);
+        // $penyesuaian = self::getDetailsPeriod($header, 'FORM PENYESUAIAN', $prodId);
+        // $distribusi = self::getDistPeriod($header, $kode);
+        $hpp = self::newHpp($header, 'PENJUALAN', $prodId);
+        $returPenjualan = self::newHpp($header, 'RETUR PENJUALAN', $prodId);
 
 
         // $product = Product::get();
         $data = (object) array(
             // 'product' => $product,
-            'masuk' => $stokMasuk,
-            'keluar' => $stokKeluar,
-            'returPembelian' => $returPembelian,
+            // 'masuk' => $stokMasuk,
+            // 'keluar' => $stokKeluar,
+            // 'returPembelian' => $returPembelian,
+            // 'returPenjualan' => $returPenjualan,
+            // 'penyesuaian' => $penyesuaian,
+            // 'distribusi' => $distribusi,
+            'hpp' => $hpp,
             'returPenjualan' => $returPenjualan,
-            'penyesuaian' => $penyesuaian,
-            'distribusi' => $distribusi,
         );
         return $data;
     }
