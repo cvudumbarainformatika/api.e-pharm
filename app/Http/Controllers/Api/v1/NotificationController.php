@@ -267,4 +267,33 @@ class NotificationController extends Controller
             'unread' => $unread
         ]);
     }
+    public function report(Request $request)
+    {
+        $me = Info::first();
+        // $header = (object) [
+        //     'periode' => 'bulan', // bulan atau range,, kosong berarti hari ini tergantung from dan to
+        //     'from' => '2024-07-01',
+        //     'to' => '2024-07-30',
+        // ];
+        $header = $request->content;
+        $data = CloudReportController::report($header);
+
+        $msg = [
+            'noPermintaanLaporan' => $request->model,
+            'laporan' => $data,
+            'kodecabang' => $me->kodecabang
+        ];
+        $post = CloudHelper::post_readNotif($msg);
+        if (!$post) $anu = null;
+        else $anu = json_decode($post->getBody(), true);
+        if (!$data) {
+            return new JsonResponse([
+                'message' => 'Laporan gagal dikirim ke cloud, data tidak ditemukan'
+            ], 410);
+        }
+        return new JsonResponse([
+            'message' => 'Laporan dikirim ke cloud',
+            'balasan' => $anu,
+        ]);
+    }
 }

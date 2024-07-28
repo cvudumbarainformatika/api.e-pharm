@@ -55,4 +55,18 @@ class CloudHelper
         $response = Http::withHeaders($header)->post('http://103.23.199.134/api/update-message-by-id', $msg);
         return $response;
     }
+    public static function post_sendReport($msg)
+    {
+        // $msg = ['id' => $id];
+        $xid = 'org';
+        $secret_key = 'd4l4m';
+        $signature = hash_hmac('sha256', $xid, $secret_key);
+        $header = [
+            'Accept' => 'application/json',
+            'X-id' => 'org',
+            'X-signature' => $signature,
+        ];
+        $response = Http::withHeaders($header)->post('http://103.23.199.134/api/report', $msg);
+        return $response;
+    }
 }
