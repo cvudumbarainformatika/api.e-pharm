@@ -8,6 +8,7 @@ use App\Http\Controllers\AutogeneratorController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\ProductResource;
 use App\Models\Cabang;
+use App\Models\DetailTransaction;
 use App\Models\Product;
 use App\Models\Setting\Info;
 use Illuminate\Http\JsonResponse;
@@ -195,6 +196,13 @@ class ProductController extends Controller
             $id = $request->id;
 
             $data = Product::find($id);
+            // cari di detail transaksi, jika ada jangan di delete
+            $ada = DetailTransaction::where('product_id', $data->id)->first();
+            if ($ada) {
+                return response()->json([
+                    'message' => 'Data sudah ada Di transaksi, jika dihapus akan mempengaruhi laporan.'
+                ], 500);
+            }
             $del = $data->delete();
 
             if (!$del) {
