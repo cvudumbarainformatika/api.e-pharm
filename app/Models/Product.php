@@ -93,6 +93,10 @@ class Product extends Model
     {
         return $this->hasMany(DetailTransaction::class);
     }
+    public function ada()
+    {
+        return $this->hasOne(DetailTransaction::class);
+    }
     public function scopeFilter($search, array $reqs)
     {
         $search->when($reqs['q'] ?? false, function ($search, $query) {
