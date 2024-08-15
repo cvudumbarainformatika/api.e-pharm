@@ -54,7 +54,7 @@ class PerusahaanController extends Controller
                     $kode = NumberHelper::setNumber($kategori->id, 'CMP');
                     // $kode = AutogeneratorController::setNumber($kategori->id, 'BBN');
                     $kategori->update([
-                        'kode_beban' => $kode
+                        'kode' => $kode
                     ]);
                 }
 

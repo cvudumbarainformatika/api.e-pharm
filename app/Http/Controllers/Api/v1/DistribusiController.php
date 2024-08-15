@@ -99,7 +99,7 @@ class DistribusiController extends Controller
                 'message' => 'ada kesalahan',
                 'error' => $th,
                 'request' => $request->all(),
-                'nodistribusi' => $nodistribusi,
+                // 'nodistribusi' => $nodistribusi,
             ], 500);
         }
     }
