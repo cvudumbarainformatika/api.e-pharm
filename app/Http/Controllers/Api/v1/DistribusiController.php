@@ -54,7 +54,6 @@ class DistribusiController extends Controller
         try {
             DB::beginTransaction();
             $count = HeaderDistribusi::whereBetween('tgl_permintaan', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
-
                 ->count();
             $nodistribusi = !$request->nodistribusi ? $this->nomoring($count) : $request->nodistribusi;
             $data = HeaderDistribusi::updateOrCreate(
