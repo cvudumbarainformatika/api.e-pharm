@@ -36,6 +36,7 @@ class DistribusiController extends Controller
             'menuju',
         )
             ->where('status', '>', 1)
+            ->orderBy('id', 'DESC')
             ->paginate(request('per_page'));
         return new JsonResponse($data);
     }
@@ -53,7 +54,7 @@ class DistribusiController extends Controller
         try {
             DB::beginTransaction();
             $count = HeaderDistribusi::whereBetween('tgl_permintaan', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
-                ->where('status', '>', 1)
+
                 ->count();
             $nodistribusi = !$request->nodistribusi ? $this->nomoring($count) : $request->nodistribusi;
             $data = HeaderDistribusi::updateOrCreate(
