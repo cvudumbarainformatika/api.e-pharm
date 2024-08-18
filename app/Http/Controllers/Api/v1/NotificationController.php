@@ -284,6 +284,7 @@ class NotificationController extends Controller
         $msg = [
             'norequest' => $request->model,
             'tgl' => $request->tgl,
+            'header' => $header,
             'laporan' => $data,
             'kodecabang' => $me->kodecabang
         ];
