@@ -215,7 +215,7 @@ class CloudReportController extends Controller
     //ambil detail transaksi pada periode dan sebelum periode tertentu
     public static function getDetailsPeriodUang($header, $nama)
     {
-        $sebelumBulanIni = date('Y-', strtotime($header->from)) . date('m-', strtotime($header->from)) . '01 00:00:00';
+        // $sebelumBulanIni = date('Y-', strtotime($header->from)) . date('m-', strtotime($header->from)) . '01 00:00:00';
         $before = Transaction::select(
             'transactions.id',
             'detail_transactions.product_id',

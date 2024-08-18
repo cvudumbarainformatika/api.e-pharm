@@ -275,20 +275,25 @@ class NotificationController extends Controller
         //     'from' => '2024-07-01',
         //     'to' => '2024-07-30',
         // ];
-        $header = $request->content;
+        $header = (object)$request->content;
+        // return new JsonResponse([
+        //     'message' => 'Laporan tidak dikirim ke cloud',
+        //     'balasan' => $header,
+        // ], 410);
         $data = CloudReportController::report($header);
-
         $msg = [
-            'noPermintaanLaporan' => $request->model,
+            'norequest' => $request->model,
+            'tgl' => $request->tgl,
             'laporan' => $data,
             'kodecabang' => $me->kodecabang
         ];
-        $post = CloudHelper::post_readNotif($msg);
+        $post = CloudHelper::post_sendReport($msg);
         if (!$post) $anu = null;
         else $anu = json_decode($post->getBody(), true);
         if (!$data) {
             return new JsonResponse([
-                'message' => 'Laporan gagal dikirim ke cloud, data tidak ditemukan'
+                'message' => 'Laporan gagal dikirim ke cloud, data tidak ditemukan',
+                'data' => $data
             ], 410);
         }
         return new JsonResponse([
