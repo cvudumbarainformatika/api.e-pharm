@@ -82,7 +82,8 @@ class DashboardController extends Controller
     {
         $data = Transaction::where('nama', 'PENJUALAN')
             ->where('status', '>=', 2)
-            ->whereMonth('tanggal', date('m'))
+            // ->whereMonth('tanggal', date('m'))
+            ->where('tanggal', 'LIKE', '%' . date('Y-m') . '%')
             ->oldest('tanggal')
             ->with('details.product:id,nama')->get();
         return $this->dataProses($data);
@@ -94,7 +95,8 @@ class DashboardController extends Controller
         $data = Transaction::where('nama', 'PENJUALAN')
             ->where('status', '>=', 2)
             ->where('jenis', 'tunai')
-            ->whereMonth('tanggal', date('m'))
+            // ->whereMonth('tanggal', date('m'))
+            ->where('tanggal', 'LIKE', '%' . date('Y-m') . '%')
             ->oldest('tanggal')
             ->with('details.product:id,nama')->get();
         return $this->dataProses($data);

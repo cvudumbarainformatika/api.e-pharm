@@ -25,13 +25,15 @@ class LaporanController extends Controller
             } else {
                 $query->whereDay('tanggal', '=', date('d'));
             }
-        } else if ($date === 'bulan') {
-            if (request()->has('bulan') && $bulan !== null) {
-                $query->whereMonth('tanggal', '=', $bulan);
-            } else {
-                $query->whereMonth('tanggal', '=', date('m'));
-            }
-        } else if ($date === 'spesifik') {
+        }
+        // else if ($date === 'bulan') {
+        //     if (request()->has('bulan') && $bulan !== null) {
+        //         $query->whereMonth('tanggal', '=', $bulan);
+        //     } else {
+        //         $query->whereMonth('tanggal', '=', date('m'));
+        //     }
+        // }
+        else if ($date === 'spesifik') {
             $query->whereDate('tanggal', '=', $from);
         } else {
             $query->whereBetween('tanggal', [$from . ' 00:00:00', $to . ' 23:59:59']);
