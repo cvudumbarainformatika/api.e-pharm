@@ -13,4 +13,5 @@ Route::group([
     Route::get('/get-produk', [PemesananController::class, 'getProduk']);
     Route::post('/simpan-produk', [PemesananController::class, 'simpanProduk']);
     Route::post('/hapus-produk', [PemesananController::class, 'hapusProduk']);
+    Route::post('/selesai-pemesanan', [PemesananController::class, 'selesaiPemesanan']);
 });

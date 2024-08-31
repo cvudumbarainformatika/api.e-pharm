@@ -126,7 +126,7 @@ class PemesananController extends Controller
                 'message' => 'Data tidak ditemukan, tidak ada yang dihapus'
             ], 410);
         }
-        // $data->delete();
+        $data->delete();
 
         $count = DetailPemesanan::where('nopemesanan', $request->nopemesanan)->get()->count();
         if ((int) $count <= 0) {
@@ -138,6 +138,22 @@ class PemesananController extends Controller
             'message' => 'Produk sudah dihapus',
             'data' => $data,
             'req' => $request->all(),
+        ]);
+    }
+    public function selesaiPemesanan(Request $request)
+    {
+
+        $data = Pemesanan::where('nopemesanan', $request->nopemesanan)->first();
+        if (!$data) {
+            return new JsonResponse([
+                'message' => 'Tidak bisa Kunci, data tidak ditemukan'
+            ], 410);
+        }
+        $data->update([
+            'flag' => '2'
+        ]);
+        return new JsonResponse([
+            'message' => 'Data Berhasil dikunci'
         ]);
     }
 }
