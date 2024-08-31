@@ -18,7 +18,7 @@ class CreateDetailPemesanansTable extends Migration
             $table->string('nopemesanan', 50)->default('');
             $table->string('kode_produk', 50)->default('');
             $table->double('qty', 24, 2)->default(0);
-            $table->double('harga', 24, 2)->default(0);
+            $table->string('satuan', 50)->default(null);
             $table->timestamps();
         });
     }
