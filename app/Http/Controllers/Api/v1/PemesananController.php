@@ -156,4 +156,46 @@ class PemesananController extends Controller
             'message' => 'Data Berhasil dikunci'
         ]);
     }
+    public function getList()
+    {
+        $raw = Pemesanan::where('nopemesanan', 'LIKE', '%' . request('q') . '%')
+            ->with(
+                'supplier',
+                'detail',
+                'detail.produk:id,kode_produk,nama',
+            )
+            ->where('flag', '!=', '1')
+            ->orderBy('id', 'DESC')
+            ->paginate(request('per_page'));
+        $data = collect($raw)['data'];
+        $meta = collect($raw)->except('data');
+        return new JsonResponse([
+            'data' => $data,
+            'meta' => $meta,
+        ]);
+    }
+    public function bukaKunci(Request $request)
+    {
+        $count = Pemesanan::where('flag', '1')->get()->count();
+        if ((int)$count > 0) {
+            return new JsonResponse([
+                'message' => 'Masih ada pemesanan yang belum dikunci, Hanya boleh ada satu draft dalam satu waktu',
+                'req' => $request->all()
+            ], 410);
+        }
+        $data = Pemesanan::find($request->id);
+        if (!$data) {
+            return new JsonResponse([
+                'message' => 'Kunci Tidak dibuka, Pemesanan tidak ditemuka',
+                'req' => $request->all()
+            ], 410);
+        }
+        $data->update(['flag' => '1']);
+
+        return new JsonResponse([
+            'message' => 'Kunci Sudah dibuka',
+            'data' => $data,
+            'req' => $request->all()
+        ]);
+    }
 }

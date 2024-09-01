@@ -14,4 +14,7 @@ Route::group([
     Route::post('/simpan-produk', [PemesananController::class, 'simpanProduk']);
     Route::post('/hapus-produk', [PemesananController::class, 'hapusProduk']);
     Route::post('/selesai-pemesanan', [PemesananController::class, 'selesaiPemesanan']);
+    // list
+    Route::get('/get-list', [PemesananController::class, 'getList']);
+    Route::post('/buka-kunci', [PemesananController::class, 'bukaKunci']);
 });
