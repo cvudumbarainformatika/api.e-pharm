@@ -52,7 +52,10 @@ class CloudReportController extends Controller
             $str = $key['id'];
             $clm = array_column($arr, 'beban_id');
             $ind = array_search($str, $clm);
-            $key['total'] = $arr[$ind]['total'] ?? 0;
+            $key['total'] = $ind === false ? 0 : $arr[$ind]['total'];
+            $key['arr'] = $arr;
+            $key['ind'] = $ind;
+            $key['ind s'] = $ind === false;
         }
         // hitung
         // $totalSmw = $ongkir->period->totalSemua ?? 0;
@@ -141,7 +144,7 @@ class CloudReportController extends Controller
             // 'penjualan' => $penjualan,
             // 'returPembelian' => $returPembelian,
             // 'returPenjualan' => $returPenjualan,
-            // 'beban' => $beban,
+            'beban' => $beban,
             // 'penerimaan' => $penerimaan,
             // 'ongkir' => $ongkir,
             // 'totalOngkir' => $totalOngkir,
