@@ -41,10 +41,10 @@ class SatuanController extends Controller
     public function store(Request $request)
     {
         // $auth = $request->user();
-        $me = Info::first();
-        if ($me->kodecabang != 'APS0001') {
-            return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
-        }
+        // $me = Info::first();
+        // if ($me->kodecabang != 'APS0001') {
+        //     return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
+        // }
         try {
 
             DB::beginTransaction();
@@ -82,21 +82,21 @@ class SatuanController extends Controller
                 // $auth->log("Merubah data Satuan {$user->name}");
             }
             // pots notif start
-            $cabang = Cabang::pluck('kodecabang')->toArray();
-            $ind = array_search($me->kodecabang, $cabang);
-            $anu = $cabang;
-            unset($anu[$ind]);
-            foreach ($anu as $key) {
-                $msg = [
-                    'sender' => $me->kodecabang,
-                    'receiver' => $key,
-                    'type' => 'update master',
-                    'model' => 'Satuan',
-                    'content' => $satuan,
-                ];
+            // $cabang = Cabang::pluck('kodecabang')->toArray();
+            // $ind = array_search($me->kodecabang, $cabang);
+            // $anu = $cabang;
+            // unset($anu[$ind]);
+            // foreach ($anu as $key) {
+            //     $msg = [
+            //         'sender' => $me->kodecabang,
+            //         'receiver' => $key,
+            //         'type' => 'update master',
+            //         'model' => 'Satuan',
+            //         'content' => $satuan,
+            //     ];
 
-                $response = CloudHelper::post_cloud($msg);
-            }
+            //     $response = CloudHelper::post_cloud($msg);
+            // }
             // pots notif end
             DB::commit();
             return response()->json(['message' => 'success'], 201);
@@ -209,10 +209,10 @@ class SatuanController extends Controller
     public function storeBesar(Request $request)
     {
         // $auth = $request->user();
-        $me = Info::first();
-        if ($me->kodecabang != 'APS0001') {
-            return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
-        }
+        // $me = Info::first();
+        // if ($me->kodecabang != 'APS0001') {
+        //     return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
+        // }
         try {
 
             DB::beginTransaction();
@@ -251,21 +251,21 @@ class SatuanController extends Controller
                 // $auth->log("Merubah data SatuanBesar {$user->name}");
             }
             // pots notif start
-            $cabang = Cabang::pluck('kodecabang')->toArray();
-            $ind = array_search($me->kodecabang, $cabang);
-            $anu = $cabang;
-            unset($anu[$ind]);
-            foreach ($anu as $key) {
-                $msg = [
-                    'sender' => $me->kodecabang,
-                    'receiver' => $key,
-                    'type' => 'update master',
-                    'model' => 'SatuanBesar',
-                    'content' => $satuan,
-                ];
+            // $cabang = Cabang::pluck('kodecabang')->toArray();
+            // $ind = array_search($me->kodecabang, $cabang);
+            // $anu = $cabang;
+            // unset($anu[$ind]);
+            // foreach ($anu as $key) {
+            //     $msg = [
+            //         'sender' => $me->kodecabang,
+            //         'receiver' => $key,
+            //         'type' => 'update master',
+            //         'model' => 'SatuanBesar',
+            //         'content' => $satuan,
+            //     ];
 
-                $response = CloudHelper::post_cloud($msg);
-            }
+            //     $response = CloudHelper::post_cloud($msg);
+            // }
             // pots notif end
 
             DB::commit();

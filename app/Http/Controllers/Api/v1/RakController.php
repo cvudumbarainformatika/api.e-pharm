@@ -32,10 +32,10 @@ class RakController extends Controller
     {
         // $auth = $request->user();
         // validasi cabang utama strt
-        $me = Info::first();
-        if ($me->kodecabang != 'APS0001') {
-            return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
-        }
+        // $me = Info::first();
+        // if ($me->kodecabang != 'APS0001') {
+        //     return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
+        // }
         // validasi cabang utama end
         try {
 
@@ -65,21 +65,21 @@ class RakController extends Controller
                 // $auth->log("Merubah data Rak {$user->name}");
             }
             // pots notif start
-            $cabang = Cabang::pluck('kodecabang')->toArray();
-            $ind = array_search($me->kodecabang, $cabang);
-            $anu = $cabang;
-            unset($anu[$ind]);
-            foreach ($anu as $key) {
-                $msg = [
-                    'sender' => $me->kodecabang,
-                    'receiver' => $key,
-                    'type' => 'update master',
-                    'model' => 'Rak',
-                    'content' => $kategori,
-                ];
+            // $cabang = Cabang::pluck('kodecabang')->toArray();
+            // $ind = array_search($me->kodecabang, $cabang);
+            // $anu = $cabang;
+            // unset($anu[$ind]);
+            // foreach ($anu as $key) {
+            //     $msg = [
+            //         'sender' => $me->kodecabang,
+            //         'receiver' => $key,
+            //         'type' => 'update master',
+            //         'model' => 'Rak',
+            //         'content' => $kategori,
+            //     ];
 
-                $response = CloudHelper::post_cloud($msg);
-            }
+            //     $response = CloudHelper::post_cloud($msg);
+            // }
             // pots notif end
             DB::commit();
             return response()->json(['message' => 'success'], 201);

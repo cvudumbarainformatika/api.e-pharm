@@ -75,10 +75,10 @@ class BebanController extends Controller
     public function store(Request $request)
     {
         // $auth = $request->user();
-        $me = Info::first();
-        if ($me->kodecabang != 'APS0001') {
-            return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
-        }
+        // $me = Info::first();
+        // if ($me->kodecabang != 'APS0001') {
+        //     return new JsonResponse(['message' => 'Edit, Tambah master hanya dilakukan di cabang utama'], 410);
+        // }
         try {
 
             DB::beginTransaction();
@@ -114,21 +114,21 @@ class BebanController extends Controller
                 // $auth->log("Merubah data Beban {$user->name}");
             }
             // pots notif start
-            $cabang = Cabang::pluck('kodecabang')->toArray();
-            $ind = array_search($me->kodecabang, $cabang);
-            $anu = $cabang;
-            unset($anu[$ind]);
-            foreach ($anu as $key) {
-                $msg = [
-                    'sender' => $me->kodecabang,
-                    'receiver' => $key,
-                    'type' => 'update master',
-                    'model' => 'Beban',
-                    'content' => $beban,
-                ];
+            // $cabang = Cabang::pluck('kodecabang')->toArray();
+            // $ind = array_search($me->kodecabang, $cabang);
+            // $anu = $cabang;
+            // unset($anu[$ind]);
+            // foreach ($anu as $key) {
+            //     $msg = [
+            //         'sender' => $me->kodecabang,
+            //         'receiver' => $key,
+            //         'type' => 'update master',
+            //         'model' => 'Beban',
+            //         'content' => $beban,
+            //     ];
 
-                $response = CloudHelper::post_cloud($msg);
-            }
+            //     $response = CloudHelper::post_cloud($msg);
+            // }
             // pots notif end
             DB::commit();
             return response()->json(['message' => 'success'], 201);
