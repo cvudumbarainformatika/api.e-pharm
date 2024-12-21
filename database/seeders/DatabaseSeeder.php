@@ -218,12 +218,12 @@ class DatabaseSeeder extends Seeder
         // ]);
         Cabang::create([
             'kodecabang' => 'APS0001',
-            'namacabang' => 'Apotek Setiawan Cokro',
+            'namacabang' => 'Apotek Sumber Baru',
         ]);
-        Cabang::create([
-            'kodecabang' => 'APS0002',
-            'namacabang' => 'Apotek Setiawan Triwung',
-        ]);
+        // Cabang::create([
+        //     'kodecabang' => 'APS0002',
+        //     'namacabang' => 'Apotek Setiawan Triwung',
+        // ]);
         Info::create([
             'nama' => 'eAchy',
             'kodecabang' => 'APS0001',
@@ -243,15 +243,15 @@ class DatabaseSeeder extends Seeder
             'themes' => [
                 [
                     "name" => "primary",
-                    "value" => "#1976d2"
+                    "value" => "#8700fc"
                 ],
                 [
                     "name" => "secondary",
-                    "value" => "#06b8b8"
+                    "value" => "#038c8c"
                 ],
                 [
                     "name" => "accent",
-                    "value" => "#d511f7"
+                    "value" => "#e059f7"
                 ],
                 [
                     "name" => "dark",
