@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
         User::create([
             'name' => 'root',
+            'username' => 'root',
             'email' => 'root@app.com',
             'role' => 'root',
             'level' => 1,
@@ -46,6 +47,7 @@ class DatabaseSeeder extends Seeder
         ]);
         User::create([
             'name' => 'owner',
+            'username' => 'owner',
             'email' => 'owner@app.com',
             'role' => 'owner',
             'level' => 2,
@@ -53,6 +55,7 @@ class DatabaseSeeder extends Seeder
         ]);
         User::create([
             'name' => 'kasir',
+            'username' => 'kasir',
             'email' => 'kasir@app.com',
             'role' => 'kasir',
             'level' => 5,
@@ -60,6 +63,7 @@ class DatabaseSeeder extends Seeder
         ]);
         User::create([
             'name' => 'kasir2',
+            'username' => 'kasir2',
             'email' => 'kasir2@app.com',
             'role' => 'kasir',
             'level' => 5,
@@ -67,6 +71,7 @@ class DatabaseSeeder extends Seeder
         ]);
         User::create([
             'name' => 'Gudang',
+            'username' => 'gudang',
             'email' => 'gudang@app.com',
             'role' => 'gudang',
             'level' => 5,
@@ -109,10 +114,12 @@ class DatabaseSeeder extends Seeder
         //     'saldo_awal_hutang' => '9000000'
         // ]);
         Kategori::create([
-            'nama' => 'GENERIK'
+            'nama' => 'GENERIK',
+            'kode_kategory' => 'KTR001'
         ]);
         Kategori::create([
-            'nama' => 'NON-GENERIK'
+            'nama' => 'NON-GENERIK',
+            'kode_kategory' => 'KTR002'
         ]);
         // Rak::create([
         //     'nama' => 'KAPSUL'
@@ -172,25 +179,32 @@ class DatabaseSeeder extends Seeder
         //     'nama' => 'KOPLO'
         // ]);
         Beban::create([
-            'nama' => 'BIAYA ADMINISTRASI'
+            'nama' => 'BIAYA ADMINISTRASI',
+            'kode_beban' => 'BBN001'
         ]);
         Beban::create([
-            'nama' => 'BEBAN LISTRIK'
+            'nama' => 'BEBAN LISTRIK',
+            'kode_beban' => 'BBN002'
         ]);
         Beban::create([
-            'nama' => 'BEBAN PDAM'
+            'nama' => 'BEBAN PDAM',
+            'kode_beban' => 'BBN003'
         ]);
         Beban::create([
-            'nama' => 'BIAYA ONGKIR'
+            'nama' => 'BIAYA ONGKIR',
+            'kode_beban' => 'BBN004'
         ]);
         Beban::create([
-            'nama' => 'BEBAN GAJI PEGAWAI'
+            'nama' => 'BEBAN GAJI PEGAWAI',
+            'kode_beban' => 'BBN005'
         ]);
         Beban::create([
-            'nama' => 'BIAYA LAIN-LAIN'
+            'nama' => 'BIAYA LAIN-LAIN',
+            'kode_beban' => 'BBN006'
         ]);
         Beban::create([
-            'nama' => 'BAYAR HUTANG'
+            'nama' => 'BAYAR HUTANG',
+            'kode_beban' => 'BBN007'
         ]);
         // Customer::create([
         //     'nama' => 'Suhar',
