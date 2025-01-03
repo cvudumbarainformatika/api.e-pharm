@@ -28,8 +28,10 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        // $request->email = $request->username . '@app.com';
         $validator = Validator::make($request->all(), [
-            'username' => 'required|string',
+            // 'username' => 'required|string',
+            'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
@@ -48,6 +50,7 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
+        // $request->email = $request->username . '@app.com';
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'username' => 'required|string|between:2,100|unique:users',
@@ -57,7 +60,7 @@ class AuthController extends Controller
             'password' => 'required|string|confirmed|min:6'
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 422);
+            return response()->json($validator->errors(), 422);
         }
         $level = 4;
         switch ($request->role) {
@@ -98,10 +101,11 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required',
+            'username' => 'required',
             'role' => 'required',
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 422);
+            return response()->json($validator->errors(), 422);
         }
         $level = 4;
         switch ($request->role) {
@@ -134,7 +138,8 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'User Berhasil di update',
             'user' => $user,
-            // 'valid' => array_merge($validator->validated(), ['password' => bcrypt($request->password)])
+            // 'req' => $request->all(),
+            'valid' => array_merge($validator->validated(), ['level' => $level])
         ], 200);
     }
 
