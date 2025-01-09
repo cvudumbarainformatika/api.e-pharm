@@ -82,7 +82,8 @@ class ProductController extends Controller
                 'harga_jual_umum' => 'required',
                 'harga_jual_resep' => 'required',
                 'harga_jual_cust' => 'required',
-                'limit_stok' => 'required',
+                'harga_jual_rac' => 'required',
+                // 'limit_stok' => 'required',
                 // 'rak_id' => 'required',
                 // 'kategori_id' => 'required',
             ]);
