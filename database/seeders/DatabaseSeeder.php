@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         User::create([
-            'name' => 'root',
+            'name' => 'Root',
             'username' => 'root',
             'email' => 'root@app.com',
             'role' => 'root',
@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('sekarep12345')
         ]);
         User::create([
-            'name' => 'owner',
+            'name' => 'Owner',
             'username' => 'owner',
             'email' => 'owner@app.com',
             'role' => 'owner',
@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('123456')
         ]);
         User::create([
-            'name' => 'kasir',
+            'name' => 'Kasir',
             'username' => 'kasir',
             'email' => 'kasir@app.com',
             'role' => 'kasir',
@@ -62,7 +62,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('123456')
         ]);
         User::create([
-            'name' => 'kasir2',
+            'name' => 'Kasir2',
             'username' => 'kasir2',
             'email' => 'kasir2@app.com',
             'role' => 'kasir',
@@ -113,14 +113,14 @@ class DatabaseSeeder extends Seeder
         //     'kontak' => '0992839879845',
         //     'saldo_awal_hutang' => '9000000'
         // ]);
-        Kategori::create([
-            'nama' => 'GENERIK',
-            'kode_kategory' => 'KTR001'
-        ]);
-        Kategori::create([
-            'nama' => 'NON-GENERIK',
-            'kode_kategory' => 'KTR002'
-        ]);
+        // Kategori::create([
+        //     'nama' => 'GENERIK',
+        //     'kode_kategory' => 'KTR001'
+        // ]);
+        // Kategori::create([
+        //     'nama' => 'NON-GENERIK',
+        //     'kode_kategory' => 'KTR002'
+        // ]);
         // Rak::create([
         //     'nama' => 'KAPSUL'
         // ]);
