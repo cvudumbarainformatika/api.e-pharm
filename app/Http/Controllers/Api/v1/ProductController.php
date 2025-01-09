@@ -72,19 +72,19 @@ class ProductController extends Controller
             DB::beginTransaction();
 
             $validatedData = Validator::make($request->all(), [
-                'barcode' => 'required',
+                // 'barcode' => 'required',
                 'nama' => 'required',
-                'merk_id' => 'required',
-                'satuan_id' => 'required',
-                'pengali' => 'required',
-                'satuan_id' => 'required',
+                // 'merk_id' => 'required',
+                // 'satuan_id' => 'required',
+                // 'pengali' => 'required',
+                // 'satuan_id' => 'required',
                 'harga_beli' => 'required',
                 'harga_jual_umum' => 'required',
                 'harga_jual_resep' => 'required',
                 'harga_jual_cust' => 'required',
                 'limit_stok' => 'required',
-                'rak_id' => 'required',
-                'kategori_id' => 'required',
+                // 'rak_id' => 'required',
+                // 'kategori_id' => 'required',
             ]);
             if ($validatedData->fails()) {
                 return response()->json($validatedData->errors(), 422);

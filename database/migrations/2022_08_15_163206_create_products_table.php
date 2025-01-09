@@ -19,7 +19,7 @@ class CreateProductsTable extends Migration
             $table->string('kode_produk')->unique()->nullable();
             $table->string('barcode')->unique()->nullable();
             $table->string('nama')->nullable();
-            $table->string('hv', 2)->nullable();
+            $table->string('hv', 10)->nullable();
             $table->unsignedBigInteger('merk_id')->nullable();
             $table->unsignedBigInteger('satuan_id')->nullable();
             $table->unsignedBigInteger('pengali')->nullable();
