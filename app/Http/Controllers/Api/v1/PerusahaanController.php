@@ -86,7 +86,7 @@ class PerusahaanController extends Controller
             // pots notif end
 
             DB::commit();
-            return response()->json(['message' => 'success'], 201);
+            return response()->json(['message' => 'success', 'data' => $kategori], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'ada kesalahan', 'error' => $e], 500);

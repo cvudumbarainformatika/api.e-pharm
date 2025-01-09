@@ -35,8 +35,9 @@ class CreateTransactionsTable extends Migration
             $table->date('tanggal_bayar')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('kasir_id')->nullable(); // kasir_id adalah user dengan role kasir
-            $table->unsignedBigInteger('supplier_id')->nullable();
-            $table->unsignedBigInteger('customer_id')->nullable();
+            $table->unsignedBigInteger('perusahaan_id')->nullable();
+            // $table->unsignedBigInteger('supplier_id')->nullable();
+            // $table->unsignedBigInteger('customer_id')->nullable();
             $table->unsignedBigInteger('dokter_id')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
