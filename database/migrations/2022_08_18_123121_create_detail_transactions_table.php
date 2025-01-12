@@ -23,6 +23,7 @@ class CreateDetailTransactionsTable extends Migration
             $table->unsignedBigInteger('product_id')->nullable();
             $table->double('qty', 20, 2)->default(0);
             $table->date('expired')->nullable();
+            $table->double('harga_beli', 20, 2)->default(0);
             $table->double('harga', 20, 2)->default(0);
             $table->double('sub_total', 20, 3)->default(0);
             $table->double('diskon', 20, 3)->default(0);

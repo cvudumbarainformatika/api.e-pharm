@@ -336,10 +336,10 @@ class TransactionController extends Controller
                 //         'harga_beli' => $request->harga_beli + $selisih
                 //     ]);
                 // }
-                if ($request->has('rak_id')) {
-                    $produk = Product::find($request->product_id);
-                    $produk->update(['rak_id' => $request->rak_id]);
-                }
+                // if ($request->has('rak_id')) {
+                //     $produk = Product::find($request->product_id);
+                //     $produk->update(['rak_id' => $request->rak_id]);
+                // }
             } else if ($request->has('product_id') && $request->qty > 0) {
 
                 $diskon = $request->has('diskon') && $request->diskon !== null ? $request->diskon : 0;
@@ -347,11 +347,14 @@ class TransactionController extends Controller
                 $sub_total = $request->has('sub_total') && $request->sub_total !== null && $request->sub_total > 0 ? $request->sub_total : ((int) $request->qty * (int) $harga);
                 $expired = $request->has('expired') && $request->expired !== null ? $request->expired : null;
 
+                $produk = Product::find($request->product_id);
+
                 $data->detail_transaction()->updateOrCreate(
                     [
                         'product_id' => $request->product_id,
                     ],
                     [
+                        'harga_beli' => $produk->harga_beli,
                         'harga' => $harga,
                         'qty' => $request->qty,
                         'expired' => $expired,
@@ -363,19 +366,24 @@ class TransactionController extends Controller
                 // update harga_beli di produk dan harga jual juga
                 if ($request->update_harga) {
                     $harga_di_update = 'Harga Di Update';
-                    $produk = Product::find($request->product_id);
                     $disperitem = 0;
                     if ($request->diskon > 0) {
                         $disperitem = $request->harga * ($request->diskon / 100);
                     }
+
                     // $selisih = $request->harga - $produk->harga_beli;
-                    $selisi = ($request->harga - $produk->harga_beli) - $disperitem;
-                    $selisih = $selisi <= 0 ? 0 : $selisi;
+                    // $selisi = ($request->harga - $produk->harga_beli) - $disperitem;
+                    // $selisih = $selisi <= 0 ? 0 : $selisi;
+                    $hargaBeli = $request->harga - $disperitem;
+                    $sepuluh = $hargaBeli * (10 / 100);
+                    $duapuluh = $hargaBeli * (20 / 100);
 
                     $produk->update([
-                        'harga_jual_umum' => $produk->harga_jual_umum + $selisih,
-                        'harga_jual_resep' => $produk->harga_jual_resep + $selisih,
-                        'harga_jual_cust' => $produk->harga_jual_cust + $selisih,
+                        'harga_jual_umum' => $hargaBeli + ($produk->hv === '1' ? $sepuluh : $duapuluh + 1000),
+                        'harga_jual_resep' => $hargaBeli + $sepuluh + 1000,
+                        'harga_jual_cust' => $hargaBeli,
+                        'harga_jual_prem' => $hargaBeli,
+                        'harga_jual_rac' => $hargaBeli + $duapuluh,
                         'harga_beli' => $request->harga - $disperitem
                         // 'harga_beli' => $produk->harga_beli + $selisih
                     ]);
