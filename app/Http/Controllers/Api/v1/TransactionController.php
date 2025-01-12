@@ -68,8 +68,8 @@ class TransactionController extends Controller
         }
         $data = $query->with([
             'kasir',
-            'supplier',
-            'customer',
+            'perusahaan',
+            // 'customer',
             'dokter',
             'penerimaan_transaction.penerimaan',
             'beban_transaction.beban',

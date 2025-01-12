@@ -26,9 +26,9 @@ class Transaction extends Model
         return $this->belongsTo(User::class, 'kasir_id');
     }
 
-    public function supplier()
+    public function perusahaan()
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(Perusahaan::class);
     }
     public function customer()
     {
