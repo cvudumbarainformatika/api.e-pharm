@@ -30,6 +30,10 @@ class Transaction extends Model
     {
         return $this->belongsTo(Perusahaan::class);
     }
+    public function supplier()
+    {
+        return $this->belongsTo(Perusahaan::class);
+    }
     public function customer()
     {
         return $this->belongsTo(Customer::class);
