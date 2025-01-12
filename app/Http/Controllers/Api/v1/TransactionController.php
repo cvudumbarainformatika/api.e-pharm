@@ -109,7 +109,7 @@ class TransactionController extends Controller
     public function pengeluaran()
     {
         $data = Transaction::where('nama', 'PENGELUARAN')
-            ->where('supplier_id', null)
+            ->where('perusahaan_id', null)
             ->whereMonth('tanggal', date('m'))
             // ->whereBetween('tanggal', [date('Y-m-01 00:00:00'), date('Y-m-31 23:59:59')])
             ->with('beban_transaction.beban', 'kasir')
@@ -120,7 +120,7 @@ class TransactionController extends Controller
     public function penerimaan()
     {
         $data = Transaction::where('nama', 'PENDAPATAN')
-            ->where('customer_id', null)
+            // ->where('customer_id', null)
             ->where('dokter_id', null)
             ->whereMonth('tanggal', date('m'))
             ->with('penerimaan_transaction.penerimaan', 'kasir')
@@ -345,7 +345,6 @@ class TransactionController extends Controller
                 $diskon = $request->has('diskon') && $request->diskon !== null ? $request->diskon : 0;
                 $harga = $request->has('harga') && $request->harga !== null ? $request->harga : 0;
                 $sub_total = $request->has('sub_total') && $request->sub_total !== null && $request->sub_total > 0 ? $request->sub_total : ((int) $request->qty * (int) $harga);
-                $expired = $request->has('expired') && $request->expired !== null ? $request->expired : null;
 
                 $produk = Product::find($request->product_id);
 
@@ -357,8 +356,9 @@ class TransactionController extends Controller
                         'harga_beli' => $produk->harga_beli,
                         'harga' => $harga,
                         'qty' => $request->qty,
-                        'expired' => $expired,
-                        'diskon' => $diskon,
+                        'racikan' => $request->racikan,
+                        'nilai_r' => $request->nilai_r ?? 0,
+                        // 'diskon' => $diskon,
                         'sub_total' => $sub_total
                     ]
                 );

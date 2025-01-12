@@ -36,7 +36,7 @@ class HutangController extends Controller
     {
 
         $bayar = Transaction::where('nama', 'PENGELUARAN')
-            ->where('supplier_id', '<>', null)
+            ->where('perusahaan_id', '<>', null)
             ->whereBetween('tanggal_bayar', [request('from') . ' 00:00:00', request('to') . ' 23:59:59'])
             ->where('status', '=', 2)
             ->with('supplier', 'kasir', 'beban_transaction.beban')
