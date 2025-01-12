@@ -60,8 +60,8 @@ class BebanController extends Controller
         $query->whereHas('transaction', function ($gg) {
             $gg->where('nama', '=', request('nama'))
                 ->where('status', '=', 2)
-                ->when(request('supplier_id'), function ($sp) {
-                    return $sp->where('supplier_id', request('supplier_id'));
+                ->when(request('perusahaan_id'), function ($sp) {
+                    return $sp->where('perusahaan_id', request('perusahaan_id'));
                 });
             $this->periode($gg, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
         });

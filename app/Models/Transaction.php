@@ -69,8 +69,8 @@ class Transaction extends Model
             return $search->where('user_id', $query);
         });
 
-        $search->when($reqs['supplier_id'] ?? false, function ($search, $query) {
-            return $search->where('supplier_id', $query);
+        $search->when($reqs['perusahaan_id'] ?? false, function ($search, $query) {
+            return $search->where('perusahaan_id', $query);
         });
 
         $search->when($reqs['customer_id'] ?? false, function ($search, $query) {

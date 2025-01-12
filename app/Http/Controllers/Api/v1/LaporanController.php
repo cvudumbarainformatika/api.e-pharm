@@ -258,7 +258,7 @@ class LaporanController extends Controller
             $gg->where('nama', '=', 'PEMBELIAN')
                 ->where('status', '>=', 2)
                 ->where('jenis', '=', 'hutang')
-                ->where('supplier_id', '=', request('supplier_id'))
+                ->where('perusahaan_id', '=', request('perusahaan_id'))
                 ->whereDate('tanggal', '<=', date('Y-m-d'));
         });
         $hutang = $query->groupBy('product_id', 'harga')
@@ -268,10 +268,10 @@ class LaporanController extends Controller
             ->whereHas('transaction', function ($apem) {
                 $apem->where('nama', '=', 'PENGELUARAN')
                     ->where('status', '>=', 2)
-                    ->where('supplier_id', '=', request('supplier_id'))
+                    ->where('perusahaan_id', '=', request('perusahaan_id'))
                     ->whereDate('tanggal', '<=', date('Y-m-d'));
             });
-        $supplier = Supplier::find(request('supplier_id'));
+        $supplier = Supplier::find(request('perusahaan_id'));
 
 
         return new JsonResponse(['hutang' => $hutang, 'dibayar' => $dibayar, 'awal' => $supplier->saldo_awal_hutang]);
@@ -319,8 +319,8 @@ class LaporanController extends Controller
         )
             ->where('nama', '=', request('nama'))
             ->where('status', '>=', 2)
-            ->when(request('supplier_id'), function ($sp, $q) {
-                return $sp->where('supplier_id', '=', $q);
+            ->when(request('perusahaan_id'), function ($sp, $q) {
+                return $sp->where('perusahaan_id', '=', $q);
             })
             ->when(request('customer_id'), function ($sp) {
                 return $sp->where('customer_id', '=', request('customer_id'));
@@ -353,8 +353,8 @@ class LaporanController extends Controller
         )
             ->where('nama', '=', $nama)
             ->where('status', '>=', 2)
-            ->when(request('supplier_id'), function ($sp, $q) {
-                return $sp->where('supplier_id', '=', $q);
+            ->when(request('perusahaan_id'), function ($sp, $q) {
+                return $sp->where('perusahaan_id', '=', $q);
             })
             ->when(request('customer_id'), function ($sp) {
                 return $sp->where('customer_id', '=', request('customer_id'));
@@ -388,8 +388,8 @@ class LaporanController extends Controller
         // });
         $query->where('nama', '=', request('nama'))
             ->where('status', '>=', 2)
-            ->when(request('supplier_id'), function ($sp, $q) {
-                return $sp->where('supplier_id', '=', $q);
+            ->when(request('perusahaan_id'), function ($sp, $q) {
+                return $sp->where('perusahaan_id', '=', $q);
             })
             ->when(request('customer_id'), function ($sp) {
                 return $sp->where('customer_id', '=', request('customer_id'));
@@ -422,7 +422,7 @@ class LaporanController extends Controller
         $trxB = Transaction::select('id')->where('nama', '=', $nama)
             ->where('status', '>=', 2)
             ->where('jenis', '=', 'tunai')
-            ->where('supplier_id', null)
+            ->where('perusahaan_id', null)
             ->whereDate('tanggal', '<', $header->from)
             ->get();
         $before = BebanTransaction::selectRaw('beban_id, sum(sub_total) as total')
@@ -439,7 +439,7 @@ class LaporanController extends Controller
             $trxR = Transaction::select('id')->where('nama', '=', $nama)
                 ->where('status', '>=', 2)
                 ->where('jenis', '=', 'tunai')
-                ->where('supplier_id', null)
+                ->where('perusahaan_id', null)
                 ->whereBetween('tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59'])
                 ->get();
             $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
@@ -456,7 +456,7 @@ class LaporanController extends Controller
             $trxM = Transaction::select('id')->where('nama', '=', $nama)
                 ->where('status', '>=', 2)
                 ->where('jenis', '=', 'tunai')
-                ->where('supplier_id', null)
+                ->where('perusahaan_id', null)
                 ->whereBetween('tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59'])
                 ->get();
             $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')
@@ -472,7 +472,7 @@ class LaporanController extends Controller
             $trxE = Transaction::select('id')->where('nama', '=', $nama)
                 ->where('status', '>=', 2)
                 ->where('jenis', '=', 'tunai')
-                ->where('supplier_id', null)
+                ->where('perusahaan_id', null)
                 ->whereDate('tanggal', '=', $header->from)
                 ->get();
             $period = BebanTransaction::selectRaw('beban_id,  sum(sub_total) as total')

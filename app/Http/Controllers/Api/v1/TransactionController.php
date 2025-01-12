@@ -346,14 +346,13 @@ class TransactionController extends Controller
                 $harga = $request->has('harga') && $request->harga !== null ? $request->harga : 0;
                 $sub_total = $request->has('sub_total') && $request->sub_total !== null && $request->sub_total > 0 ? $request->sub_total : ((int) $request->qty * (int) $harga);
 
-                $produk = Product::find($request->product_id);
 
                 $data->detail_transaction()->updateOrCreate(
                     [
                         'product_id' => $request->product_id,
                     ],
                     [
-                        'harga_beli' => $produk->harga_beli,
+                        'harga_beli' => $request->harga_beli ?? 0,
                         'harga' => $harga,
                         'qty' => $request->qty,
                         'racikan' => $request->racikan,
@@ -365,6 +364,7 @@ class TransactionController extends Controller
 
                 // update harga_beli di produk dan harga jual juga
                 if ($request->update_harga) {
+                    $produk = Product::find($request->product_id);
                     $harga_di_update = 'Harga Di Update';
                     $disperitem = 0;
                     if ($request->diskon > 0) {

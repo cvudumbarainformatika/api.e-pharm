@@ -79,8 +79,8 @@ class DetailTransactionController extends Controller
         // ambil detail transaction
         $tr = Transaction::query()->select('id')->where('nama', '=', request('nama'))
             ->whereIn('status', [2, 3])
-            ->when(request('supplier_id'), function ($sp, $q) {
-                return $sp->where('supplier_id', '=', $q);
+            ->when(request('perusahaan_id'), function ($sp, $q) {
+                return $sp->where('perusahaan_id', '=', $q);
             })
             ->when(request('customer_id'), function ($sp) {
                 return $sp->where('customer_id', '=', request('customer_id'));

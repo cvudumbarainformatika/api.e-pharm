@@ -303,7 +303,7 @@ class CloudReportController extends Controller
             ->where('transactions.nama', '=', $nama)
             ->where('transactions.status', '>=', 2)
             ->where('transactions.jenis', '=', 'tunai')
-            ->where('transactions.supplier_id', null)
+            ->where('transactions.perusahaan_id', null)
             ->whereDate('transactions.tanggal', '<', $header->from)
             ->groupBy('beban_transactions.beban_id')->get();
 
@@ -316,7 +316,7 @@ class CloudReportController extends Controller
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->where('transactions.jenis', '=', 'tunai')
-                ->where('transactions.supplier_id', null)
+                ->where('transactions.perusahaan_id', null)
                 ->whereBetween('transactions.tanggal', [$header->from . ' 00:00:00', $header->to . ' 23:59:59'])
                 ->groupBy('beban_transactions.beban_id')->get();
         } else if ($header->periode === 'bulan') {
@@ -328,7 +328,7 @@ class CloudReportController extends Controller
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->where('transactions.jenis', '=', 'tunai')
-                ->where('transactions.supplier_id', null)
+                ->where('transactions.perusahaan_id', null)
                 ->whereBetween('transactions.tanggal', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59'])
                 ->groupBy('beban_transactions.beban_id')->get();
         } else {
@@ -340,7 +340,7 @@ class CloudReportController extends Controller
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->where('transactions.jenis', '=', 'tunai')
-                ->where('transactions.supplier_id', null)
+                ->where('transactions.perusahaan_id', null)
                 ->whereDate('transactions.tanggal', '=', $header->from)
                 ->groupBy('beban_transactions.beban_id')->get();
         }
