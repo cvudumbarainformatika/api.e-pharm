@@ -180,7 +180,7 @@ class CloudReportController extends Controller
             $period = Transaction::select(
                 'transactions.id',
                 'detail_transactions.product_id',
-                DB::raw('sum(detail_transactions.sub_total) as sub'),
+                DB::raw('sum(detail_transactions.qty) as jml'),
                 DB::raw('sum(detail_transactions.sub_total) as subt'),
                 DB::raw('sum(detail_transactions.qty*detail_transactions.harga) as subfr'),
                 DB::raw('sum(detail_transactions.qty*products.harga_beli) as sub')
