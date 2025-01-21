@@ -82,9 +82,9 @@ class DetailTransactionController extends Controller
             ->when(request('perusahaan_id'), function ($sp, $q) {
                 return $sp->where('perusahaan_id', '=', $q);
             })
-            ->when(request('customer_id'), function ($sp) {
-                return $sp->where('customer_id', '=', request('customer_id'));
-            })
+            // ->when(request('customer_id'), function ($sp) {
+            //     return $sp->where('customer_id', '=', request('customer_id'));
+            // })
             ->when(
                 request('dokter_id'),
                 function ($sp) {
@@ -92,8 +92,7 @@ class DetailTransactionController extends Controller
                 }
             )
             ->when(request('umum'), function ($sp) {
-                return $sp->where('dokter_id', '=', null)
-                    ->where('customer_id', '=', null);
+                return $sp->where('dokter_id', '=', null);
             })
             ->whereBetween('tanggal', [request('from') . ' 00:00:00', request('to') . ' 23:59:59'])
             ->get();

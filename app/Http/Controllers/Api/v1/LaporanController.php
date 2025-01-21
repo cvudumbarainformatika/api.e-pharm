@@ -322,15 +322,14 @@ class LaporanController extends Controller
             ->when(request('perusahaan_id'), function ($sp, $q) {
                 return $sp->where('perusahaan_id', '=', $q);
             })
-            ->when(request('customer_id'), function ($sp) {
-                return $sp->where('customer_id', '=', request('customer_id'));
-            })
+            // ->when(request('customer_id'), function ($sp) {
+            //     return $sp->where('customer_id', '=', request('customer_id'));
+            // })
             ->when(request('dokter_id'), function ($sp) {
                 return $sp->where('dokter_id', '=', request('dokter_id'));
             })
             ->when(request('umum'), function ($sp) {
-                return $sp->where('dokter_id', '=', null)
-                    ->where('customer_id', '=', null);
+                return $sp->where('dokter_id', '=', null);
             });
         $this->periode($query, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
         $data = $query->get();
@@ -356,15 +355,14 @@ class LaporanController extends Controller
             ->when(request('perusahaan_id'), function ($sp, $q) {
                 return $sp->where('perusahaan_id', '=', $q);
             })
-            ->when(request('customer_id'), function ($sp) {
-                return $sp->where('customer_id', '=', request('customer_id'));
-            })
+            // ->when(request('customer_id'), function ($sp) {
+            //     return $sp->where('customer_id', '=', request('customer_id'));
+            // })
             ->when(request('dokter_id'), function ($sp) {
                 return $sp->where('dokter_id', '=', request('dokter_id'));
             })
             ->when(request('umum'), function ($sp) {
-                return $sp->where('dokter_id', '=', null)
-                    ->where('customer_id', '=', null);
+                return $sp->where('dokter_id', '=', null);
             });
         $this->periode($query, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
         $data = $query->get();
@@ -391,15 +389,14 @@ class LaporanController extends Controller
             ->when(request('perusahaan_id'), function ($sp, $q) {
                 return $sp->where('perusahaan_id', '=', $q);
             })
-            ->when(request('customer_id'), function ($sp) {
-                return $sp->where('customer_id', '=', request('customer_id'));
-            })
+            // ->when(request('customer_id'), function ($sp) {
+            //     return $sp->where('customer_id', '=', request('customer_id'));
+            // })
             ->when(request('dokter_id'), function ($sp) {
                 return $sp->where('dokter_id', '=', request('dokter_id'));
             })
             ->when(request('umum'), function ($sp) {
-                return $sp->where('dokter_id', '=', null)
-                    ->where('customer_id', '=', null);
+                return $sp->where('dokter_id', '=', null);
             });
         $this->periode($query, request('date'), request('hari'), request('bulan'), request('to'), request('from'),);
 
@@ -409,7 +406,7 @@ class LaporanController extends Controller
         //     ->with(['product'])
         //     ->get();
         // return new JsonResponse($data);
-        $data = $query->with(['detail_transaction.product', 'penerimaan_transaction.penerimaan', 'beban_transaction.beban', 'dokter', 'customer', 'supplier', 'kasir'])
+        $data = $query->with(['detail_transaction.product', 'penerimaan_transaction.penerimaan', 'beban_transaction.beban', 'dokter', 'perusahaan', 'kasir'])
             ->latest()->paginate(request('per_page'));
 
         return TransactionResource::collection($data);

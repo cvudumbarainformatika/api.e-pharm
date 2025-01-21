@@ -23,7 +23,7 @@ class TransactionFactory extends Factory
     //         'faktur' => $this->faker->word(1),
     //         'tanggal' => $this->faker->dateTimeThisYear(),
     //         'tempo' => $tempo[$p],
-    //         'supplier_id' => $supplier[$p],
+    //         'perusahaan_id' => $supplier[$p],
     //         'jenis' => $jenis[$p],
     //         'status' => 1,
     //     ];
@@ -57,7 +57,7 @@ class TransactionFactory extends Factory
     //         'faktur' => $this->faker->word(1),
     //         'tanggal' => $this->faker->dateTimeThisYear(),
     //         'tempo' => $tempo[$p],
-    //         'supplier_id' => $supplier[$p],
+    //         'perusahaan_id' => $supplier[$p],
     //         'jenis' => $jenis[$p],
     //         'status' => 1,
     //     ];
