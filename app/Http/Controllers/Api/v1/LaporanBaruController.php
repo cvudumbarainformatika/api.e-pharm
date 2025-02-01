@@ -7,6 +7,7 @@ use App\Models\DetailTransaction;
 use App\Models\DistribusiAntarToko;
 use App\Models\Product;
 use App\Models\Setting\Info;
+use App\Models\StokOpname;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -75,20 +76,31 @@ class LaporanBaruController extends Controller
     }
     public function getSingleDetails($header, $nama)
     {
-        $before = Transaction::select(
-            'detail_transactions.qty'
-        )->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
-            ->where('detail_transactions.product_id', $header->product_id)
-            ->where('transactions.nama', '=', $nama)
-            ->where('transactions.status', '>=', 2)
-            ->whereDate('transactions.tanggal', '<', $header->from)->get();
+        $dataOpname = [];
+        $tglOpnameTerakhir = StokOpname::select('tgl_opname')->orderBy('tgl_opname', 'desc')->first();
+        if ($tglOpnameTerakhir) {
+            $dataOpname = StokOpname::select('jumlah as qty')->where('kode_produk', $header->kode_produk)->where('tgl_opname', $tglOpnameTerakhir->tgl_opname)->get();
+        }
+        if (sizeof($dataOpname)  > 0) {
+            // $before = $dataOpname;
+            $before = null;
+        } else {
+            $before = Transaction::select(
+                'detail_transactions.qty'
+            )->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
+                ->where('detail_transactions.product_id', $header->product_id)
+                ->where('transactions.nama', '=', $nama)
+                ->where('transactions.status', '>=', 2)
+                ->whereDate('transactions.tanggal', '<', $header->from)->get();
+        }
+
         $period = Transaction::select(
             'detail_transactions.qty'
         )->leftJoin('detail_transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
             ->where('detail_transactions.product_id', $header->product_id)
             ->where('transactions.nama', '=', $nama)
             ->where('transactions.status', '>=', 2)
-            ->whereDate('transactions.tanggal', '=', $header->from)->get(); // period is today
+            ->whereDate('transactions.tanggal', '>', $header->from)->get(); // period is today
         $data = (object) array(
             'before' => $before,
             'period' => $period,
@@ -98,29 +110,40 @@ class LaporanBaruController extends Controller
     public function getSumSingleProduct($header)
     {
         $me = Info::first();
-        $masukbefore = DistribusiAntarToko::select(
-            'distribusi_antar_tokos.qty'
-        )
-            ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
-            ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
-            ->where('header_distribusis.tujuan', $me->kodecabang)
-            ->whereDate('header_distribusis.tgl_terima', '<', $header->from)
-            ->get();
+        $dataOpname = [];
+        $tglOpnameTerakhir = StokOpname::select('tgl_opname')->orderBy('tgl_opname', 'desc')->first();
+        if ($tglOpnameTerakhir) {
+            $dataOpname = StokOpname::select('jumlah as qty')->where('kode_produk', $header->kode_produk)->where('tgl_opname', $tglOpnameTerakhir->tgl_opname)->get();
+        }
+        if (sizeof($dataOpname) > 0) {
+            $masukbefore = null;
+            $keluarbefore = null;
+        } else {
+            $masukbefore = DistribusiAntarToko::select(
+                'distribusi_antar_tokos.qty'
+            )
+                ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
+                ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
+                ->where('header_distribusis.tujuan', $me->kodecabang)
+                ->whereDate('header_distribusis.tgl_terima', '<', $header->from)
+                ->get();
+
+            $keluarbefore = DistribusiAntarToko::select(
+                'distribusi_antar_tokos.qty'
+            )
+                ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
+                ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
+                ->where('header_distribusis.dari', $me->kodecabang)
+                ->whereDate('header_distribusis.tgl_distribusi', '<', $header->from)
+                ->get();
+        }
         $masukperiod = DistribusiAntarToko::select(
             'distribusi_antar_tokos.qty'
         )
             ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
             ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
             ->where('header_distribusis.tujuan', $me->kodecabang)
-            ->whereDate('header_distribusis.tgl_terima', '=', $header->from)
-            ->get();
-        $keluarbefore = DistribusiAntarToko::select(
-            'distribusi_antar_tokos.qty'
-        )
-            ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
-            ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
-            ->where('header_distribusis.dari', $me->kodecabang)
-            ->whereDate('header_distribusis.tgl_distribusi', '<', $header->from)
+            ->whereDate('header_distribusis.tgl_terima', '>', $header->from)
             ->get();
         $keluarperiod = DistribusiAntarToko::select(
             'distribusi_antar_tokos.qty'
@@ -128,7 +151,7 @@ class LaporanBaruController extends Controller
             ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
             ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
             ->where('header_distribusis.dari', $me->kodecabang)
-            ->whereDate('header_distribusis.tgl_distribusi', '=', $header->from) // period is today
+            ->whereDate('header_distribusis.tgl_distribusi', '>', $header->from) // period is today
             ->get();
         $data = (object) array(
             // 'me' => $me->kodecabang,

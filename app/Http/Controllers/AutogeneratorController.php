@@ -19,6 +19,7 @@ use App\Models\Product;
 use App\Models\Satuan;
 use App\Models\SatuanBesar;
 use App\Models\Setting\Info;
+use App\Models\StokOpname;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Models\User;
@@ -528,9 +529,24 @@ class AutogeneratorController extends Controller
     public function wawan()
     {
 
-        $data = 'PNSDA-apem';
-        $return = explode('-', $data);
-        return new JsonResponse($return[0]);
+        // $data = 'PNSDA-apem';
+        // $return = explode('-', $data);
+        // return new JsonResponse($return[0]);
+        $tglOpnameTerakhir = StokOpname::select('tgl_opname')->orderBy('tgl_opname', 'desc')->first();
+        $tgl = date('Y-m-d', strtotime($tglOpnameTerakhir->tgl_opname));
+        // $today = date('2024-03-02');
+        $today = date('Y-m-d');
+        $dToday = date_create($today);
+        $dOpname = date_create($tgl);
+        $diff = date_diff($dToday, $dOpname);
+        return new JsonResponse([
+            'tgl opname' => $tglOpnameTerakhir,
+            'tgl' => $tgl,
+            'is same' => $tgl == $today,
+            'diff' => $diff,
+            'days' => $diff->days,
+            'days' => $diff->days == 0,
+        ]);
     }
 
     public function setKode()
