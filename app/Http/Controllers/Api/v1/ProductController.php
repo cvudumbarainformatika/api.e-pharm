@@ -185,10 +185,10 @@ class ProductController extends Controller
         // $auth = auth()->user()->id;
 
         // validasi cabang utama strt
-        $me = Info::first();
-        if ($me->kodecabang != 'APS0001') {
-            return new JsonResponse(['message' => 'Hapus master hanya dilakukan di cabang utama'], 410);
-        }
+        // $me = Info::first();
+        // if ($me->kodecabang != 'APS0001') {
+        //     return new JsonResponse(['message' => 'Hapus master hanya dilakukan di cabang utama'], 410);
+        // }
         // validasi cabang utama end
         try {
 
@@ -197,12 +197,12 @@ class ProductController extends Controller
 
             $data = Product::find($id);
             // cari di detail transaksi, jika ada jangan di delete
-            $ada = DetailTransaction::where('product_id', $data->id)->first();
-            if ($ada) {
-                return response()->json([
-                    'message' => 'Data sudah ada Di transaksi, jika dihapus akan mempengaruhi laporan.'
-                ], 500);
-            }
+            // $ada = DetailTransaction::where('product_id', $data->id)->first();
+            // if ($ada) {
+            //     return response()->json([
+            //         'message' => 'Data sudah ada Di transaksi, jika dihapus akan mempengaruhi laporan.'
+            //     ], 500);
+            // }
             $del = $data->delete();
 
             if (!$del) {
@@ -212,21 +212,21 @@ class ProductController extends Controller
             }
 
             // pots notif start
-            $cabang = Cabang::pluck('kodecabang')->toArray();
-            $ind = array_search($me->kodecabang, $cabang);
-            $anu = $cabang;
-            unset($anu[$ind]);
-            foreach ($anu as $key) {
-                $msg = [
-                    'sender' => $me->kodecabang,
-                    'receiver' => $key,
-                    'type' => 'delete master',
-                    'model' => 'Product',
-                    'content' => $data,
-                ];
+            // $cabang = Cabang::pluck('kodecabang')->toArray();
+            // $ind = array_search($me->kodecabang, $cabang);
+            // $anu = $cabang;
+            // unset($anu[$ind]);
+            // foreach ($anu as $key) {
+            //     $msg = [
+            //         'sender' => $me->kodecabang,
+            //         'receiver' => $key,
+            //         'type' => 'delete master',
+            //         'model' => 'Product',
+            //         'content' => $data,
+            //     ];
 
-                $response = CloudHelper::post_cloud($msg);
-            }
+            //     $response = CloudHelper::post_cloud($msg);
+            // }
             // pots notif end
             DB::commit();
             // $user->log("Menghapus Data Product {$data->nama}");
