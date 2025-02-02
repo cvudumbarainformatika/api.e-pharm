@@ -137,13 +137,14 @@ class LaporanBaruController extends Controller
                 ->whereDate('header_distribusis.tgl_distribusi', '<', $header->from)
                 ->get();
         }
+        $from = date('Y-m-d', strtotime($header->from));
         $masukperiod = DistribusiAntarToko::select(
             'distribusi_antar_tokos.qty'
         )
             ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
             ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
             ->where('header_distribusis.tujuan', $me->kodecabang)
-            ->whereDate('header_distribusis.tgl_terima', '>', $header->from)
+            ->whereDate('header_distribusis.tgl_terima', '>', $from)
             ->get();
         $keluarperiod = DistribusiAntarToko::select(
             'distribusi_antar_tokos.qty'
@@ -151,7 +152,7 @@ class LaporanBaruController extends Controller
             ->leftJoin('header_distribusis', 'header_distribusis.nodistribusi', '=', 'distribusi_antar_tokos.nodistribusi')
             ->where('distribusi_antar_tokos.kode_produk', $header->kode_produk)
             ->where('header_distribusis.dari', $me->kodecabang)
-            ->whereDate('header_distribusis.tgl_distribusi', '>', $header->from) // period is today
+            ->whereDate('header_distribusis.tgl_distribusi', '>', $from) // period is today
             ->get();
         $data = (object) array(
             // 'me' => $me->kodecabang,

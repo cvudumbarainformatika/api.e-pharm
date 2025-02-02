@@ -29,7 +29,7 @@ class Product extends Model
             $dataOpname = StokOpname::select('jumlah as qty')->where('kode_produk', $this->kode_produk)->where('tgl_opname', $tglOpnameTerakhir->tgl_opname)->first();
         }
         $header = (object) array(
-            'from' => $tglOpnameTerakhir ? date('Y-m-d', strtotime($tglOpnameTerakhir->tgl_opname)) : date('Y-m-d'),
+            'from' => $tglOpnameTerakhir->tgl_opname ?? date('Y-m-d'),
             'product_id' => $this->id,
             'kode_produk' => $this->kode_produk,
         );
