@@ -29,4 +29,5 @@ Route::group([
     'prefix' => 'laporan/baru'
 ], function () {
     Route::get('/single-product', [LaporanBaruController::class, 'singleProduct']);
+    Route::get('/nilai-product', [LaporanBaruController::class, 'nilaiProduct']);
 });

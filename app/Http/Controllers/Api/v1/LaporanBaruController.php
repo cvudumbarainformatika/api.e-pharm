@@ -15,6 +15,28 @@ use Illuminate\Support\Facades\DB;
 class LaporanBaruController extends Controller
 {
     //
+    public function nilaiProduct()
+    {
+        $raw = Product::select('id', 'harga_beli')->get();
+        $raw->append('stok');
+
+        $prod = collect($raw)->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'nilai' => $item->harga_beli * $item->stok,
+                'stok' => $item->stok,
+                'harga_beli' => $item->harga_beli
+            ];
+        });
+        $sum = $prod->sum('nilai');
+
+        return new JsonResponse($sum);
+        // return new JsonResponse([
+        //     'prod' => $prod,
+        //     'sum' => $sum,
+
+        // ], 200);
+    }
     public function singleProduct()
     {
         $header = (object) array(
