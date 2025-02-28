@@ -520,7 +520,7 @@ class TransactionController extends Controller
                 $hitungTot = collect($det)->sum('sub_total');
                 $bayar = (float)$request->bayar;
                 $totalnya = (float)$hitungTot;
-                if ($bayar < $totalnya) {
+                if ($bayar < $totalnya && $request->jenis === 'tunai') {
                     return new JsonResponse([
                         'message' => 'Periksa kembali jumlah bayar',
                         'bayar' => $request->bayar,
