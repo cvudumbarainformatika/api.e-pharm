@@ -363,31 +363,32 @@ class TransactionController extends Controller
                 );
 
                 // update harga_beli di produk dan harga jual juga
-                if ($request->update_harga) {
-                    $produk = Product::find($request->product_id);
-                    $harga_di_update = 'Harga Di Update';
-                    $disperitem = 0;
-                    if ($request->diskon > 0) {
-                        $disperitem = $request->harga * ($request->diskon / 100);
-                    }
+                // tidak perlu update harga
+                // if ($request->update_harga) {
+                //     $produk = Product::find($request->product_id);
+                //     $harga_di_update = 'Harga Di Update';
+                //     $disperitem = 0;
+                //     if ($request->diskon > 0) {
+                //         $disperitem = $request->harga * ($request->diskon / 100);
+                //     }
 
-                    // $selisih = $request->harga - $produk->harga_beli;
-                    // $selisi = ($request->harga - $produk->harga_beli) - $disperitem;
-                    // $selisih = $selisi <= 0 ? 0 : $selisi;
-                    $hargaBeli = $request->harga - $disperitem;
-                    $sepuluh = $hargaBeli * (10 / 100);
-                    $duapuluh = $hargaBeli * (20 / 100);
+                //     // $selisih = $request->harga - $produk->harga_beli;
+                //     // $selisi = ($request->harga - $produk->harga_beli) - $disperitem;
+                //     // $selisih = $selisi <= 0 ? 0 : $selisi;
+                //     $hargaBeli = $request->harga - $disperitem;
+                //     $sepuluh = $hargaBeli * (10 / 100);
+                //     $duapuluh = $hargaBeli * (20 / 100);
 
-                    $produk->update([
-                        'harga_jual_umum' => $hargaBeli + ($produk->hv === '1' ? $sepuluh : $duapuluh + 1000),
-                        'harga_jual_resep' => $hargaBeli + $sepuluh + 1000,
-                        'harga_jual_cust' => $hargaBeli,
-                        'harga_jual_prem' => $hargaBeli,
-                        'harga_jual_rac' => $hargaBeli + $duapuluh,
-                        'harga_beli' => $request->harga - $disperitem
-                        // 'harga_beli' => $produk->harga_beli + $selisih
-                    ]);
-                }
+                //     $produk->update([
+                //         'harga_jual_umum' => $hargaBeli + ($produk->hv === '1' ? $sepuluh : $duapuluh + 1000),
+                //         'harga_jual_resep' => $hargaBeli + $sepuluh + 1000,
+                //         'harga_jual_cust' => $hargaBeli,
+                //         'harga_jual_prem' => $hargaBeli,
+                //         'harga_jual_rac' => $hargaBeli + $duapuluh,
+                //         'harga_beli' => $request->harga - $disperitem
+                //         // 'harga_beli' => $produk->harga_beli + $selisih
+                //     ]);
+                // }
                 // if ($request->nama === 'PENJUALAN' && $request->status === 2) {
                 //     if ($request->jenis === 'tunai') {
                 // // cek subtotal
@@ -418,51 +419,51 @@ class TransactionController extends Controller
             * koding ongkir / PPN  disini
             * PPN  dalam %
             */
-                $tr = null;
-                $deta = null;
-                $produ = [];
-                if ($request->nama === 'PEMBELIAN' && $request->status === 2) {
-                    if ($request->ongkir > 0 || $request->potongan > 0) {
-                        $transaksi = Transaction::where('reff', $request->reff)->first();
-                        $tr = $transaksi;
-                        $det = DetailTransaction::where('transaction_id', $transaksi->id)->get();
-                        $deta = $det;
-                        foreach ($det as $key) {
-                            $prod = Product::find($key['product_id']);
-                            $harga = 0;
-                            $hargaPpn = 0;
+                // $tr = null;
+                // $deta = null;
+                // $produ = [];
+                // if ($request->nama === 'PEMBELIAN' && $request->status === 2) {
+                //     if ($request->ongkir > 0 || $request->potongan > 0) {
+                //         $transaksi = Transaction::where('reff', $request->reff)->first();
+                //         $tr = $transaksi;
+                //         $det = DetailTransaction::where('transaction_id', $transaksi->id)->get();
+                //         $deta = $det;
+                //         foreach ($det as $key) {
+                //             $prod = Product::find($key['product_id']);
+                //             $harga = 0;
+                //             $hargaPpn = 0;
 
-                            if ($request->potongan > 0) {
-                                $discPerItem = $prod->harga_beli  * ($request->potongan / 100);
-                                $harga =  $prod->harga_beli - $discPerItem;
-                                array_push($produ, $harga);
-                            }
-                            if ($request->ongkir > 0) {
-                                if ($harga > 0) {
-                                    $ppnPerItem = $harga  * ($request->ongkir / 100);
-                                    $hargaPpn = $harga + $ppnPerItem;
-                                    array_push($produ, $hargaPpn);
-                                } else {
-                                    $ppnPerItem = $prod->harga_beli  * ($request->ongkir / 100);
-                                    $hargaPpn = $prod->harga_beli + $ppnPerItem;
-                                    array_push($produ, $hargaPpn);
-                                }
-                            }
+                //             if ($request->potongan > 0) {
+                //                 $discPerItem = $prod->harga_beli  * ($request->potongan / 100);
+                //                 $harga =  $prod->harga_beli - $discPerItem;
+                //                 array_push($produ, $harga);
+                //             }
+                //             if ($request->ongkir > 0) {
+                //                 if ($harga > 0) {
+                //                     $ppnPerItem = $harga  * ($request->ongkir / 100);
+                //                     $hargaPpn = $harga + $ppnPerItem;
+                //                     array_push($produ, $hargaPpn);
+                //                 } else {
+                //                     $ppnPerItem = $prod->harga_beli  * ($request->ongkir / 100);
+                //                     $hargaPpn = $prod->harga_beli + $ppnPerItem;
+                //                     array_push($produ, $hargaPpn);
+                //                 }
+                //             }
 
-                            $harg = ceil($hargaPpn);
-                            $selisi = ceil($harg - $prod->harga_beli);
-                            $selisih = $selisi <= 0 ? 0 : $selisi;
-                            $prod->update([
-                                'harga_jual_umum' => $prod->harga_jual_umum + $selisih,
-                                'harga_jual_resep' => $prod->harga_jual_resep + $selisih,
-                                'harga_jual_cust' => $prod->harga_jual_cust + $selisih,
-                                'harga_jual_prem' => $prod->harga_jual_prem + $selisih,
-                                'harga_beli' => $harg
-                                // 'harga_beli' => $produk->harga_beli + $selisih
-                            ]);
-                        }
-                    }
-                }
+                //             $harg = ceil($hargaPpn);
+                //             $selisi = ceil($harg - $prod->harga_beli);
+                //             $selisih = $selisi <= 0 ? 0 : $selisi;
+                //             $prod->update([
+                //                 'harga_jual_umum' => $prod->harga_jual_umum + $selisih,
+                //                 'harga_jual_resep' => $prod->harga_jual_resep + $selisih,
+                //                 'harga_jual_cust' => $prod->harga_jual_cust + $selisih,
+                //                 'harga_jual_prem' => $prod->harga_jual_prem + $selisih,
+                //                 'harga_beli' => $harg
+                //                 // 'harga_beli' => $produk->harga_beli + $selisih
+                //             ]);
+                //         }
+                //     }
+                // }
 
                 /*
             * koding ongkir / PPN  disini
@@ -541,9 +542,9 @@ class TransactionController extends Controller
             return response()->json([
                 'message' => 'ada kesalahan',
                 'error' => $th,
-                'tr' => $tr,
-                'produ' => $produ,
-                'deta' => $deta,
+                'tr' => $tr ?? null,
+                'produ' => $produ ?? null,
+                'deta' => $deta ?? null,
                 'simpan' => $simpan,
                 'simpan 2' => $simpan2,
                 'second array' => $array2,
