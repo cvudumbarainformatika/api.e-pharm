@@ -25,7 +25,7 @@ class ProductController extends Controller
             ->with('rak:id,nama', 'merk:id,nama', 'satuan:id,nama', 'satuanBesar:id,nama', 'kategori:id,nama', 'ada:id,product_id')
             ->filter(request(['q', 'rak_id']))
             // ->attributes('stok')
-            ->orderBy('hv', 'ASC')
+            // ->orderBy('hv', 'ASC')
             ->paginate(request('per_page'));
         // $data->append('stok')->toArray();
         $data->append('stok');
@@ -79,6 +79,7 @@ class ProductController extends Controller
                 // 'satuan_id' => 'required',
                 // 'pengali' => 'required',
                 // 'satuan_id' => 'required',
+                'harga_jual_hv' => 'required',
                 'harga_beli' => 'required',
                 'harga_jual_umum' => 'required',
                 'harga_jual_resep' => 'required',

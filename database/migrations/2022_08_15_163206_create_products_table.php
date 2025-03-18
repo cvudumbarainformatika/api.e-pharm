@@ -19,12 +19,12 @@ class CreateProductsTable extends Migration
             $table->string('kode_produk')->unique()->nullable();
             $table->string('barcode')->unique()->nullable();
             $table->string('nama')->nullable();
-            $table->string('hv', 10)->nullable();
             $table->unsignedBigInteger('merk_id')->nullable();
             $table->unsignedBigInteger('satuan_id')->nullable();
             $table->unsignedBigInteger('pengali')->nullable();
             $table->unsignedBigInteger('satuan_besar_id')->nullable();
             $table->double('harga_beli', 20, 2)->default(0);
+            $table->double('harga_jual_hv', 20, 2)->default(0);
             $table->double('harga_jual_umum', 20, 2)->default(0);
             $table->double('harga_jual_resep', 20, 2)->default(0);
             $table->double('harga_jual_cust', 20, 2)->default(0);
