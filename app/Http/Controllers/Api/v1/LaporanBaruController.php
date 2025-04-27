@@ -17,7 +17,7 @@ class LaporanBaruController extends Controller
     //
     public function nilaiProduct()
     {
-        $raw = Product::select('id', 'harga_beli')->get();
+        $raw = Product::select('id', 'harga_beli', 'stok_awal')->get();
         $raw->append('stok');
 
         $prod = collect($raw)->map(function ($item) {
