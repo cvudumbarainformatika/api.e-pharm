@@ -344,7 +344,8 @@ class TransactionController extends Controller
 
                 $diskon = $request->has('diskon') && $request->diskon !== null ? $request->diskon : 0;
                 $harga = $request->has('harga') && $request->harga !== null ? $request->harga : 0;
-                $sub_total = $request->has('sub_total') && $request->sub_total !== null && $request->sub_total > 0 ? $request->sub_total : ((int) $request->qty * (int) $harga);
+                $nilai_r = $request->has('nilai_r') && $request->nilai_r !== null ? $request->nilai_r : 0;
+                $sub_total = $request->has('sub_total') && $request->sub_total !== null && $request->sub_total > 0 ? $request->sub_total : (((int) $request->qty * (int) $harga) + (int) $nilai_r);
 
 
                 $data->detail_transaction()->updateOrCreate(
