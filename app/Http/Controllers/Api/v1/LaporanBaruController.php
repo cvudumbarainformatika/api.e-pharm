@@ -355,7 +355,7 @@ class LaporanBaruController extends Controller
     }
     public function getDistPeriod($header, $kode)
     {
-        $sebelumBulanIni = date('Y-', strtotime($header->from)) . date('m-', strtotime($header->from)) . '01 00:00:00';
+        $sebelumBulanIni = date('Y-m-d', strtotime($header->from))  . ' 00:00:00';
         $me = Info::first();
         $masukbefore = DistribusiAntarToko::selectRaw(
             'sum(distribusi_antar_tokos.qty) as jml, distribusi_antar_tokos.product_id, distribusi_antar_tokos.harga'
@@ -456,7 +456,7 @@ class LaporanBaruController extends Controller
     // jumlah produk sebelum periode pilihan dan pada periode pilihan
     public function getDetailsPeriod($header, $nama, $id)
     {
-        $sebelumBulanIni = date('Y-', strtotime($header->from)) . date('m-', strtotime($header->from)) . '01 00:00:00';
+        $sebelumBulanIni = date('Y-m-d', strtotime($header->from))  . ' 00:00:00';
 
         $before = Transaction::select(
             'transactions.id',
@@ -525,7 +525,7 @@ class LaporanBaruController extends Controller
     //ambil detail transaksi pada periode dan sebelum periode tertentu
     public function getDetailsPeriodUang($header, $nama)
     {
-        $sebelumBulanIni = date('Y-', strtotime($header->from)) . date('m-', strtotime($header->from)) . '01 00:00:00';
+        $sebelumBulanIni = date('Y-m-d', strtotime($header->from))  . ' 00:00:00';
         $before = Transaction::select(
             'transactions.id',
             'detail_transactions.product_id',
