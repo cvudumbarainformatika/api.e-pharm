@@ -460,7 +460,7 @@ class LaporanBaruController extends Controller
     // jumlah produk sebelum periode pilihan dan pada periode pilihan
     public function getDetailsPeriod($header, $nama, $id)
     {
-        $sebelumBulanIni = date('Y-', strtotime($header->from)) . date('m-', strtotime($header->from)) . '01 00:00:00';
+        $sebelumBulanIni = date('Y-m-d', strtotime($header->from)) .  ' 00:00:00';
 
         $before = Transaction::select(
             'transactions.id',
@@ -500,8 +500,9 @@ class LaporanBaruController extends Controller
                 ->where('transactions.nama', '=', $nama)
                 ->where('transactions.status', '>=', 2)
                 ->whereIn('detail_transactions.product_id', $id)
+                ->where('transactions.tanggal', 'like', date('Y-m'))
                 // ->whereMonth('transactions.tanggal', '=', date('m'))
-                ->whereBetween('transactions.tanggal',  [date('Y-m-01') . ' 00:00:00', date('Y-m-31') . ' 23:59:59'])
+                // ->whereBetween('transactions.tanggal',  [date('Y-m-01') . ' 00:00:00', date('Y-m-31') . ' 23:59:59'])
                 ->groupBy('detail_transactions.product_id')
                 ->get();
         } else {
