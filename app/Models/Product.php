@@ -58,8 +58,8 @@ class Product extends Model
         $distMP = collect($distribusi->masukperiod)->sum('qty');
         $distKP = collect($distribusi->keluarperiod)->sum('qty');
         $stokAwal = 0;
-        if (!$tglOpnameTerakhir) $stokAwal = $this->stok_awal;
-        else $stokAwal = $dataOpname->qty ?? 0;
+        // if (!$tglOpnameTerakhir) $stokAwal = $this->stok_awal;
+        $stokAwal = $dataOpname->qty ?? $this->stok_awal;
         $sebelum = $masukBefore - $keluarBefore + $retJualBefore - $retBeliBefore + $penyeBefore + $distMB - $distKB;
         $berjalan = $masukPeriod - $keluarPeriod + $retJualPeriod - $retBeliPeriod + $penyePeriod + $distMP - $distKP;
         $awal = $stokAwal + $sebelum;
