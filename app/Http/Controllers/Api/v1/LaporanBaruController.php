@@ -423,7 +423,7 @@ class LaporanBaruController extends Controller
                 ->where('header_distribusis.dari', $me->kodecabang)
                 ->whereIn('distribusi_antar_tokos.kode_produk', $kode)
                 // ->whereBetween('header_distribusis.tgl_distribusi', [date('Y-m-01') . ' 00:00:00', date('Y-m-t') . ' 23:59:59']) // period is today ini potensi masalah karena di bulan 2 masih kena
-                ->whereBetween('header_distribusis.tgl_distribusi', 'like', date('Y-m') . '%') // period is today ini potensi masalah karena di bulan 2 masih kena
+                ->where('header_distribusis.tgl_distribusi', 'like', date('Y-m') . '%') // period is today ini potensi masalah karena di bulan 2 masih kena
                 ->groupBy('distribusi_antar_tokos.kode_produk')
                 ->get();
         } else {
